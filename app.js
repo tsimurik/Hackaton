@@ -227,6 +227,10 @@
       syncBalancesToDom();
       renderMinecraftGrid();
     }
+    if (tab === "tasks") {
+      renderCalendarGrid();
+      updateStreakDisplay();
+    }
   }
 
   function registerUser(nicknameRaw, inviterCode) {
@@ -399,6 +403,237 @@
   var BUILDING_KEYS = ["coffee", "bank", "shop", "itcompany", "warehouse", "flowershop", "autoservice", "cinema", "construction", "gasstation", "restaurant"];
   var currentSelectedBlock = null;
   var currentInfoIndex = null;
+  
+  // ========== ЕЖЕДНЕВНЫЙ КАЛЕНДАРЬ ==========
+  
+  var CALENDAR_KEY = "rr_calendar_";
+  
+  function getCalendarData() {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return null;
+    
+    var key = CALENDAR_KEY + currentUser.id;
+    try {
+      var raw = localStorage.getItem(key);
+      if (!raw) {
+        return {
+          lastClaimDay: 0,
+          currentStreak: 0,
+          claimedDays: [],
+          lastClaimDate: null
+        };
+      }
+      return JSON.parse(raw);
+    } catch (e) {
+      return {
+        lastClaimDay: 0,
+        currentStreak: 0,
+        claimedDays: [],
+        lastClaimDate: null
+      };
+    }
+  }
+  
+  function saveCalendarData(data) {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return;
+    var key = CALENDAR_KEY + currentUser.id;
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+  
+  function getRewardForDay(day) {
+    var baseSkill = 10;
+    var baseToken = 10;
+    var maxDay = Math.min(day, 12);
+    var multiplier = Math.pow(1.2, maxDay - 1);
+    return {
+      skill: Math.floor(baseSkill * multiplier),
+      token: Math.floor(baseToken * multiplier)
+    };
+  }
+  
+  function checkAndResetCalendar() {
+    var calendarData = getCalendarData();
+    if (!calendarData) return false;
+    
+    var today = new Date().toDateString();
+    var lastDate = calendarData.lastClaimDate;
+    
+    if (!lastDate) return false;
+    
+    var lastClaim = new Date(lastDate);
+    var todayDate = new Date();
+    var diffDays = Math.floor((todayDate - lastClaim) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays >= 1) {
+      calendarData.currentStreak = 0;
+      calendarData.lastClaimDay = 0;
+      calendarData.claimedDays = [];
+      calendarData.lastClaimDate = null;
+      saveCalendarData(calendarData);
+      renderCalendarGrid();
+      updateStreakDisplay();
+      return true;
+    }
+    
+    return false;
+  }
+  
+  function claimDayReward(day) {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return false;
+    
+    var calendarData = getCalendarData();
+    if (!calendarData) return false;
+    
+    var today = new Date().toDateString();
+    var lastDate = calendarData.lastClaimDate;
+    
+    if (lastDate === today) {
+      showGameToast("❌ Вы уже забирали награду сегодня! Возвращайтесь завтра!");
+      return false;
+    }
+    
+    var expectedDay = calendarData.currentStreak + 1;
+    if (day !== expectedDay) {
+      showGameToast("❌ Вы можете забрать только следующий день по порядку!");
+      return false;
+    }
+    
+    if (calendarData.claimedDays.includes(day)) {
+      showGameToast("❌ Награда за этот день уже получена!");
+      return false;
+    }
+    
+    var reward = getRewardForDay(day);
+    
+    currentUser.balanceSkillPoints = (currentUser.balanceSkillPoints || 0) + reward.skill;
+    currentUser.balanceMtBanks = (currentUser.balanceMtBanks || 0) + reward.token;
+    
+    calendarData.claimedDays.push(day);
+    calendarData.currentStreak = day;
+    calendarData.lastClaimDay = day;
+    calendarData.lastClaimDate = today;
+    
+    var users = loadAllUsers();
+    users[currentUser.id] = currentUser;
+    saveAllUsers(users);
+    saveCalendarData(calendarData);
+    
+    balanceSkillPoints = currentUser.balanceSkillPoints;
+    balanceMtBanks = currentUser.balanceMtBanks;
+    syncBalancesToDom();
+    updateGameBalanceDisplay();
+    renderCalendarGrid();
+    updateStreakDisplay();
+    
+    showGameToast(`🎉 Получено: ${reward.skill} ⭐ и ${reward.token} 💰!`);
+    return true;
+  }
+  
+  function resetCalendarWithTokens() {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return false;
+    
+    var cost = 500;
+    
+    if ((currentUser.balanceMtBanks || 0) < cost) {
+      showGameToast(`❌ Недостаточно MTBank Tokens! Нужно ${cost} 💰`);
+      return false;
+    }
+    
+    currentUser.balanceMtBanks -= cost;
+    
+    var calendarData = getCalendarData();
+    calendarData.currentStreak = 0;
+    calendarData.lastClaimDay = 0;
+    calendarData.claimedDays = [];
+    calendarData.lastClaimDate = null;
+    saveCalendarData(calendarData);
+    
+    var users = loadAllUsers();
+    users[currentUser.id] = currentUser;
+    saveAllUsers(users);
+    
+    balanceMtBanks = currentUser.balanceMtBanks;
+    syncBalancesToDom();
+    updateGameBalanceDisplay();
+    renderCalendarGrid();
+    updateStreakDisplay();
+    
+    showGameToast(`✨ Прогресс календаря восстановлен! Потрачено ${cost} 💰`);
+    return true;
+  }
+  
+  function updateStreakDisplay() {
+    var calendarData = getCalendarData();
+    if (calendarData) {
+      var streakSpan = document.getElementById("streak-count");
+      if (streakSpan) streakSpan.textContent = calendarData.currentStreak || 0;
+    }
+  }
+  
+  function renderCalendarGrid() {
+    var container = document.getElementById("calendar-grid");
+    if (!container) return;
+    
+    var calendarData = getCalendarData();
+    if (!calendarData) return;
+    
+    checkAndResetCalendar();
+    
+    container.innerHTML = "";
+    
+    var currentStreak = calendarData.currentStreak || 0;
+    var startDay = Math.max(1, currentStreak - 6);
+    var endDay = currentStreak + 1;
+    
+    for (var day = startDay; day <= endDay; day++) {
+      var dayDiv = document.createElement("div");
+      dayDiv.className = "calendar-day";
+      
+      var reward = getRewardForDay(day);
+      var isMaxReward = day >= 12;
+      
+      var isClaimed = calendarData.claimedDays.includes(day);
+      var isAvailable = (day === currentStreak + 1) && !isClaimed;
+      var isLocked = !isClaimed && !isAvailable;
+      
+      if (isClaimed) {
+        dayDiv.classList.add("calendar-day--claimed");
+      } else if (isAvailable) {
+        dayDiv.classList.add("calendar-day--available");
+      } else {
+        dayDiv.classList.add("calendar-day--locked");
+      }
+      
+      dayDiv.innerHTML = `
+        <div class="calendar-day__number">День ${day}</div>
+        <div class="calendar-day__reward">
+          <span class="reward-skill">⭐ ${reward.skill}</span>
+          <span class="reward-token">💰 ${reward.token}</span>
+        </div>
+        ${isMaxReward && day > 12 ? '<div class="max-badge">MAX</div>' : ''}
+        ${isClaimed ? '<div class="claimed-badge">✓</div>' : ''}
+      `;
+      
+      if (isAvailable) {
+        dayDiv.addEventListener("click", (function(d) {
+          return function() { claimDayReward(d); };
+        })(day));
+      }
+      
+      container.appendChild(dayDiv);
+    }
+  }
+  
+  function initCalendar() {
+    checkAndResetCalendar();
+    renderCalendarGrid();
+    updateStreakDisplay();
+  }
+  
+  // ========== ИГРОВАЯ МЕХАНИКА ==========
   
   function loadGameBuildings() {
     var currentUser = getCurrentUser();
@@ -980,31 +1215,6 @@
       });
     }
     
-    var addSkillBtn = document.getElementById("btn-add-skill");
-    if (addSkillBtn) {
-      addSkillBtn.addEventListener("click", function() {
-        var amountInput = document.getElementById("skill-add-amount");
-        var amount = parseInt(amountInput.value, 10);
-        if (isNaN(amount) || amount <= 0) {
-          amount = 100;
-        }
-        addSkillPoints(amount);
-      });
-    }
-    
-    var gamePanel = document.getElementById("panel-game");
-    if (gamePanel) {
-      var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          if (mutation.attributeName === "class" && gamePanel.classList.contains("is-active")) {
-            updateGameBalanceDisplay();
-            renderMinecraftGrid();
-          }
-        });
-      });
-      observer.observe(gamePanel, { attributes: true });
-    }
-        // Кнопка "Как играть?"
     var helpBtn = document.getElementById("game-help-btn");
     var helpModal = document.getElementById("help-modal");
     var helpModalClose = document.getElementById("help-modal-close");
@@ -1033,6 +1243,38 @@
       helpModalOverlay.addEventListener("click", function() {
         helpModal.setAttribute("hidden", "");
       });
+    }
+    
+    var addSkillBtn = document.getElementById("btn-add-skill");
+    if (addSkillBtn) {
+      addSkillBtn.addEventListener("click", function() {
+        var amountInput = document.getElementById("skill-add-amount");
+        var amount = parseInt(amountInput.value, 10);
+        if (isNaN(amount) || amount <= 0) {
+          amount = 100;
+        }
+        addSkillPoints(amount);
+      });
+    }
+    
+    var resetStreakBtn = document.getElementById("reset-streak-btn");
+    if (resetStreakBtn) {
+      resetStreakBtn.addEventListener("click", function() {
+        resetCalendarWithTokens();
+      });
+    }
+    
+    var gamePanel = document.getElementById("panel-game");
+    if (gamePanel) {
+      var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+          if (mutation.attributeName === "class" && gamePanel.classList.contains("is-active")) {
+            updateGameBalanceDisplay();
+            renderMinecraftGrid();
+          }
+        });
+      });
+      observer.observe(gamePanel, { attributes: true });
     }
   }
 
@@ -1161,6 +1403,7 @@
     }
     
     initGame();
+    initCalendar();
   }
 
   if (document.readyState === "loading") {

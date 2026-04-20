@@ -122,7 +122,6 @@
             </div>
           </div>
           
-          <!-- Поле 5x5 -->
           <div class="minecraft-grid" id="minecraft-grid"></div>
           
           <button class="collect-all-btn" id="collect-all-btn">
@@ -132,12 +131,29 @@
       </section>
       
       <section id="panel-tasks" class="panel" data-panel="tasks">
-        <div class="card card--panel">
-          <h2 class="panel__title">📋 Задания</h2>
-          <p class="panel__empty">Раздел в разработке. Скоро здесь появятся ежедневные задания и квесты!</p>
-          <div style="text-align: center; margin-top: 20px; opacity: 0.6;">
-            <span style="font-size: 48px;">🎯</span>
-            <p>Выполняйте задания и получайте награды</p>
+        <div class="card card--panel tasks-card">
+          <h2 class="panel__title">📋 Ежедневные задания</h2>
+          
+          <div class="tasks-list" id="tasks-list"></div>
+          
+          <div class="calendar-section">
+            <div class="calendar-header">
+              <h3 class="calendar-title">📅 Ежедневный календарь</h3>
+              <div class="calendar-streak">
+                <div class="streak-flame">🔥</div>
+                <div class="streak-count" id="streak-count">0</div>
+                <div class="streak-label">дней подряд</div>
+              </div>
+            </div>
+            
+            <div class="calendar-grid" id="calendar-grid"></div>
+            
+            <div class="calendar-reset" id="calendar-reset-container">
+              <button class="reset-streak-btn" id="reset-streak-btn">
+                💎 Восстановить прогресс (500 MTBank Tokens)
+              </button>
+              <p class="reset-hint">Если вы пропустили день, можете восстановить календарь за 500 токенов</p>
+            </div>
           </div>
         </div>
       </section>
@@ -395,7 +411,7 @@
           <h4>⭐ Очки прокачки</h4>
           <p>Очки прокачки тратятся на покупку и улучшение бизнесов. Вы можете получить их:</p>
           <ul>
-            <li>✅ За выполнение ежедневных заданий (раздел "Задания" скоро появится)</li>
+            <li>✅ За выполнение ежедневных заданий (раздел "Задания")</li>
             <li>✅ За регистрацию по реферальному коду (+1000 ⭐)</li>
             <li>✅ Можно добавить вручную в профиле для тестирования</li>
           </ul>
@@ -425,6 +441,9 @@
       <button class="help-modal__ok" id="help-modal-ok">Понятно!</button>
     </div>
   </div>
+
+  <!-- Уведомления -->
+  <div class="buy-toast" id="buy-toast"></div>
 
   <script src="app.js" defer></script>
 </body>
