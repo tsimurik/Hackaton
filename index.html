@@ -105,6 +105,10 @@
       <section id="panel-game" class="panel" data-panel="game">
         <div class="game-container">
           <div class="game-header">
+            <div class="game-title-section">
+              <h2 class="game-title">🏙️ Город МТ</h2>
+              <button class="game-help-btn" id="game-help-btn">❓ Как играть?</button>
+            </div>
             <div class="game-balance">
               <span class="game-balance__label">MTBank Tokens</span>
               <span class="game-balance__value" id="game-balance">0</span>
@@ -124,6 +128,17 @@
           <button class="collect-all-btn" id="collect-all-btn">
             🧺 Собрать весь доход
           </button>
+        </div>
+      </section>
+      
+      <section id="panel-tasks" class="panel" data-panel="tasks">
+        <div class="card card--panel">
+          <h2 class="panel__title">📋 Задания</h2>
+          <p class="panel__empty">Раздел в разработке. Скоро здесь появятся ежедневные задания и квесты!</p>
+          <div style="text-align: center; margin-top: 20px; opacity: 0.6;">
+            <span style="font-size: 48px;">🎯</span>
+            <p>Выполняйте задания и получайте награды</p>
+          </div>
         </div>
       </section>
       
@@ -297,7 +312,11 @@
       </button>
       <button type="button" class="bottom-nav__tab" data-tab="game" aria-current="page">
         <span class="bottom-nav__icon" aria-hidden="true">🎮</span>
-        <span class="bottom-nav__text">Игра</span>
+        <span class="bottom-nav__text">Город МТ</span>
+      </button>
+      <button type="button" class="bottom-nav__tab" data-tab="tasks">
+        <span class="bottom-nav__icon" aria-hidden="true">📋</span>
+        <span class="bottom-nav__text">Задания</span>
       </button>
       <button type="button" class="bottom-nav__tab" data-tab="shop">
         <span class="bottom-nav__icon" aria-hidden="true">🛒</span>
@@ -321,7 +340,6 @@
   </div>
 
   <!-- Модальное окно информации о здании -->
-   <!-- Модальное окно информации о здании -->
   <div class="info-modal" id="info-modal" hidden>
     <div class="info-modal__overlay"></div>
     <div class="info-modal__content">
@@ -359,6 +377,52 @@
         <button class="info-btn info-btn--upgrade" id="info-upgrade-btn">⬆️ Улучшить</button>
         <button class="info-btn info-btn--sell" id="info-sell-btn">💰 Продать (-50%)</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно "Как играть?" -->
+  <div class="help-modal" id="help-modal" hidden>
+    <div class="help-modal__overlay"></div>
+    <div class="help-modal__content">
+      <button class="help-modal__close" id="help-modal-close">✕</button>
+      <h3 class="help-modal__title">🎮 Как играть в Город МТ?</h3>
+      <div class="help-modal__body">
+        <div class="help-section">
+          <h4>🏗️ Строительство</h4>
+          <p>Нажимайте на свободные клетки поля и выбирайте бизнес для постройки. Каждый бизнес приносит пассивный доход в MTBank Tokens.</p>
+        </div>
+        <div class="help-section">
+          <h4>⭐ Очки прокачки</h4>
+          <p>Очки прокачки тратятся на покупку и улучшение бизнесов. Вы можете получить их:</p>
+          <ul>
+            <li>✅ За выполнение ежедневных заданий (раздел "Задания" скоро появится)</li>
+            <li>✅ За регистрацию по реферальному коду (+1000 ⭐)</li>
+            <li>✅ Можно добавить вручную в профиле для тестирования</li>
+          </ul>
+        </div>
+        <div class="help-section">
+          <h4>💰 MTBank Tokens</h4>
+          <p>Токены зарабатываются с ваших бизнесов. Их можно тратить на специальные предложения от МТБанка:</p>
+          <ul>
+            <li>🛍️ Сертификаты партнёров (в разделе "Магазин")</li>
+            <li>💸 Кэшбеки на покупки</li>
+            <li>🎁 Эксклюзивные предложения</li>
+          </ul>
+        </div>
+        <div class="help-section">
+          <h4>⬆️ Улучшение бизнеса</h4>
+          <p>Нажмите на построенное здание → выберите "Улучшить". Доход бизнеса увеличится, но стоимость следующего улучшения растёт.</p>
+        </div>
+        <div class="help-section">
+          <h4>💰 Продажа бизнеса</h4>
+          <p>Нажмите на здание → "Продать (-50%)" - вы получите обратно 50% от потраченных очков прокачки. Место освободится для нового бизнеса.</p>
+        </div>
+        <div class="help-section">
+          <h4>📈 Цены на строительство</h4>
+          <p>Каждый новый бизнес дороже предыдущего на 10%. Планируйте свою стратегию развития!</p>
+        </div>
+      </div>
+      <button class="help-modal__ok" id="help-modal-ok">Понятно!</button>
     </div>
   </div>
 

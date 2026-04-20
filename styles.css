@@ -946,3 +946,160 @@ a.shop-item {
 .info-btn--sell:hover {
   filter: brightness(1.05);
 }
+/* Стили для секции заданий */
+#panel-tasks .card {
+  text-align: center;
+}
+
+#panel-tasks .panel__empty {
+  margin-bottom: 16px;
+}
+/* Заголовок и кнопка помощи в игре */
+.game-title-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.game-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.game-help-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 30px;
+  padding: 6px 14px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.game-help-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.02);
+}
+
+.game-help-btn:active {
+  transform: scale(0.98);
+}
+
+/* Модальное окно помощи */
+.help-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2500;
+}
+
+.help-modal[hidden] {
+  display: none;
+}
+
+.help-modal__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.help-modal__content {
+  position: relative;
+  background: white;
+  border-radius: 24px;
+  padding: 24px 20px 28px;
+  width: 90%;
+  max-width: 380px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+.help-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #999;
+}
+
+.help-modal__title {
+  margin: 0 0 16px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+}
+
+.help-modal__body {
+  margin-bottom: 20px;
+}
+
+.help-section {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.help-section:last-child {
+  border-bottom: none;
+}
+
+.help-section h4 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  color: #007bff;
+}
+
+.help-section p {
+  margin: 0 0 6px;
+  font-size: 0.8rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+.help-section ul {
+  margin: 6px 0 0;
+  padding-left: 20px;
+}
+
+.help-section li {
+  font-size: 0.75rem;
+  color: #666;
+  margin: 4px 0;
+}
+
+.help-modal__ok {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.help-modal__ok:active {
+  transform: scale(0.98);
+}

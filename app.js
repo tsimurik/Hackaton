@@ -1004,6 +1004,36 @@
       });
       observer.observe(gamePanel, { attributes: true });
     }
+        // Кнопка "Как играть?"
+    var helpBtn = document.getElementById("game-help-btn");
+    var helpModal = document.getElementById("help-modal");
+    var helpModalClose = document.getElementById("help-modal-close");
+    var helpModalOk = document.getElementById("help-modal-ok");
+    var helpModalOverlay = document.querySelector("#help-modal .help-modal__overlay");
+    
+    if (helpBtn && helpModal) {
+      helpBtn.addEventListener("click", function() {
+        helpModal.removeAttribute("hidden");
+      });
+    }
+    
+    if (helpModalClose && helpModal) {
+      helpModalClose.addEventListener("click", function() {
+        helpModal.setAttribute("hidden", "");
+      });
+    }
+    
+    if (helpModalOk && helpModal) {
+      helpModalOk.addEventListener("click", function() {
+        helpModal.setAttribute("hidden", "");
+      });
+    }
+    
+    if (helpModalOverlay && helpModal) {
+      helpModalOverlay.addEventListener("click", function() {
+        helpModal.setAttribute("hidden", "");
+      });
+    }
   }
 
   function init() {
