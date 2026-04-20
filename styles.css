@@ -1499,3 +1499,201 @@ a.shop-item {
     font-size: 12px;
   }
 }
+/* Лидерборд */
+.leaderboard-card {
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  color: white;
+  box-shadow: 0 10px 32px rgba(0, 123, 255, 0.28), 0 4px 16px rgba(225, 0, 152, 0.18);
+}
+
+.leaderboard-subtitle {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  text-align: center;
+  margin: -12px 0 20px 0;
+}
+
+.leaderboard-table {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  backdrop-filter: blur(4px);
+}
+
+.leaderboard-header {
+  display: grid;
+  grid-template-columns: 50px 1fr 80px 80px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.leaderboard-rank {
+  text-align: center;
+}
+
+.leaderboard-player {
+  padding-left: 8px;
+}
+
+.leaderboard-level {
+  text-align: center;
+}
+
+.leaderboard-score {
+  text-align: center;
+}
+
+.leaderboard-body {
+  min-height: 300px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 80px 80px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.leaderboard-row:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.leaderboard-row--top {
+  background: rgba(255, 215, 0, 0.15);
+}
+
+.leaderboard-rank-number {
+  text-align: center;
+  font-weight: 600;
+}
+
+.leaderboard-rank-number--1 {
+  color: #ffd700;
+  text-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
+}
+
+.leaderboard-rank-number--2 {
+  color: #c0c0c0;
+}
+
+.leaderboard-rank-number--3 {
+  color: #cd7f32;
+}
+
+.leaderboard-player-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 8px;
+}
+
+.leaderboard-player-avatar {
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+.leaderboard-level-value {
+  text-align: center;
+  font-weight: 600;
+  color: #ffd700;
+}
+
+.leaderboard-score-value {
+  text-align: center;
+  font-weight: 600;
+  color: #a5d6ff;
+}
+
+.leaderboard-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.leaderboard-empty-icon {
+  font-size: 48px;
+  opacity: 0.6;
+  margin-bottom: 16px;
+}
+
+.leaderboard-empty p {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.leaderboard-empty-hint {
+  font-size: 0.7rem;
+  opacity: 0.5;
+}
+
+.leaderboard-footer {
+  text-align: center;
+  padding-top: 8px;
+}
+
+.leaderboard-note {
+  font-size: 0.65rem;
+  opacity: 0.6;
+  margin: 0;
+}
+
+/* Стили для скролла лидерборда */
+.leaderboard-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.leaderboard-body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.leaderboard-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+/* Адаптив для лидерборда */
+@media (max-width: 480px) {
+  .leaderboard-header {
+    grid-template-columns: 40px 1fr 60px 70px;
+    font-size: 0.65rem;
+    padding: 10px 12px;
+  }
+  
+  .leaderboard-row {
+    grid-template-columns: 40px 1fr 60px 70px;
+    padding: 10px 12px;
+    font-size: 0.75rem;
+  }
+  
+  .leaderboard-player-avatar {
+    width: 22px;
+    height: 22px;
+    font-size: 0.7rem;
+  }
+  
+  .leaderboard-player-name {
+    gap: 6px;
+  }
+}

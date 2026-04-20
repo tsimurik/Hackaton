@@ -202,6 +202,7 @@
   }
 
   function switchTab(tab) {
+    console.log("Switching to tab:", tab);
     var panels = document.querySelectorAll(".panel");
     for (var i = 0; i < panels.length; i += 1) {
       var p = panels[i];
@@ -230,6 +231,8 @@
     if (tab === "tasks") {
       renderCalendarGrid();
       updateStreakDisplay();
+      // renderTasksList();  // НЕ НУЖНО, ТАК КАК checkAllTasksCompletion ВЫЗОВЕТ ЕГО САМ
+      checkAllTasksCompletion();
     }
   }
 
@@ -408,7 +411,7 @@
   
   var CALENDAR_KEY = "rr_calendar_";
   
-  function getCalendarData() {
+   function getCalendarData() {
     var currentUser = getCurrentUser();
     if (!currentUser) return null;
     
@@ -420,20 +423,23 @@
           lastClaimDay: 0,
           currentStreak: 0,
           claimedDays: [],
-          lastClaimDate: null
+          lastClaimDate: null,
+          brokenStreak: 0
         };
       }
-      return JSON.parse(raw);
+      var data = JSON.parse(raw);
+      if (data.brokenStreak === undefined) data.brokenStreak = 0;
+      return data;
     } catch (e) {
       return {
         lastClaimDay: 0,
         currentStreak: 0,
         claimedDays: [],
-        lastClaimDate: null
+        lastClaimDate: null,
+        brokenStreak: 0
       };
     }
   }
-  
   function saveCalendarData(data) {
     var currentUser = getCurrentUser();
     if (!currentUser) return;
@@ -451,7 +457,7 @@
       token: Math.floor(baseToken * multiplier)
     };
   }
-  
+
   function checkAndResetCalendar() {
     var calendarData = getCalendarData();
     if (!calendarData) return false;
@@ -466,10 +472,12 @@
     var diffDays = Math.floor((todayDate - lastClaim) / (1000 * 60 * 60 * 24));
     
     if (diffDays >= 1) {
+      var lastStreak = calendarData.currentStreak;
       calendarData.currentStreak = 0;
       calendarData.lastClaimDay = 0;
       calendarData.claimedDays = [];
       calendarData.lastClaimDate = null;
+      calendarData.brokenStreak = lastStreak;
       saveCalendarData(calendarData);
       renderCalendarGrid();
       updateStreakDisplay();
@@ -531,9 +539,30 @@
     return true;
   }
   
-  function resetCalendarWithTokens() {
+    function resetCalendarWithTokens() {
     var currentUser = getCurrentUser();
     if (!currentUser) return false;
+    
+    var calendarData = getCalendarData();
+    var today = new Date().toDateString();
+    var lastDate = calendarData.lastClaimDate;
+    var canReset = false;
+    var lastStreak = 0;
+    
+    if (lastDate) {
+      var lastClaim = new Date(lastDate);
+      var todayDate = new Date();
+      var diffDays = Math.floor((todayDate - lastClaim) / (1000 * 60 * 60 * 24));
+      if (diffDays >= 1) {
+        canReset = true;
+        lastStreak = calendarData.currentStreak || 0;
+      }
+    }
+    
+    if (!canReset && calendarData.brokenStreak === 0) {
+      showGameToast("❌ Серия не прервана! Восстановление не требуется.");
+      return false;
+    }
     
     var cost = 500;
     
@@ -544,11 +573,11 @@
     
     currentUser.balanceMtBanks -= cost;
     
-    var calendarData = getCalendarData();
     calendarData.currentStreak = 0;
     calendarData.lastClaimDay = 0;
     calendarData.claimedDays = [];
     calendarData.lastClaimDate = null;
+    calendarData.brokenStreak = 0;
     saveCalendarData(calendarData);
     
     var users = loadAllUsers();
@@ -561,7 +590,7 @@
     renderCalendarGrid();
     updateStreakDisplay();
     
-    showGameToast(`✨ Прогресс календаря восстановлен! Потрачено ${cost} 💰`);
+    showGameToast(`✨ Прогресс календаря восстановлен! Начинайте с 1 дня. Потрачено ${cost} 💰`);
     return true;
   }
   
@@ -573,7 +602,7 @@
     }
   }
   
-  function renderCalendarGrid() {
+   function renderCalendarGrid() {
     var container = document.getElementById("calendar-grid");
     if (!container) return;
     
@@ -588,6 +617,9 @@
     var startDay = Math.max(1, currentStreak - 6);
     var endDay = currentStreak + 1;
     
+    var today = new Date().toDateString();
+    var canClaimToday = calendarData.lastClaimDate !== today;
+    
     for (var day = startDay; day <= endDay; day++) {
       var dayDiv = document.createElement("div");
       dayDiv.className = "calendar-day";
@@ -596,7 +628,7 @@
       var isMaxReward = day >= 12;
       
       var isClaimed = calendarData.claimedDays.includes(day);
-      var isAvailable = (day === currentStreak + 1) && !isClaimed;
+      var isAvailable = (day === currentStreak + 1) && !isClaimed && canClaimToday;
       var isLocked = !isClaimed && !isAvailable;
       
       if (isClaimed) {
@@ -625,6 +657,50 @@
       
       container.appendChild(dayDiv);
     }
+    
+    updateResetButton(calendarData, canClaimToday);
+  }
+
+    function updateResetButton(calendarData, canClaimToday) {
+    var resetBtn = document.getElementById("reset-streak-btn");
+    var resetContainer = document.getElementById("calendar-reset-container");
+    if (!resetBtn) return;
+    
+    var lastDate = calendarData.lastClaimDate;
+    var isStreakBroken = false;
+    var lastStreak = calendarData.brokenStreak || 0;
+    
+    if (lastDate) {
+      var lastClaim = new Date(lastDate);
+      var todayDate = new Date();
+      var diffDays = Math.floor((todayDate - lastClaim) / (1000 * 60 * 60 * 24));
+      if (diffDays >= 1) {
+        isStreakBroken = true;
+        lastStreak = calendarData.currentStreak || lastStreak;
+      }
+    }
+    
+    // Если серия не началась и не прервана - скрываем кнопку
+    if (calendarData.currentStreak === 0 && !isStreakBroken && calendarData.claimedDays.length === 0) {
+      if (resetContainer) resetContainer.style.display = "none";
+      return;
+    }
+    
+    if (resetContainer) resetContainer.style.display = "block";
+    
+    if (isStreakBroken) {
+      resetBtn.innerHTML = `💎 Восстановить прогресс (было ${lastStreak} дней) - 500 MTBank Tokens`;
+      resetBtn.style.opacity = "1";
+      resetBtn.disabled = false;
+    } else if (!canClaimToday) {
+      resetBtn.innerHTML = `💎 Восстановить прогресс (500 MTBank Tokens)`;
+      resetBtn.style.opacity = "0.5";
+      resetBtn.disabled = true;
+    } else {
+      resetBtn.innerHTML = `💎 Восстановить прогресс (500 MTBank Tokens)`;
+      resetBtn.style.opacity = "1";
+      resetBtn.disabled = false;
+    }
   }
   
   function initCalendar() {
@@ -632,7 +708,313 @@
     renderCalendarGrid();
     updateStreakDisplay();
   }
+    // ========== ЗАДАНИЯ ==========
   
+  var TASKS_KEY = "rr_tasks_";
+  
+  var TASKS_LIST = [
+    { id: "upgrade_coffee", title: "Прокачай кофейню", desc: "Улучшите кофейню до 3 уровня", type: "upgrade_building", buildingType: "coffee", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
+    { id: "upgrade_bank", title: "Прокачай банк", desc: "Улучшите банк до 3 уровня", type: "upgrade_building", buildingType: "bank", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
+    { id: "upgrade_shop", title: "Прокачай магазин", desc: "Улучшите магазин до 3 уровня", type: "upgrade_building", buildingType: "shop", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
+    { id: "upgrade_itcompany", title: "Прокачай IT компанию", desc: "Улучшите IT компанию до 3 уровня", type: "upgrade_building", buildingType: "itcompany", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
+    { id: "upgrade_warehouse", title: "Прокачай склад", desc: "Улучшите склад до 3 уровня", type: "upgrade_building", buildingType: "warehouse", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
+    { id: "upgrade_flowershop", title: "Прокачай цветочный магазин", desc: "Улучшите цветочный магазин до 3 уровня", type: "upgrade_building", buildingType: "flowershop", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
+    { id: "upgrade_autoservice", title: "Прокачай автосервис", desc: "Улучшите автосервис до 3 уровня", type: "upgrade_building", buildingType: "autoservice", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
+    { id: "upgrade_cinema", title: "Прокачай кинотеатр", desc: "Улучшите кинотеатр до 3 уровня", type: "upgrade_building", buildingType: "cinema", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
+    { id: "upgrade_construction", title: "Прокачай стройкомпанию", desc: "Улучшите стройкомпанию до 3 уровня", type: "upgrade_building", buildingType: "construction", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
+    { id: "upgrade_gasstation", title: "Прокачай заправку", desc: "Улучшите заправку до 3 уровня", type: "upgrade_building", buildingType: "gasstation", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
+    { id: "upgrade_restaurant", title: "Прокачай ресторан", desc: "Улучшите ресторан до 3 уровня", type: "upgrade_building", buildingType: "restaurant", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
+    { id: "card_payment_500", title: "Расплата картой МТБанка (до 500₽)", desc: "Совершите покупку на сумму до 500 рублей", type: "card_payment", minAmount: 0, maxAmount: 500, rewardSkill: 200, rewardToken: 0 },
+    { id: "card_payment_1000", title: "Расплата картой МТБанка (500-1000₽)", desc: "Совершите покупку на сумму от 500 до 1000 рублей", type: "card_payment", minAmount: 500.01, maxAmount: 1000, rewardSkill: 300, rewardToken: 0 },
+    { id: "card_payment_1500", title: "Расплата картой МТБанка (1000-1500₽)", desc: "Совершите покупку на сумму от 1000 до 1500 рублей", type: "card_payment", minAmount: 1000.01, maxAmount: 1500, rewardSkill: 400, rewardToken: 0 },
+    { id: "card_payment_unlimited", title: "Расплата картой МТБанка (от 1500₽)", desc: "Совершите покупку на сумму от 1500 рублей", type: "card_payment", minAmount: 1500.01, maxAmount: Infinity, rewardSkill: 400, rewardToken: 0 },
+    { id: "halva_card", title: "Оформи карту Халва", desc: "Оформите карту Халва от МТБанка", type: "halva", rewardSkill: 350, rewardToken: 0 }
+  ];
+  
+  function getTasksData() {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return null;
+    
+    var key = TASKS_KEY + currentUser.id;
+    try {
+      var raw = localStorage.getItem(key);
+      if (!raw) {
+        var defaultTasks = {};
+        for (var i = 0; i < TASKS_LIST.length; i++) {
+          defaultTasks[TASKS_LIST[i].id] = { completed: false, claimed: false };
+        }
+        return defaultTasks;
+      }
+      return JSON.parse(raw);
+    } catch (e) {
+      var defaultTasks = {};
+      for (var i = 0; i < TASKS_LIST.length; i++) {
+        defaultTasks[TASKS_LIST[i].id] = { completed: false, claimed: false };
+      }
+      return defaultTasks;
+    }
+  }
+  
+  function saveTasksData(data) {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return;
+    var key = TASKS_KEY + currentUser.id;
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+  
+  function checkBuildingUpgradeTask(buildingType, requiredLevel) {
+    var gameData = loadGameBuildings();
+    for (var i = 0; i < gameData.buildings.length; i++) {
+      var building = gameData.buildings[i];
+      if (building && building.type === buildingType && building.level >= requiredLevel) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  function checkAllTasksCompletion() {
+    var tasksData = getTasksData();
+    if (!tasksData) return;
+    
+    var needSave = false;
+    
+    for (var i = 0; i < TASKS_LIST.length; i++) {
+      var task = TASKS_LIST[i];
+      var taskData = tasksData[task.id];
+      
+      if (!taskData.completed && !taskData.claimed) {
+        var isCompleted = false;
+        
+        if (task.type === "upgrade_building") {
+          isCompleted = checkBuildingUpgradeTask(task.buildingType, task.requiredLevel);
+        }
+        
+        if (isCompleted) {
+          taskData.completed = true;
+          needSave = true;
+        }
+      }
+    }
+    
+    if (needSave) {
+      saveTasksData(tasksData);
+    }
+    
+    renderTasksList();
+  }
+  
+  function openTaskModal(task) {
+    var modal = document.getElementById("task-modal");
+    if (!modal) {
+      createTaskModal();
+      modal = document.getElementById("task-modal");
+    }
+    
+    document.getElementById("task-modal-title").textContent = task.title;
+    document.getElementById("task-modal-desc").textContent = task.desc;
+    document.getElementById("task-modal-reward").innerHTML = `⭐ ${task.rewardSkill} очков прокачки ${task.rewardToken > 0 ? `+ 💰 ${task.rewardToken} токенов` : ''}`;
+    
+    var inputContainer = document.getElementById("task-modal-input-container");
+    var inputField = document.getElementById("task-modal-input");
+    
+    if (task.type === "card_payment") {
+      inputContainer.style.display = "block";
+      inputField.placeholder = "Введите сумму покупки (₽)";
+      inputField.type = "number";
+      inputField.step = "0.01";
+      inputField.value = "";
+      
+      var confirmBtn = document.getElementById("task-modal-confirm");
+      confirmBtn.onclick = function() {
+        var amount = parseFloat(inputField.value);
+        if (isNaN(amount) || amount <= 0) {
+          showGameToast("❌ Введите корректную сумму!");
+          return;
+        }
+        
+        if (amount >= task.minAmount && amount <= task.maxAmount) {
+          claimTaskReward(task.id, task.rewardSkill, task.rewardToken);
+          closeTaskModal();
+        } else {
+          showGameToast(`❌ Сумма должна быть от ${task.minAmount} до ${task.maxAmount === Infinity ? '∞' : task.maxAmount} рублей!`);
+        }
+      };
+    } else if (task.type === "halva") {
+      inputContainer.style.display = "block";
+      inputField.placeholder = "Введите номер заявки или телефона";
+      inputField.type = "text";
+      inputField.value = "";
+      
+      var confirmBtn = document.getElementById("task-modal-confirm");
+      confirmBtn.onclick = function() {
+        var value = inputField.value.trim();
+        if (value.length < 3) {
+          showGameToast("❌ Введите корректные данные!");
+          return;
+        }
+        claimTaskReward(task.id, task.rewardSkill, task.rewardToken);
+        closeTaskModal();
+      };
+    } else {
+      inputContainer.style.display = "none";
+      var confirmBtn = document.getElementById("task-modal-confirm");
+      confirmBtn.onclick = function() {
+        claimTaskReward(task.id, task.rewardSkill, task.rewardToken);
+        closeTaskModal();
+      };
+    }
+    
+    modal.removeAttribute("hidden");
+  }
+  
+  function createTaskModal() {
+    var modalHtml = `
+      <div class="task-modal" id="task-modal" hidden>
+        <div class="task-modal__overlay"></div>
+        <div class="task-modal__content">
+          <button class="task-modal__close" id="task-modal-close">✕</button>
+          <h3 class="task-modal__title" id="task-modal-title">Название задания</h3>
+          <p class="task-modal__desc" id="task-modal-desc">Описание задания</p>
+          <div class="task-modal__reward" id="task-modal-reward">⭐ 0</div>
+          <div id="task-modal-input-container">
+            <input type="text" class="task-modal__input" id="task-modal-input" placeholder="Введите данные">
+          </div>
+          <button class="task-modal__btn" id="task-modal-confirm">Получить награду</button>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML("beforeend", modalHtml);
+    
+    document.getElementById("task-modal-close").addEventListener("click", closeTaskModal);
+    document.getElementById("task-modal-overlay").addEventListener("click", closeTaskModal);
+  }
+  
+  function closeTaskModal() {
+    var modal = document.getElementById("task-modal");
+    if (modal) modal.setAttribute("hidden", "");
+  }
+  
+  function claimTaskReward(taskId, rewardSkill, rewardToken) {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return false;
+    
+    var tasksData = getTasksData();
+    var taskData = tasksData[taskId];
+    
+    if (!taskData.completed) {
+      showGameToast("❌ Условие задания ещё не выполнено!");
+      return false;
+    }
+    
+    if (taskData.claimed) {
+      showGameToast("❌ Награда за это задание уже получена!");
+      return false;
+    }
+    
+    currentUser.balanceSkillPoints = (currentUser.balanceSkillPoints || 0) + rewardSkill;
+    currentUser.balanceMtBanks = (currentUser.balanceMtBanks || 0) + rewardToken;
+    
+    taskData.claimed = true;
+    
+    var users = loadAllUsers();
+    users[currentUser.id] = currentUser;
+    saveAllUsers(users);
+    saveTasksData(tasksData);
+    
+    balanceSkillPoints = currentUser.balanceSkillPoints;
+    balanceMtBanks = currentUser.balanceMtBanks;
+    syncBalancesToDom();
+    updateGameBalanceDisplay();
+    renderTasksList();
+    
+    showGameToast(`🎉 Получена награда: ${rewardSkill} ⭐ и ${rewardToken} 💰!`);
+    return true;
+  }
+  
+  function renderTasksList() {
+      console.log("renderTasksList called");  // Временная отладка
+   
+    var container = document.getElementById("tasks-list");
+   console.log("container:", container);  // Временная отладка
+    if (!container)  {
+      console.log("tasks-list not found");
+      return;
+    }
+    
+    var tasksData = getTasksData();
+    if (!tasksData) return;
+    
+    //checkAllTasksCompletion();
+    
+    container.innerHTML = "";
+    
+    for (var i = 0; i < TASKS_LIST.length; i++) {
+      var task = TASKS_LIST[i];
+      var taskData = tasksData[task.id];
+      
+      var taskDiv = document.createElement("div");
+      taskDiv.className = "task-item";
+      if (taskData.claimed) {
+        taskDiv.classList.add("task-item--completed");
+      }
+      
+      var statusText = "";
+      var statusClass = "";
+      var showButton = false;
+      var buttonDisabled = false;
+      
+      if (taskData.claimed) {
+        statusText = "✓ Получено";
+        statusClass = "task-status--claimed";
+        showButton = false;
+      } else if (taskData.completed) {
+        statusText = "⭐ Готово к получению";
+        statusClass = "task-status--available";
+        showButton = true;
+        buttonDisabled = false;
+      } else {
+        statusText = "🔒 Не выполнено";
+        statusClass = "";
+        showButton = true;
+        buttonDisabled = true;
+      }
+      
+      taskDiv.innerHTML = `
+        <div class="task-info">
+          <div class="task-title">${task.title}</div>
+          <div class="task-desc">${task.desc}</div>
+          <div class="task-reward">
+            <span>⭐ ${task.rewardSkill}</span>
+            ${task.rewardToken > 0 ? `<span>💰 ${task.rewardToken}</span>` : ''}
+          </div>
+        </div>
+        <div class="task-status ${statusClass}">${statusText}</div>
+        ${showButton ? `<button class="task-btn" data-task-id="${task.id}" ${buttonDisabled ? 'disabled' : ''}>Получить</button>` : ''}
+      `;
+      
+      container.appendChild(taskDiv);
+    }
+    
+    var btns = container.querySelectorAll(".task-btn");
+    for (var j = 0; j < btns.length; j++) {
+      var btn = btns[j];
+      if (!btn.disabled) {
+        var taskId = btn.getAttribute("data-task-id");
+        var task = TASKS_LIST.find(function(t) { return t.id === taskId; });
+        if (task) {
+          btn.addEventListener("click", (function(t) {
+            return function() { openTaskModal(t); };
+          })(task));
+        }
+      }
+    }
+  }
+  
+  function initTasks() {
+    checkAllTasksCompletion(); 
+  }
+
   // ========== ИГРОВАЯ МЕХАНИКА ==========
   
   function loadGameBuildings() {
@@ -885,6 +1267,8 @@
     
     showGameToast("⬆️ " + BUILDING_TYPES[building.type].name + " улучшен до " + building.level + " уровня!");
     
+    checkAllTasksCompletion();
+
     if (currentInfoIndex === index) {
       document.getElementById("info-level").textContent = building.level;
       document.getElementById("info-income").textContent = getBuildingIncome(building);
@@ -1404,6 +1788,7 @@
     
     initGame();
     initCalendar();
+    initTasks(); 
   }
 
   if (document.readyState === "loading") {

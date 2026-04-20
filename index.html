@@ -12,7 +12,7 @@
 <body>
   <!-- Экран регистрации -->
   <div id="screen-register" class="screen screen--center">
-    <div class="card card--form">
+    <div class="card card--form">щ
       <h1 class="card__title">Создать аккаунт</h1>
       <form id="form-register" class="form" novalidate>
         <div class="field">
@@ -96,12 +96,34 @@
   <div id="screen-app" class="screen screen--app is-hidden" hidden>
     <main class="app-main">
       <section id="panel-leaderboard" class="panel" data-panel="leaderboard">
-        <div class="card card--panel">
-          <h2 class="panel__title">Лидерборд</h2>
-          <p class="panel__empty">Раздел в разработке.</p>
-        </div>
-      </section>
+  <div class="card card--panel leaderboard-card">
+    <h2 class="panel__title">🏆 Лидерборд</h2>
+    <p class="leaderboard-subtitle">Рейтинг игроков Город МТ</p>
+    
+    <div class="leaderboard-table">
+      <div class="leaderboard-header">
+        <div class="leaderboard-rank">#</div>
+        <div class="leaderboard-player">Игрок</div>
+        <div class="leaderboard-level">Уровень</div>
+        <div class="leaderboard-score">⭐ Очки</div>
+      </div>
       
+      <div class="leaderboard-body" id="leaderboard-body">
+        <!-- Здесь будут строки с игроками -->
+        <div class="leaderboard-empty">
+          <span class="leaderboard-empty-icon">📊</span>
+          <p>Таблица лидеров скоро пополнится</p>
+          <span class="leaderboard-empty-hint">Станьте первым в рейтинге!</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="leaderboard-footer">
+      <p class="leaderboard-note">✨ Рейтинг обновляется ежедневно</p>
+    </div>
+  </div>
+</section>
+
       <section id="panel-game" class="panel" data-panel="game">
         <div class="game-container">
           <div class="game-header">
