@@ -2,12 +2,12 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Регистрация</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>MTBank Strategy</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
   <!-- Экран регистрации -->
@@ -92,68 +92,41 @@
     </div>
   </div>
 
-  <!-- Основное приложение (скрыто до регистрации/входа) -->
+  <!-- Основное приложение -->
   <div id="screen-app" class="screen screen--app is-hidden" hidden>
     <main class="app-main">
-      <section id="panel-leaderboard" class="panel is-active" data-panel="leaderboard">
+      <section id="panel-leaderboard" class="panel" data-panel="leaderboard">
         <div class="card card--panel">
           <h2 class="panel__title">Лидерборд</h2>
           <p class="panel__empty">Раздел в разработке.</p>
         </div>
       </section>
+      
       <section id="panel-game" class="panel" data-panel="game">
-        <section id="panel-game" class="panel" data-panel="game">
-          <!--мини игра-->
-  <div class="card card--panel game-container">
-    <h2 class="panel__title">Кликер МТБанк</h2>
-    <div class="game-content">
-      <div class="game-stats">
-        <div class="game-stat">
-          <span class="game-stat__label">МТБанков:</span>
-          <span class="game-stat__value" id="game-mtb-balance">0</span>
+        <div class="game-container">
+          <div class="game-header">
+            <div class="game-balance">
+              <span class="game-balance__label">MTBank Tokens</span>
+              <span class="game-balance__value" id="game-balance">0</span>
+            </div>
+            <div class="game-skill-balance">
+              <span class="game-skill-balance__label">⭐ Очки прокачки</span>
+              <span class="game-skill-balance__value" id="game-skill-balance">0</span>
+            </div>
+            <div class="game-total-income">
+              <span>💰 Доход/час: <span id="total-income">0</span></span>
+            </div>
+          </div>
+          
+          <!-- Поле 5x5 -->
+          <div class="minecraft-grid" id="minecraft-grid"></div>
+          
+          <button class="collect-all-btn" id="collect-all-btn">
+            🧺 Собрать весь доход
+          </button>
         </div>
-        <div class="game-stat">
-          <span class="game-stat__label">Кликов сегодня:</span>
-          <span class="game-stat__value" id="game-today-clicks">0</span>
-        </div>
-        <div class="game-stat">
-          <span class="game-stat__label">До следующего бонуса:</span>
-          <span class="game-stat__value" id="game-next-bonus">10</span>
-        </div>
-      </div>
-      
-      <button class="game-token" id="game-token-btn" aria-label="Нажми на токен">
-        <svg class="game-token__svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="tokenGrad" cx="50%" cy="40%" r="50%">
-              <stop offset="0%" stop-color="#ffe082" />
-              <stop offset="60%" stop-color="#ffca28" />
-              <stop offset="100%" stop-color="#f57f17" />
-            </radialGradient>
-            <filter id="tokenShadow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#f57f17" flood-opacity="0.4" />
-            </filter>
-          </defs>
-          <circle cx="100" cy="100" r="85" fill="url(#tokenGrad)" filter="url(#tokenShadow)" />
-          <circle cx="100" cy="100" r="75" fill="none" stroke="#fff" stroke-width="3" opacity="0.4" />
-          <circle cx="100" cy="100" r="65" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.3" />
-          <text x="100" y="115" text-anchor="middle" font-size="48" font-weight="700" fill="#fff" font-family="system-ui,sans-serif" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.2))">₿</text>
-          <ellipse cx="80" cy="70" rx="15" ry="8" fill="#fff" opacity="0.3" transform="rotate(-30 80 70)" />
-        </svg>
-        <span class="game-token__hint">Нажми на токен!</span>
-      </button>
-      
-      <div class="game-info">
-        <p class="game-info__text">💡 За каждый клик получаешь <strong>+1 МТБанк</strong></p>
-        <p class="game-info__text">🎯 Каждые <strong>10 кликов</strong> дают <strong>+50 бонусных МТБанков</strong>!</p>
-        <p class="game-info__text">🔄 Счётчик кликов сбрасывается в полночь</p>
-      </div>
-      
-      <div id="game-animation-container" class="game-animation-container"></div>
-    </div>
-  </div>
-</section>
       </section>
+      
       <section id="panel-shop" class="panel" data-panel="shop">
         <div class="shop-page">
           <h2 class="panel__title shop-page__title">Магазин</h2>
@@ -236,6 +209,7 @@
           </div>
         </div>
       </section>
+      
       <section id="panel-profile" class="panel" data-panel="profile">
         <div class="profile-page">
           <div class="profile-balances">
@@ -301,6 +275,13 @@
                 <p class="copy-toast" id="copy-toast" hidden aria-live="polite">Скопировано</p>
               </div>
               <div class="profile-item profile-item--full">
+                <span class="profile-item__label">Добавить очки прокачки</span>
+                <div class="skill-input-group">
+                  <input type="number" id="skill-add-amount" class="skill-input" placeholder="Количество" value="100" min="1" step="100">
+                  <button type="button" class="btn btn--pill skill-add-btn" id="btn-add-skill">➕ Добавить</button>
+                </div>
+              </div>
+              <div class="profile-item profile-item--full">
                 <button type="button" class="btn btn--pill btn--logout" id="btn-logout">Выйти из аккаунта</button>
               </div>
             </div>
@@ -310,11 +291,11 @@
     </main>
 
     <nav id="bottom-nav" class="bottom-nav" aria-label="Основная навигация">
-      <button type="button" class="bottom-nav__tab" data-tab="leaderboard" aria-current="page">
+      <button type="button" class="bottom-nav__tab" data-tab="leaderboard">
         <span class="bottom-nav__icon" aria-hidden="true">🏆</span>
         <span class="bottom-nav__text">Лидерборд</span>
       </button>
-      <button type="button" class="bottom-nav__tab" data-tab="game">
+      <button type="button" class="bottom-nav__tab" data-tab="game" aria-current="page">
         <span class="bottom-nav__icon" aria-hidden="true">🎮</span>
         <span class="bottom-nav__text">Игра</span>
       </button>
@@ -327,6 +308,58 @@
         <span class="bottom-nav__text">Профиль</span>
       </button>
     </nav>
+  </div>
+
+  <!-- Модальное окно выбора здания -->
+  <div class="build-modal" id="build-modal" hidden>
+    <div class="build-modal__overlay"></div>
+    <div class="build-modal__content">
+      <h3 class="build-modal__title">Выберите здание</h3>
+      <div class="build-options" id="build-options"></div>
+      <button class="build-modal__close" id="build-modal-close">Закрыть</button>
+    </div>
+  </div>
+
+  <!-- Модальное окно информации о здании -->
+   <!-- Модальное окно информации о здании -->
+  <div class="info-modal" id="info-modal" hidden>
+    <div class="info-modal__overlay"></div>
+    <div class="info-modal__content">
+      <button class="info-modal__close" id="info-modal-close">✕</button>
+      <div class="info-modal__icon" id="info-icon" style="width:80px; height:80px; margin:0 auto;"></div>
+      <h3 class="info-modal__title" id="info-title">Название</h3>
+      <div class="info-modal__stats">
+        <div class="info-stat">
+          <span class="info-stat__label">📊 Тип:</span>
+          <span class="info-stat__value" id="info-type">—</span>
+        </div>
+        <div class="info-stat">
+          <span class="info-stat__label">⭐ Уровень:</span>
+          <span class="info-stat__value" id="info-level">1</span>
+        </div>
+        <div class="info-stat">
+          <span class="info-stat__label">💰 Доход/час:</span>
+          <span class="info-stat__value" id="info-income">0</span>
+        </div>
+        <div class="info-stat">
+          <span class="info-stat__label">💎 Накоплено:</span>
+          <span class="info-stat__value" id="info-pending">0</span>
+        </div>
+        <div class="info-stat">
+          <span class="info-stat__label">⬆️ Стоимость апгрейда:</span>
+          <span class="info-stat__value" id="info-upgrade-cost">0</span>
+        </div>
+        <div class="info-stat">
+          <span class="info-stat__label">💰 Цена продажи:</span>
+          <span class="info-stat__value" id="info-sell-value">0</span>
+        </div>
+      </div>
+      <div class="info-modal__actions">
+        <button class="info-btn info-btn--collect" id="info-collect-btn">💰 Забрать доход</button>
+        <button class="info-btn info-btn--upgrade" id="info-upgrade-btn">⬆️ Улучшить</button>
+        <button class="info-btn info-btn--sell" id="info-sell-btn">💰 Продать (-50%)</button>
+      </div>
+    </div>
   </div>
 
   <script src="app.js" defer></script>

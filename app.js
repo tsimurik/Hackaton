@@ -3,11 +3,10 @@
 
   var BASE_REF_URL = "https://myapp.com/ref";
 
-  /** Балансы (восьмизначные строки), дальше можно менять переменные — UI обновится через syncBalancesToDom */
   var balanceSkillPoints = 0;
   var balanceMtBanks = 0;
+  var buildingPriceMultiplier = 1.0;
 
-  /** Латиница + цифры, длина len */
   function randomAlphanumeric(len) {
     var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     var out = "";
@@ -17,10 +16,9 @@
     return out;
   }
 
-  var STORAGE_KEY = "rr_registered_users"; // Храним всех пользователей
-  var USER_KEY = "rr_current_user_id"; // Храним ID текущего пользователя
+  var STORAGE_KEY = "rr_registered_users";
+  var USER_KEY = "rr_current_user_id";
 
-  // Загрузка всех пользователей
   function loadAllUsers() {
     try {
       var raw = localStorage.getItem(STORAGE_KEY);
@@ -31,12 +29,10 @@
     }
   }
 
-  // Сохранение всех пользователей
   function saveAllUsers(users) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
   }
 
-  // Получение текущего пользователя
   function getCurrentUser() {
     try {
       var userId = localStorage.getItem(USER_KEY);
@@ -48,16 +44,13 @@
     }
   }
 
-  // Сохранение текущего пользователя
   function setCurrentUser(userId) {
     localStorage.setItem(USER_KEY, userId);
   }
 
-  // Очистка текущего пользователя (выход)
   function logout() {
     localStorage.removeItem(USER_KEY);
     showRegisterScreen();
-    // Очищаем форму входа
     var loginIdInput = document.getElementById("login-id");
     var loginNicknameInput = document.getElementById("login-nickname");
     if (loginIdInput) loginIdInput.value = "";
@@ -76,7 +69,6 @@
     var elId = document.getElementById("register-preview-id");
     if (elId) elId.textContent = preUserId;
     
-    // Сохраняем временные данные для регистрации
     window._tempRegistration = {
       id: preUserId,
       referralCode: preReferralCode,
@@ -89,16 +81,11 @@
     var elM = document.getElementById("profile-balance-mtb");
     if (elS) elS.textContent = String(balanceSkillPoints).padStart(8, '0');
     if (elM) elM.textContent = String(balanceMtBanks).padStart(8, '0');
-  }
-
-  // Принудительное обновление профиля из данных пользователя
-  function refreshProfileFromUser() {
-    var currentUser = getCurrentUser();
-    if (!currentUser) return;
     
-    balanceSkillPoints = currentUser.balanceSkillPoints || 0;
-    balanceMtBanks = currentUser.balanceMtBanks || 0;
-    syncBalancesToDom();
+    var gameSkillSpan = document.getElementById("game-skill-balance");
+    if (gameSkillSpan) gameSkillSpan.textContent = balanceSkillPoints;
+    var gameBalanceSpan = document.getElementById("game-balance");
+    if (gameBalanceSpan) gameBalanceSpan.textContent = balanceMtBanks;
   }
 
   function hideRegisterShowApp() {
@@ -236,28 +223,28 @@
     }
 
     if (tab === "profile") syncBalancesToDom();
+    if (tab === "game") {
+      syncBalancesToDom();
+      renderMinecraftGrid();
+    }
   }
 
-  // Регистрация нового пользователя
   function registerUser(nicknameRaw, inviterCode) {
     var nickname = nicknameRaw.trim();
     var normalizedNickname = normalizeNickname(nickname);
     
     var users = loadAllUsers();
     
-    // Проверка на существующий никнейм
     for (var userId in users) {
       if (users[userId].nicknameLower === normalizedNickname) {
         return { success: false, error: "Этот ник уже занят. Выберите другой." };
       }
     }
     
-    // Проверка длины никнейма
     if (nickname.length < 2) {
       return { success: false, error: "Никнейм слишком короткий." };
     }
     
-    // Создаём нового пользователя
     var newUser = {
       id: window._tempRegistration.id,
       nickname: nickname,
@@ -270,13 +257,11 @@
       createdAt: Date.now()
     };
     
-    // Начисление бонуса за реферальный код
     if (inviterCode && inviterCode.trim() !== "") {
       var inviterFound = false;
       for (var uid in users) {
         if (users[uid].referralCode === inviterCode) {
           inviterFound = true;
-          // Начисляем бонус новому пользователю
           newUser.balanceSkillPoints = 1000;
           newUser.balanceMtBanks = 1000;
           break;
@@ -287,7 +272,6 @@
       }
     }
     
-    // Сохраняем пользователя
     users[newUser.id] = newUser;
     saveAllUsers(users);
     setCurrentUser(newUser.id);
@@ -295,7 +279,6 @@
     return { success: true, user: newUser };
   }
   
-  // Вход в аккаунт
   function loginUser(id, nickname) {
     var users = loadAllUsers();
     var normalizedNickname = normalizeNickname(nickname);
@@ -311,7 +294,6 @@
     return { success: false, error: "Неверный ID или никнейм." };
   }
 
-  // Проверка авторизации при загрузке страницы
   function checkAuthAndRedirect() {
     var currentUser = getCurrentUser();
     if (currentUser) {
@@ -321,226 +303,712 @@
     }
   }
 
-  // ========== НАЧАЛО БЛОКА ИГРЫ ==========
+  // ========== 2D ЗДАНИЯ (БИЗНЕСЫ) ==========
   
-  function getTodayKey() {
-    var today = new Date();
-    return today.toISOString().split('T')[0];
-  }
+  var BUILDING_TYPES = {
+    coffee: { 
+      name: "Кофейня", 
+      icon: "☕",
+      svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="20" width="100" height="80" rx="4" fill="#F5F0E8" stroke="#A89880" stroke-width="1.5"/><rect x="10" y="20" width="100" height="15" rx="4" fill="#4A4A4A" stroke="#2A2A2A" stroke-width="1"/><text x="60" y="32" font-size="8" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">☕ КОФЕЙНЯ</text><rect x="18" y="40" width="35" height="40" rx="2" fill="#B3E5FC" stroke="#78909C" stroke-width="1" opacity="0.8"/><line x1="35" y1="40" x2="35" y2="80" stroke="#78909C" stroke-width="0.8"/><line x1="18" y1="60" x2="53" y2="60" stroke="#78909C" stroke-width="0.8"/><rect x="62" y="42" width="40" height="38" rx="2" fill="#D4C8B8" stroke="#A89880" stroke-width="1"/><rect x="58" y="38" width="48" height="5" rx="1" fill="#607D8B"/><rect x="15" y="85" width="25" height="15" rx="2" fill="#6D4C41"/><rect x="80" y="85" width="25" height="15" rx="2" fill="#6D4C41"/><ellipse cx="60" cy="105" rx="45" ry="5" fill="rgba(0,0,0,0.1)"/></svg>`,
+      baseIncome: 50, 
+      upgradeMultiplier: 1.5, 
+      cost: 100 
+    },
+    bank: { 
+      name: "Банк", 
+      icon: "🏦",
+      svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="25" width="104" height="75" rx="3" fill="#E8ECEF" stroke="#8090A0" stroke-width="1.5"/><rect x="8" y="25" width="104" height="18" rx="3" fill="#455A64" stroke="#263238" stroke-width="1"/><text x="60" y="38" font-size="9" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">🏦 БАНК</text><rect x="15" y="48" width="12" height="35" fill="#D7CCC8" stroke="#8D6E63" stroke-width="0.8"/><rect x="93" y="48" width="12" height="35" fill="#D7CCC8" stroke="#8D6E63" stroke-width="0.8"/><rect x="35" y="52" width="15" height="28" fill="#81D4FA" stroke="#607D8B" stroke-width="0.8" opacity="0.7"/><rect x="70" y="52" width="15" height="28" fill="#81D4FA" stroke="#607D8B" stroke-width="0.8" opacity="0.7"/><path d="M60,22 Q60,15 60,22" fill="none" stroke="#FFC107" stroke-width="2"/><circle cx="60" cy="20" r="3" fill="#FFD700"/><rect x="12" y="85" width="96" height="5" fill="#CFD8DC"/><ellipse cx="60" cy="105" rx="50" ry="6" fill="rgba(0,0,0,0.1)"/></svg>`,
+      baseIncome: 80, 
+      upgradeMultiplier: 1.6, 
+      cost: 150 
+    },
+    shop: { 
+      name: "Магазин", 
+      icon: "🏪",
+      svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="20" width="100" height="80" rx="4" fill="#FFAB91" stroke="#BF360C" stroke-width="1.5"/><rect x="10" y="20" width="100" height="15" rx="4" fill="#424242" stroke="#1A1A1A" stroke-width="1"/><text x="60" y="32" font-size="8" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">🛒 МАГАЗИН</text><rect x="15" y="40" width="40" height="40" rx="2" fill="#B3E5FC" stroke="#BF360C" stroke-width="1" opacity="0.8"/><line x1="35" y1="40" x2="35" y2="80" stroke="#BF360C" stroke-width="0.8"/><line x1="15" y1="60" x2="55" y2="60" stroke="#BF360C" stroke-width="0.8"/><rect x="65" y="42" width="40" height="38" rx="2" fill="#FFF" stroke="#BF360C" stroke-width="1"/><rect x="60" y="38" width="50" height="5" rx="1" fill="#E64A19"/><rect x="18" y="85" width="30" height="15" rx="2" fill="#8D6E63"/><rect x="72" y="85" width="30" height="15" rx="2" fill="#8D6E63"/><rect x="12" y="105" width="96" height="3" fill="#BCAAA4" rx="1"/><ellipse cx="60" cy="112" rx="45" ry="4" fill="rgba(0,0,0,0.1)"/></svg>`,
+      baseIncome: 60, 
+      upgradeMultiplier: 1.55, 
+      cost: 120 
+    },
+    itcompany: { 
+      name: "IT Компания", 
+      icon: "💻",
+      svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect x="15" y="15" width="90" height="85" rx="3" fill="#B3E5FC" stroke="#0288D1" stroke-width="1.5"/><rect x="15" y="15" width="90" height="12" rx="3" fill="#37474F" stroke="#1A1A1A" stroke-width="1"/><text x="60" y="24" font-size="6" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">💻 IT КОМПАНИЯ</text><rect x="22" y="32" width="12" height="55" fill="#E1F5FE" stroke="#0288D1" stroke-width="0.6" rx="1"/><rect x="38" y="32" width="12" height="55" fill="#E1F5FE" stroke="#0288D1" stroke-width="0.6" rx="1"/><rect x="54" y="32" width="12" height="55" fill="#E1F5FE" stroke="#0288D1" stroke-width="0.6" rx="1"/><rect x="70" y="32" width="12" height="55" fill="#E1F5FE" stroke="#0288D1" stroke-width="0.6" rx="1"/><rect x="86" y="32" width="12" height="55" fill="#E1F5FE" stroke="#0288D1" stroke-width="0.6" rx="1"/><text x="60" y="82" font-size="7" fill="#00FF00" font-family="monospace" text-anchor="middle">&lt;/&gt;</text><rect x="12" y="102" width="96" height="3" fill="#90A4AE" rx="1"/><ellipse cx="60" cy="110" rx="45" ry="5" fill="rgba(0,0,0,0.1)"/></svg>`,
+      baseIncome: 90, 
+      upgradeMultiplier: 1.65, 
+      cost: 200 
+    },
+    warehouse: { 
+      name: "Склад", 
+      icon: "🏭",
+      svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect x="8" y="25" width="104" height="70" rx="3" fill="#D7CCC8" stroke="#5D4037" stroke-width="1.5"/><rect x="8" y="25" width="104" height="12" rx="3" fill="#546E7A" stroke="#263238" stroke-width="1"/><text x="60" y="34" font-size="7" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">📦 СКЛАД</text><rect x="20" y="42" width="35" height="28" rx="2" fill="#37474F"/><rect x="22" y="44" width="31" height="4" fill="#455A64"/><rect x="22" y="50" width="31" height="4" fill="#455A64"/><rect x="22" y="56" width="31" height="4" fill="#455A64"/><rect x="22" y="62" width="31" height="4" fill="#455A64"/><rect x="65" y="45" width="35" height="25" rx="2" fill="#37474F"/><rect x="67" y="47" width="31" height="3" fill="#455A64"/><rect x="67" y="52" width="31" height="3" fill="#455A64"/><rect x="67" y="57" width="31" height="3" fill="#455A64"/><rect x="67" y="62" width="31" height="3" fill="#455A64"/><rect x="15" y="78" width="25" height="15" rx="2" fill="#A1887F"/><rect x="80" y="78" width="25" height="15" rx="2" fill="#A1887F"/><rect x="12" y="98" width="96" height="4" fill="#78909C" rx="1"/><ellipse cx="60" cy="108" rx="48" ry="6" fill="rgba(0,0,0,0.1)"/></svg>`,
+      baseIncome: 45, 
+      upgradeMultiplier: 1.52, 
+      cost: 90 
+    },
+    flowershop: { 
+      name: "Цветочный магазин", 
+      icon: "🌷",
+      svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="20" width="100" height="80" rx="4" fill="#FCE4EC" stroke="#E91E63" stroke-width="1.5"/><rect x="10" y="20" width="100" height="15" rx="4" fill="#AD1457" stroke="#880E4F" stroke-width="1"/><text x="60" y="32" font-size="6" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">🌷 ЦВЕТЫ</text><rect x="18" y="40" width="35" height="40" rx="2" fill="#B3E5FC" stroke="#E91E63" stroke-width="1" opacity="0.8"/><line x1="35" y1="40" x2="35" y2="80" stroke="#E91E63" stroke-width="0.8"/><rect x="62" y="42" width="40" height="38" rx="2" fill="#FFF" stroke="#E91E63" stroke-width="1"/><text x="60" y="78" font-size="10" fill="#E91E63" text-anchor="middle">🌻🌹🌺</text><rect x="15" y="85" width="25" height="15" rx="2" fill="#66BB6A"/><rect x="80" y="85" width="25" height="15" rx="2" fill="#66BB6A"/><ellipse cx="60" cy="105" rx="45" ry="5" fill="rgba(0,0,0,0.1)"/></svg>`,
+      baseIncome: 55, 
+      upgradeMultiplier: 1.53, 
+      cost: 110 
+    },
+    autoservice: { 
+      name: "Автосервис", 
+      icon: "🔧",
+      svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="20" width="100" height="80" rx="4" fill="#B0BEC5" stroke="#455A64" stroke-width="1.5"/><rect x="10" y="20" width="100" height="15" rx="4" fill="#37474F" stroke="#263238" stroke-width="1"/><text x="60" y="32" font-size="6" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">🔧 АВТОСЕРВИС</text><rect x="18" y="40" width="35" height="40" rx="2" fill="#FFF" stroke="#455A64" stroke-width="1"/><text x="35" y="65" font-size="10" fill="#455A64" text-anchor="middle">🚗</text><rect x="62" y="42" width="40" height="38" rx="2" fill="#FFF" stroke="#455A64" stroke-width="1"/><text x="82" y="65" font-size="10" fill="#455A64" text-anchor="middle">🔧</text><rect x="15" y="85" width="25" height="15" rx="2" fill="#78909C"/><rect x="80" y="85" width="25" height="15" rx="2" fill="#78909C"/><ellipse cx="60" cy="105" rx="45" ry="5" fill="rgba(0,0,0,0.1)"/></svg>`,
+      baseIncome: 75, 
+      upgradeMultiplier: 1.62, 
+      cost: 160 
+    },
+    cinema: { 
+      name: "Кинотеатр", 
+      icon: "🎬",
+      svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="20" width="100" height="80" rx="4" fill="#E1BEE7" stroke="#6A1B9A" stroke-width="1.5"/><rect x="10" y="20" width="100" height="15" rx="4" fill="#4A148C" stroke="#311B92" stroke-width="1"/><text x="60" y="32" font-size="6" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">🎬 КИНОТЕАТР</text><rect x="18" y="40" width="35" height="40" rx="2" fill="#FFD54F" stroke="#6A1B9A" stroke-width="1"/><text x="35" y="65" font-size="10" fill="#6A1B9A" text-anchor="middle">🎬</text><rect x="62" y="42" width="40" height="38" rx="2" fill="#FFF" stroke="#6A1B9A" stroke-width="1"/><text x="60" y="78" font-size="7" fill="#6A1B9A" text-anchor="middle">КИНО</text><rect x="15" y="85" width="25" height="15" rx="2" fill="#CE93D8"/><rect x="80" y="85" width="25" height="15" rx="2" fill="#CE93D8"/><ellipse cx="60" cy="105" rx="45" ry="5" fill="rgba(0,0,0,0.1)"/></svg>`,
+      baseIncome: 85, 
+      upgradeMultiplier: 1.63, 
+      cost: 180 
+    },
+    construction: { 
+      name: "Стройкомпания", 
+      icon: "🏗️",
+      svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="20" width="100" height="80" rx="4" fill="#FFF3E0" stroke="#E65100" stroke-width="1.5"/><rect x="10" y="20" width="100" height="15" rx="4" fill="#BF360C" stroke="#E65100" stroke-width="1"/><text x="60" y="32" font-size="5" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">🏗️ СТРОЙКОМПАНИЯ</text><rect x="18" y="40" width="35" height="40" rx="2" fill="#FFCC80" stroke="#E65100" stroke-width="1"/><text x="35" y="65" font-size="10" fill="#E65100" text-anchor="middle">🏗️</text><rect x="62" y="42" width="40" height="38" rx="2" fill="#FFF" stroke="#E65100" stroke-width="1"/><text x="60" y="78" font-size="6" fill="#E65100" text-anchor="middle">СТРОЙКА</text><rect x="15" y="85" width="25" height="15" rx="2" fill="#FFA726"/><rect x="80" y="85" width="25" height="15" rx="2" fill="#FFA726"/><ellipse cx="60" cy="105" rx="45" ry="5" fill="rgba(0,0,0,0.1)"/></svg>`,
+      baseIncome: 95, 
+      upgradeMultiplier: 1.68, 
+      cost: 220 
+    },
+    gasstation: { 
+      name: "Заправка", 
+      icon: "⛽",
+      svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="20" width="100" height="80" rx="4" fill="#C8E6C9" stroke="#2E7D32" stroke-width="1.5"/><rect x="10" y="20" width="100" height="15" rx="4" fill="#1B5E20" stroke="#1B5E20" stroke-width="1"/><text x="60" y="32" font-size="7" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">⛽ ЗАПРАВКА</text><rect x="18" y="40" width="35" height="40" rx="2" fill="#FFF" stroke="#2E7D32" stroke-width="1"/><text x="35" y="65" font-size="10" fill="#2E7D32" text-anchor="middle">⛽</text><rect x="62" y="42" width="40" height="38" rx="2" fill="#FFF" stroke="#2E7D32" stroke-width="1"/><text x="60" y="78" font-size="6" fill="#2E7D32" text-anchor="middle">БЕНЗИН</text><rect x="15" y="85" width="25" height="15" rx="2" fill="#66BB6A"/><rect x="80" y="85" width="25" height="15" rx="2" fill="#66BB6A"/><ellipse cx="60" cy="105" rx="45" ry="5" fill="rgba(0,0,0,0.1)"/></svg>`,
+      baseIncome: 70, 
+      upgradeMultiplier: 1.6, 
+      cost: 140 
+    },
+    restaurant: { 
+      name: "Ресторан", 
+      icon: "🍽️",
+      svg: `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg"><rect x="10" y="20" width="100" height="80" rx="4" fill="#FFE0B2" stroke="#E65100" stroke-width="1.5"/><rect x="10" y="20" width="100" height="15" rx="4" fill="#BF360C" stroke="#E65100" stroke-width="1"/><text x="60" y="32" font-size="7" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">🍽️ РЕСТОРАН</text><rect x="18" y="40" width="35" height="40" rx="2" fill="#FFF" stroke="#E65100" stroke-width="1"/><text x="35" y="65" font-size="10" fill="#E65100" text-anchor="middle">🍕</text><rect x="62" y="42" width="40" height="38" rx="2" fill="#FFF" stroke="#E65100" stroke-width="1"/><text x="60" y="78" font-size="6" fill="#E65100" text-anchor="middle">ЕДА</text><rect x="15" y="85" width="25" height="15" rx="2" fill="#FFCC80"/><rect x="80" y="85" width="25" height="15" rx="2" fill="#FFCC80"/><ellipse cx="60" cy="105" rx="45" ry="5" fill="rgba(0,0,0,0.1)"/></svg>`,
+      baseIncome: 65, 
+      upgradeMultiplier: 1.58, 
+      cost: 125 
+    }
+  };
   
-  function loadGameData() {
+  var BUILDING_KEYS = ["coffee", "bank", "shop", "itcompany", "warehouse", "flowershop", "autoservice", "cinema", "construction", "gasstation", "restaurant"];
+  var currentSelectedBlock = null;
+  var currentInfoIndex = null;
+  
+  function loadGameBuildings() {
     var currentUser = getCurrentUser();
-    if (!currentUser) return { clicks: 0, lastDate: getTodayKey() };
+    if (!currentUser) return null;
     
-    var gameDataKey = "rr_game_data_" + currentUser.id;
+    var gameKey = "rr_game_" + currentUser.id;
     try {
-      var raw = localStorage.getItem(gameDataKey);
-      if (!raw) return { clicks: 0, lastDate: getTodayKey() };
+      var raw = localStorage.getItem(gameKey);
+      if (!raw) {
+        var emptyGrid = [];
+        for (var i = 0; i < 25; i++) emptyGrid.push(null);
+        var defaultData = { buildings: emptyGrid, lastUpdate: Date.now() };
+        saveGameBuildings(defaultData);
+        return defaultData;
+      }
       return JSON.parse(raw);
     } catch (e) {
-      return { clicks: 0, lastDate: getTodayKey() };
+      var emptyGrid = [];
+      for (var i = 0; i < 25; i++) emptyGrid.push(null);
+      return { buildings: emptyGrid, lastUpdate: Date.now() };
     }
   }
   
-  function saveGameData(data) {
+  function saveGameBuildings(data) {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return;
+    var gameKey = "rr_game_" + currentUser.id;
+    localStorage.setItem(gameKey, JSON.stringify(data));
+  }
+  
+  function getBuildingIncome(building) {
+    if (!building) return 0;
+    var typeData = BUILDING_TYPES[building.type];
+    if (!typeData) return 0;
+    return Math.floor(typeData.baseIncome * Math.pow(typeData.upgradeMultiplier, building.level - 1));
+  }
+  
+  function getUpgradeCost(building) {
+    if (!building) return 0;
+    var typeData = BUILDING_TYPES[building.type];
+    return Math.floor(typeData.cost * Math.pow(1.3, building.level - 1));
+  }
+  
+  function updateBuildingPriceMultiplier() {
     var currentUser = getCurrentUser();
     if (!currentUser) return;
     
-    var gameDataKey = "rr_game_data_" + currentUser.id;
-    localStorage.setItem(gameDataKey, JSON.stringify(data));
+    var gameData = loadGameBuildings();
+    var buildingCount = 0;
+    for (var i = 0; i < gameData.buildings.length; i++) {
+      if (gameData.buildings[i]) buildingCount++;
+    }
+    
+    buildingPriceMultiplier = Math.pow(1.1, buildingCount);
   }
   
-  function updateGameUI() {
+  function migrateOldBuildings() {
     var currentUser = getCurrentUser();
     if (!currentUser) return;
     
-    // Синхронизируем глобальную переменную с актуальным балансом
-    balanceMtBanks = currentUser.balanceMtBanks || 0;
+    var gameData = loadGameBuildings();
+    var needSave = false;
     
-    var mtbSpan = document.getElementById("game-mtb-balance");
-    if (mtbSpan) mtbSpan.textContent = currentUser.balanceMtBanks || 0;
-    
-    // Также обновляем профиль, если он виден
-    var profileMtbSpan = document.getElementById("profile-balance-mtb");
-    if (profileMtbSpan) {
-      profileMtbSpan.textContent = String(balanceMtBanks).padStart(8, '0');
-    }
-    
-    var gameData = loadGameData();
-    var todayKey = getTodayKey();
-    
-    // Проверяем, не новый ли день
-    if (gameData.lastDate !== todayKey) {
-      gameData.clicks = 0;
-      gameData.lastDate = todayKey;
-      saveGameData(gameData);
-    }
-    
-    var clicksSpan = document.getElementById("game-today-clicks");
-    if (clicksSpan) clicksSpan.textContent = gameData.clicks || 0;
-    
-    var nextBonusSpan = document.getElementById("game-next-bonus");
-    if (nextBonusSpan) {
-      var clicksLeft = 10 - ((gameData.clicks || 0) % 10);
-      nextBonusSpan.textContent = clicksLeft;
-    }
-  }
-  
-  function showClickAnimation(x, y, value) {
-    var container = document.getElementById("game-animation-container");
-    if (!container) return;
-    
-    var animation = document.createElement("div");
-    animation.className = "click-animation";
-    animation.textContent = "+" + value;
-    animation.style.left = x + "px";
-    animation.style.top = y + "px";
-    container.appendChild(animation);
-    
-    setTimeout(function() {
-      if (animation.parentNode) {
-        animation.parentNode.removeChild(animation);
+    for (var i = 0; i < gameData.buildings.length; i++) {
+      var building = gameData.buildings[i];
+      if (building && !building.purchasePrice) {
+        var typeData = BUILDING_TYPES[building.type];
+        if (typeData) {
+          building.purchasePrice = typeData.cost;
+          needSave = true;
+        }
       }
-    }, 1000);
+    }
+    
+    if (needSave) {
+      saveGameBuildings(gameData);
+    }
   }
   
-  function addMtbanks(amount, clickEvent) {
+  function updatePendingIncome() {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return;
+    
+    var gameData = loadGameBuildings();
+    var now = Date.now();
+    var timeDiff = (now - (gameData.lastUpdate || now)) / (1000 * 60 * 60);
+    
+    if (timeDiff > 0 && timeDiff < 24) {
+      for (var i = 0; i < gameData.buildings.length; i++) {
+        var building = gameData.buildings[i];
+        if (building) {
+          if (!building.pendingIncome) building.pendingIncome = 0;
+          var hourlyIncome = getBuildingIncome(building);
+          var earned = Math.floor(hourlyIncome * timeDiff);
+          building.pendingIncome += earned;
+        }
+      }
+    }
+    
+    gameData.lastUpdate = now;
+    saveGameBuildings(gameData);
+    renderMinecraftGrid();
+    updateGameBalanceDisplay();
+  }
+  
+  function collectBuildingIncome(index) {
     var currentUser = getCurrentUser();
     if (!currentUser) return false;
     
-    // Обновляем баланс пользователя в объекте
-    currentUser.balanceMtBanks = (currentUser.balanceMtBanks || 0) + amount;
+    var gameData = loadGameBuildings();
+    if (!gameData.buildings[index]) {
+      showGameToast("❌ Здание не найдено!");
+      return false;
+    }
     
-    // Сохраняем обновлённого пользователя в хранилище
+    var building = gameData.buildings[index];
+    
+    if (!building.pendingIncome || building.pendingIncome <= 0) {
+      showGameToast("💰 Нет накопленного дохода!");
+      return false;
+    }
+    
+    var amount = building.pendingIncome;
+    currentUser.balanceMtBanks = (currentUser.balanceMtBanks || 0) + amount;
+    building.pendingIncome = 0;
+    
     var users = loadAllUsers();
     users[currentUser.id] = currentUser;
     saveAllUsers(users);
+    saveGameBuildings(gameData);
     
-    // ВАЖНО: обновляем глобальные переменные балансов
     balanceMtBanks = currentUser.balanceMtBanks;
+    syncBalancesToDom();
+    updateGameBalanceDisplay();
+    renderMinecraftGrid();
     
-    // Обновляем UI везде, где отображается баланс
-    syncBalancesToDom();  // Обновляет цифры в профиле
-    updateGameUI();       // Обновляет цифры в игре
+    showGameToast("💰 Получено " + amount + " MTBank Tokens!");
+    return true;
+  }
+  
+  function collectAllIncome() {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return;
     
-    // Также обновляем отображение в профиле, если оно открыто
-    var profileMtbSpan = document.getElementById("profile-balance-mtb");
-    if (profileMtbSpan) {
-      profileMtbSpan.textContent = String(balanceMtBanks).padStart(8, '0');
+    var gameData = loadGameBuildings();
+    var totalCollected = 0;
+    
+    for (var i = 0; i < gameData.buildings.length; i++) {
+      var building = gameData.buildings[i];
+      if (building && building.pendingIncome && building.pendingIncome > 0) {
+        totalCollected += building.pendingIncome;
+        building.pendingIncome = 0;
+      }
     }
     
-    // Показываем анимацию если нужно
-    if (clickEvent && clickEvent.clientX) {
-      showClickAnimation(clickEvent.clientX, clickEvent.clientY, amount);
+    if (totalCollected > 0) {
+      currentUser.balanceMtBanks = (currentUser.balanceMtBanks || 0) + totalCollected;
+      var users = loadAllUsers();
+      users[currentUser.id] = currentUser;
+      saveAllUsers(users);
+      saveGameBuildings(gameData);
+      
+      balanceMtBanks = currentUser.balanceMtBanks;
+      syncBalancesToDom();
+      updateGameBalanceDisplay();
+      renderMinecraftGrid();
+      
+      showGameToast("🧺 Собрано " + totalCollected + " MTBank Tokens!");
+    } else {
+      showGameToast("😴 Нет дохода для сбора");
+    }
+  }
+  
+  function buildBuilding(index, type) {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return false;
+    
+    updateBuildingPriceMultiplier();
+    var baseCost = BUILDING_TYPES[type].cost;
+    var cost = Math.floor(baseCost * buildingPriceMultiplier);
+    
+    if ((currentUser.balanceSkillPoints || 0) < cost) {
+      showGameToast("❌ Недостаточно очков прокачки! Нужно " + cost + " ⭐");
+      return false;
+    }
+    
+    var gameData = loadGameBuildings();
+    if (gameData.buildings[index]) {
+      showGameToast("❌ Здесь уже есть здание!");
+      return false;
+    }
+    
+    gameData.buildings[index] = {
+      type: type,
+      level: 1,
+      pendingIncome: 0,
+      purchasePrice: cost
+    };
+    
+    currentUser.balanceSkillPoints -= cost;
+    
+    var users = loadAllUsers();
+    users[currentUser.id] = currentUser;
+    saveAllUsers(users);
+    saveGameBuildings(gameData);
+    
+    balanceSkillPoints = currentUser.balanceSkillPoints;
+    balanceMtBanks = currentUser.balanceMtBanks;
+    syncBalancesToDom();
+    updateGameBalanceDisplay();
+    renderMinecraftGrid();
+    
+    showGameToast("✅ Построено: " + BUILDING_TYPES[type].name + " за " + cost + " ⭐!");
+    return true;
+  }
+  
+  function upgradeBuilding(index) {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return false;
+    
+    var gameData = loadGameBuildings();
+    var building = gameData.buildings[index];
+    
+    if (!building) {
+      showGameToast("❌ Здесь нет здания!");
+      return false;
+    }
+    
+    var cost = getUpgradeCost(building);
+    
+    if ((currentUser.balanceSkillPoints || 0) < cost) {
+      showGameToast("❌ Недостаточно очков прокачки для улучшения! Нужно " + cost + " ⭐");
+      return false;
+    }
+    
+    building.level++;
+    currentUser.balanceSkillPoints -= cost;
+    
+    var users = loadAllUsers();
+    users[currentUser.id] = currentUser;
+    saveAllUsers(users);
+    saveGameBuildings(gameData);
+    
+    balanceSkillPoints = currentUser.balanceSkillPoints;
+    balanceMtBanks = currentUser.balanceMtBanks;
+    syncBalancesToDom();
+    updateGameBalanceDisplay();
+    renderMinecraftGrid();
+    
+    showGameToast("⬆️ " + BUILDING_TYPES[building.type].name + " улучшен до " + building.level + " уровня!");
+    
+    if (currentInfoIndex === index) {
+      document.getElementById("info-level").textContent = building.level;
+      document.getElementById("info-income").textContent = getBuildingIncome(building);
+      document.getElementById("info-upgrade-cost").textContent = getUpgradeCost(building);
     }
     
     return true;
   }
   
-  function handleTokenClick(event) {
+  function sellBuilding(index) {
     var currentUser = getCurrentUser();
-    if (!currentUser) return;
+    if (!currentUser) return false;
     
-    var gameData = loadGameData();
-    var todayKey = getTodayKey();
+    var gameData = loadGameBuildings();
+    var building = gameData.buildings[index];
     
-    // Сброс если новый день
-    if (gameData.lastDate !== todayKey) {
-      gameData.clicks = 0;
-      gameData.lastDate = todayKey;
+    if (!building) {
+      showGameToast("❌ Здесь нет здания!");
+      return false;
     }
     
-    // Добавляем клик
-    gameData.clicks = (gameData.clicks || 0) + 1;
-    var currentClicks = gameData.clicks;
-    
-    // Начисляем 1 МТБанк за клик
-    addMtbanks(1, event);
-    
-    // Проверяем бонус каждые 10 кликов
-    var bonusAmount = 0;
-    if (currentClicks % 10 === 0) {
-      bonusAmount = 50;
-      addMtbanks(bonusAmount, null);
-      
-      // Показываем уведомление о бонусе
-      var toast = document.getElementById("buy-toast");
-      if (toast) {
-        var originalText = toast.textContent;
-        toast.textContent = "🎉 Бонус! +50 МТБанков за 10 кликов! 🎉";
-        toast.classList.add("is-visible");
-        setTimeout(function() {
-          toast.classList.remove("is-visible");
-          toast.textContent = originalText;
-        }, 2000);
-      }
+    var purchasePrice = building.purchasePrice;
+    if (!purchasePrice || isNaN(purchasePrice)) {
+      var typeData = BUILDING_TYPES[building.type];
+      purchasePrice = typeData.cost;
     }
     
-    // Сохраняем данные игры
-    saveGameData(gameData);
+    var sellPrice = Math.floor(purchasePrice / 2);
     
-    // Обновляем UI
-    updateGameUI();
+    if (isNaN(sellPrice)) {
+      showGameToast("❌ Ошибка при продаже!");
+      return false;
+    }
     
-    // Дополнительная анимация для бонуса
-    if (bonusAmount > 0 && event) {
+    currentUser.balanceSkillPoints = (currentUser.balanceSkillPoints || 0) + sellPrice;
+    
+    gameData.buildings[index] = null;
+    
+    var users = loadAllUsers();
+    users[currentUser.id] = currentUser;
+    saveAllUsers(users);
+    saveGameBuildings(gameData);
+    
+    balanceSkillPoints = currentUser.balanceSkillPoints;
+    syncBalancesToDom();
+    updateGameBalanceDisplay();
+    renderMinecraftGrid();
+    
+    showGameToast("💰 Здание продано! Выручено " + sellPrice + " ⭐ (50% от цены покупки)");
+    return true;
+  }
+  
+  function showGameToast(message) {
+    var toast = document.getElementById("buy-toast");
+    if (toast) {
+      toast.textContent = message;
+      toast.classList.add("is-visible");
       setTimeout(function() {
-        showClickAnimation(event.clientX, event.clientY - 30, bonusAmount);
-      }, 100);
-    }
-    
-    // Небольшая вибрация если поддерживается
-    if (navigator.vibrate) {
-      navigator.vibrate(50);
+        toast.classList.remove("is-visible");
+      }, 2000);
     }
   }
   
-  function initGame() {
-    updateGameUI();
+  function updateGameBalanceDisplay() {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return;
     
-    var tokenBtn = document.getElementById("game-token-btn");
-    if (tokenBtn) {
-      tokenBtn.addEventListener("click", handleTokenClick);
+    var balanceSpan = document.getElementById("game-balance");
+    if (balanceSpan) balanceSpan.textContent = currentUser.balanceMtBanks || 0;
+    
+    var skillSpan = document.getElementById("game-skill-balance");
+    if (skillSpan) skillSpan.textContent = currentUser.balanceSkillPoints || 0;
+    
+    var gameData = loadGameBuildings();
+    var totalHourly = 0;
+    for (var i = 0; i < gameData.buildings.length; i++) {
+      var b = gameData.buildings[i];
+      if (b) totalHourly += getBuildingIncome(b);
+    }
+    var totalIncomeSpan = document.getElementById("total-income");
+    if (totalIncomeSpan) totalIncomeSpan.textContent = totalHourly;
+  }
+  
+  function addSkillPoints(amount) {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return false;
+    
+    currentUser.balanceSkillPoints = (currentUser.balanceSkillPoints || 0) + amount;
+    
+    var users = loadAllUsers();
+    users[currentUser.id] = currentUser;
+    saveAllUsers(users);
+    
+    balanceSkillPoints = currentUser.balanceSkillPoints;
+    syncBalancesToDom();
+    updateGameBalanceDisplay();
+    
+    showGameToast("✨ Добавлено " + amount + " очков прокачки!");
+    return true;
+  }
+  
+  function openBuildModal(blockIndex) {
+    currentSelectedBlock = blockIndex;
+    var container = document.getElementById("build-options");
+    container.innerHTML = "";
+    
+    for (var i = 0; i < BUILDING_KEYS.length; i++) {
+      var key = BUILDING_KEYS[i];
+      var type = BUILDING_TYPES[key];
+      
+      var option = document.createElement("div");
+      option.className = "build-option";
+      option.innerHTML = `
+        <div class="build-option__icon">${type.icon}</div>
+        <div class="build-option__name">${type.name}</div>
+        <div class="build-option__cost">⭐ ${Math.floor(type.cost * buildingPriceMultiplier)}</div>
+      `;
+      option.addEventListener("click", (function(k) {
+        return function() {
+          buildBuilding(currentSelectedBlock, k);
+          closeBuildModal();
+        };
+      })(key));
+      
+      container.appendChild(option);
     }
     
-    // Обновляем UI игры при переключении на вкладку игры
+    var modal = document.getElementById("build-modal");
+    modal.removeAttribute("hidden");
+  }
+  
+  function closeBuildModal() {
+    var modal = document.getElementById("build-modal");
+    modal.setAttribute("hidden", "");
+    currentSelectedBlock = null;
+  }
+  
+  function openInfoModal(index) {
+    var gameData = loadGameBuildings();
+    var building = gameData.buildings[index];
+    if (!building) {
+      showGameToast("❌ Здесь нет здания!");
+      return;
+    }
+    
+    var typeData = BUILDING_TYPES[building.type];
+    if (!typeData) {
+      showGameToast("❌ Ошибка: тип здания не найден!");
+      return;
+    }
+    
+    currentInfoIndex = index;
+    
+    var iconContainer = document.getElementById("info-icon");
+    if (iconContainer) {
+      iconContainer.innerHTML = typeData.svg;
+      iconContainer.style.width = "80px";
+      iconContainer.style.height = "80px";
+      iconContainer.style.margin = "0 auto";
+      iconContainer.style.display = "flex";
+      iconContainer.style.alignItems = "center";
+      iconContainer.style.justifyContent = "center";
+    }
+    
+    var purchasePrice = building.purchasePrice;
+    if (!purchasePrice || isNaN(purchasePrice)) {
+      purchasePrice = typeData.cost;
+    }
+    var sellPrice = Math.floor(purchasePrice / 2);
+    
+    document.getElementById("info-title").textContent = typeData.name;
+    document.getElementById("info-type").textContent = typeData.name;
+    document.getElementById("info-level").textContent = building.level;
+    document.getElementById("info-income").textContent = getBuildingIncome(building);
+    document.getElementById("info-pending").textContent = building.pendingIncome || 0;
+    document.getElementById("info-upgrade-cost").textContent = getUpgradeCost(building);
+    
+    var sellValueSpan = document.getElementById("info-sell-value");
+    if (sellValueSpan) sellValueSpan.textContent = sellPrice;
+    
+    var modal = document.getElementById("info-modal");
+    if (modal) {
+      modal.removeAttribute("hidden");
+    }
+  }
+  
+  function closeInfoModal() {
+    var modal = document.getElementById("info-modal");
+    modal.setAttribute("hidden", "");
+    currentInfoIndex = null;
+  }
+  
+  function renderMinecraftGrid() {
+    updateBuildingPriceMultiplier();
+    var container = document.getElementById("minecraft-grid");
+    if (!container) return;
+    
+    var gameData = loadGameBuildings();
+    container.innerHTML = "";
+    
+    for (var i = 0; i < 25; i++) {
+      var block = document.createElement("div");
+      block.className = "minecraft-block";
+      
+      var building = gameData.buildings[i];
+      
+      if (building && BUILDING_TYPES[building.type]) {
+        var typeData = BUILDING_TYPES[building.type];
+        var pending = building.pendingIncome || 0;
+        
+        block.className += " minecraft-block--building";
+        
+        var buildingDiv = document.createElement("div");
+        buildingDiv.className = "block-building";
+        
+        var svgDiv = document.createElement("div");
+        svgDiv.className = "block-building__svg";
+        svgDiv.innerHTML = typeData.svg;
+        
+        var levelSpan = document.createElement("div");
+        levelSpan.className = "block-building__level";
+        levelSpan.textContent = building.level;
+        
+        var incomeSpan = document.createElement("div");
+        incomeSpan.className = "block-building__income";
+        if (pending > 0) {
+          incomeSpan.classList.add("block-building__income--active");
+        }
+        incomeSpan.textContent = "+" + pending;
+        
+        buildingDiv.appendChild(svgDiv);
+        buildingDiv.appendChild(levelSpan);
+        buildingDiv.appendChild(incomeSpan);
+        block.appendChild(buildingDiv);
+        
+        block.addEventListener("click", (function(idx) {
+          return function(e) {
+            e.stopPropagation();
+            openInfoModal(idx);
+          };
+        })(i));
+        
+      } else {
+        block.className += " minecraft-block--empty";
+        
+        var emptyDiv = document.createElement("div");
+        emptyDiv.className = "empty-block";
+        emptyDiv.innerHTML = `
+          <div class="empty-block__plus">+</div>
+          <div class="empty-block__text">построить</div>
+        `;
+        block.appendChild(emptyDiv);
+        
+        block.addEventListener("click", (function(idx) {
+          return function(e) {
+            e.stopPropagation();
+            openBuildModal(idx);
+          };
+        })(i));
+      }
+      
+      container.appendChild(block);
+    }
+  }
+  
+  var incomeInterval = null;
+  
+  function startIncomeTimer() {
+    if (incomeInterval) clearInterval(incomeInterval);
+    incomeInterval = setInterval(function() {
+      updatePendingIncome();
+    }, 60000);
+  }
+  
+  function initGame() {
+    migrateOldBuildings();
+    updateBuildingPriceMultiplier();
+    updatePendingIncome();
+    renderMinecraftGrid();
+    updateGameBalanceDisplay();
+    startIncomeTimer();
+    
+    var collectAllBtn = document.getElementById("collect-all-btn");
+    if (collectAllBtn) {
+      collectAllBtn.addEventListener("click", function() {
+        collectAllIncome();
+      });
+    }
+    
+    var buildModalClose = document.getElementById("build-modal-close");
+    var buildModalOverlay = document.querySelector("#build-modal .build-modal__overlay");
+    if (buildModalClose) buildModalClose.addEventListener("click", closeBuildModal);
+    if (buildModalOverlay) buildModalOverlay.addEventListener("click", closeBuildModal);
+    
+    var infoModalClose = document.getElementById("info-modal-close");
+    var infoModalOverlay = document.querySelector("#info-modal .info-modal__overlay");
+    var infoCollectBtn = document.getElementById("info-collect-btn");
+    var infoUpgradeBtn = document.getElementById("info-upgrade-btn");
+    var infoSellBtn = document.getElementById("info-sell-btn");
+    
+    if (infoModalClose) infoModalClose.addEventListener("click", closeInfoModal);
+    if (infoModalOverlay) infoModalOverlay.addEventListener("click", closeInfoModal);
+    
+    if (infoCollectBtn) {
+      infoCollectBtn.addEventListener("click", function() {
+        if (currentInfoIndex !== null) {
+          collectBuildingIncome(currentInfoIndex);
+          closeInfoModal();
+        }
+      });
+    }
+    
+    if (infoUpgradeBtn) {
+      infoUpgradeBtn.addEventListener("click", function() {
+        if (currentInfoIndex !== null) {
+          upgradeBuilding(currentInfoIndex);
+          closeInfoModal();
+        }
+      });
+    }
+    
+    if (infoSellBtn) {
+      infoSellBtn.addEventListener("click", function() {
+        if (currentInfoIndex !== null) {
+          sellBuilding(currentInfoIndex);
+          closeInfoModal();
+        }
+      });
+    }
+    
+    var addSkillBtn = document.getElementById("btn-add-skill");
+    if (addSkillBtn) {
+      addSkillBtn.addEventListener("click", function() {
+        var amountInput = document.getElementById("skill-add-amount");
+        var amount = parseInt(amountInput.value, 10);
+        if (isNaN(amount) || amount <= 0) {
+          amount = 100;
+        }
+        addSkillPoints(amount);
+      });
+    }
+    
     var gamePanel = document.getElementById("panel-game");
     if (gamePanel) {
       var observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
-          if (mutation.attributeName === "class") {
-            if (gamePanel.classList.contains("is-active")) {
-              updateGameUI();
-            }
+          if (mutation.attributeName === "class" && gamePanel.classList.contains("is-active")) {
+            updateGameBalanceDisplay();
+            renderMinecraftGrid();
           }
         });
       });
       observer.observe(gamePanel, { attributes: true });
     }
-    
-    // Также обновляем профиль при переключении на него
-    var profilePanel = document.getElementById("panel-profile");
-    if (profilePanel) {
-      var profileObserver = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          if (mutation.attributeName === "class") {
-            if (profilePanel.classList.contains("is-active")) {
-              refreshProfileFromUser();
-            }
-          }
-        });
-      });
-      profileObserver.observe(profilePanel, { attributes: true });
-    }
   }
-  
-  // ========== КОНЕЦ БЛОКА ИГРЫ ==========
 
   function init() {
-    // Проверяем авторизацию при загрузке
     checkAuthAndRedirect();
     
-    // Регистрация
     var form = document.getElementById("form-register");
     var nicknameInput = document.getElementById("nickname");
     var inviterInput = document.getElementById("inviter-referral");
@@ -571,7 +1039,6 @@
       });
     }
     
-    // Вход в аккаунт
     var loginForm = document.getElementById("form-login");
     var loginIdInput = document.getElementById("login-id");
     var loginNicknameInput = document.getElementById("login-nickname");
@@ -610,7 +1077,6 @@
       });
     }
     
-    // Кнопка выхода
     var logoutBtn = document.getElementById("btn-logout");
     if (logoutBtn) {
       logoutBtn.addEventListener("click", function () {
@@ -618,7 +1084,6 @@
       });
     }
     
-    // Копирование реферальной ссылки
     var copyBtn = document.getElementById("btn-copy-referral-link");
     if (copyBtn) {
       copyBtn.addEventListener("click", function () {
@@ -636,7 +1101,6 @@
       });
     }
     
-    // Навигация
     var nav = document.getElementById("bottom-nav");
     if (nav) {
       nav.addEventListener("click", function (e) {
@@ -649,7 +1113,6 @@
       });
     }
     
-    // Переключение между экранами регистрации и входа
     var showLoginLink = document.getElementById("show-login");
     var showRegisterLink = document.getElementById("show-register");
     
@@ -667,7 +1130,6 @@
       });
     }
     
-    // Инициализация игры
     initGame();
   }
 
