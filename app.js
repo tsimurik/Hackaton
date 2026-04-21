@@ -1225,314 +1225,461 @@
     showGameToast(`✅ Кредит погашен!`);
   }
     // ========== ЗАДАНИЯ ==========
+
+var TASKS_KEY = "rr_tasks_";
+
+var TASKS_LIST = [
+  { id: "upgrade_coffee", title: "Прокачай кофейню", desc: "Улучшите кофейню до 3 уровня", type: "upgrade_building", buildingType: "coffee", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, category: "once" },
+  { id: "upgrade_bank", title: "Прокачай банк", desc: "Улучшите банк до 3 уровня", type: "upgrade_building", buildingType: "mtbank", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, category: "once" },
+  { id: "upgrade_shop", title: "Прокачай магазин", desc: "Улучшите магазин до 3 уровня", type: "upgrade_building", buildingType: "shop", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, category: "once" },
+  { id: "upgrade_itcompany", title: "Прокачай IT компанию", desc: "Улучшите IT компанию до 3 уровня", type: "upgrade_building", buildingType: "itcompany", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, category: "once" },
+  { id: "upgrade_warehouse", title: "Прокачай склад", desc: "Улучшите склад до 3 уровня", type: "upgrade_building", buildingType: "warehouse", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, category: "once" },
+  { id: "upgrade_flowershop", title: "Прокачай цветочный магазин", desc: "Улучшите цветочный магазин до 3 уровня", type: "upgrade_building", buildingType: "flowershop", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, category: "once" },
+  { id: "upgrade_autoservice", title: "Прокачай автосервис", desc: "Улучшите автосервис до 3 уровня", type: "upgrade_building", buildingType: "autoservice", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, category: "once" },
+  { id: "upgrade_cinema", title: "Прокачай кинотеатр", desc: "Улучшите кинотеатр до 3 уровня", type: "upgrade_building", buildingType: "cinema", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, category: "once" },
+  { id: "upgrade_construction", title: "Прокачай стройкомпанию", desc: "Улучшите стройкомпанию до 3 уровня", type: "upgrade_building", buildingType: "construction", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, category: "once" },
+  { id: "upgrade_gasstation", title: "Прокачай заправку", desc: "Улучшите заправку до 3 уровня", type: "upgrade_building", buildingType: "gasstation", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, category: "once" },
+  { id: "upgrade_restaurant", title: "Прокачай ресторан", desc: "Улучшите ресторан до 3 уровня", type: "upgrade_building", buildingType: "restaurant", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, category: "once" },
+  { id: "upgrade_businesspark", title: "Прокачай бизнес-парк", desc: "Улучшите бизнес-парк до 3 уровня", type: "upgrade_building", buildingType: "businesspark", requiredLevel: 3, rewardSkill: 150, rewardToken: 150, category: "once" },
+  { id: "upgrade_mall", title: "Прокачай торговый центр", desc: "Улучшите торговый центр до 3 уровня", type: "upgrade_building", buildingType: "mall", requiredLevel: 3, rewardSkill: 150, rewardToken: 150, category: "once" },
+  { id: "card_payment_500", title: "Расплата картой МТБанка (до 500₽)", desc: "Совершите покупку на сумму до 500 рублей", type: "card_payment", minAmount: 0, maxAmount: 500, rewardSkill: 200, rewardToken: 0, category: "monthly" },
+  { id: "card_payment_1000", title: "Расплата картой МТБанка (500-1000₽)", desc: "Совершите покупку на сумму от 500 до 1000 рублей", type: "card_payment", minAmount: 500.01, maxAmount: 1000, rewardSkill: 300, rewardToken: 0, category: "monthly" },
+  { id: "card_payment_1500", title: "Расплата картой МТБанка (1000-1500₽)", desc: "Совершите покупку на сумму от 1000 до 1500 рублей", type: "card_payment", minAmount: 1000.01, maxAmount: 1500, rewardSkill: 400, rewardToken: 0, category: "monthly" },
+  { id: "card_payment_unlimited", title: "Расплата картой МТБанка (от 1500₽)", desc: "Совершите покупку на сумму от 1500 рублей", type: "card_payment", minAmount: 1500.01, maxAmount: Infinity, rewardSkill: 500, rewardToken: 0, category: "monthly" },
+  { id: "halva_card", title: "Оформи карту Халва", desc: "Оформите карту Халва от МТБанка", type: "halva", rewardSkill: 350, rewardToken: 0, category: "once" },
+  { id: "daily_login", title: "Ежедневный вход", desc: "Заходите в игру каждый день", type: "daily", rewardSkill: 50, rewardToken: 50, category: "daily" }
+];
+
+function getTasksData() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return null;
   
-  var TASKS_KEY = "rr_tasks_";
-  
-  var TASKS_LIST = [
-    { id: "upgrade_coffee", title: "Прокачай кофейню", desc: "Улучшите кофейню до 3 уровня", type: "upgrade_building", buildingType: "coffee", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
-    { id: "upgrade_bank", title: "Прокачай банк", desc: "Улучшите банк до 3 уровня", type: "upgrade_building", buildingType: "bank", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
-    { id: "upgrade_shop", title: "Прокачай магазин", desc: "Улучшите магазин до 3 уровня", type: "upgrade_building", buildingType: "shop", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
-    { id: "upgrade_itcompany", title: "Прокачай IT компанию", desc: "Улучшите IT компанию до 3 уровня", type: "upgrade_building", buildingType: "itcompany", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
-    { id: "upgrade_warehouse", title: "Прокачай склад", desc: "Улучшите склад до 3 уровня", type: "upgrade_building", buildingType: "warehouse", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
-    { id: "upgrade_flowershop", title: "Прокачай цветочный магазин", desc: "Улучшите цветочный магазин до 3 уровня", type: "upgrade_building", buildingType: "flowershop", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
-    { id: "upgrade_autoservice", title: "Прокачай автосервис", desc: "Улучшите автосервис до 3 уровня", type: "upgrade_building", buildingType: "autoservice", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
-    { id: "upgrade_cinema", title: "Прокачай кинотеатр", desc: "Улучшите кинотеатр до 3 уровня", type: "upgrade_building", buildingType: "cinema", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
-    { id: "upgrade_construction", title: "Прокачай стройкомпанию", desc: "Улучшите стройкомпанию до 3 уровня", type: "upgrade_building", buildingType: "construction", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
-    { id: "upgrade_gasstation", title: "Прокачай заправку", desc: "Улучшите заправку до 3 уровня", type: "upgrade_building", buildingType: "gasstation", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
-    { id: "upgrade_restaurant", title: "Прокачай ресторан", desc: "Улучшите ресторан до 3 уровня", type: "upgrade_building", buildingType: "restaurant", requiredLevel: 3, rewardSkill: 100, rewardToken: 100 },
-    { id: "card_payment_500", title: "Расплата картой МТБанка (до 500₽)", desc: "Совершите покупку на сумму до 500 рублей", type: "card_payment", minAmount: 0, maxAmount: 500, rewardSkill: 200, rewardToken: 0 },
-    { id: "card_payment_1000", title: "Расплата картой МТБанка (500-1000₽)", desc: "Совершите покупку на сумму от 500 до 1000 рублей", type: "card_payment", minAmount: 500.01, maxAmount: 1000, rewardSkill: 300, rewardToken: 0 },
-    { id: "card_payment_1500", title: "Расплата картой МТБанка (1000-1500₽)", desc: "Совершите покупку на сумму от 1000 до 1500 рублей", type: "card_payment", minAmount: 1000.01, maxAmount: 1500, rewardSkill: 400, rewardToken: 0 },
-    { id: "card_payment_unlimited", title: "Расплата картой МТБанка (от 1500₽)", desc: "Совершите покупку на сумму от 1500 рублей", type: "card_payment", minAmount: 1500.01, maxAmount: Infinity, rewardSkill: 400, rewardToken: 0 },
-    { id: "halva_card", title: "Оформи карту Халва", desc: "Оформите карту Халва от МТБанка", type: "halva", rewardSkill: 350, rewardToken: 0 }
-  ];
-  
-  function getTasksData() {
-    var currentUser = getCurrentUser();
-    if (!currentUser) return null;
-    
-    var key = TASKS_KEY + currentUser.id;
-    try {
-      var raw = localStorage.getItem(key);
-      if (!raw) {
-        var defaultTasks = {};
-        for (var i = 0; i < TASKS_LIST.length; i++) {
-          defaultTasks[TASKS_LIST[i].id] = { completed: false, claimed: false };
-        }
-        return defaultTasks;
-      }
-      return JSON.parse(raw);
-    } catch (e) {
+  var key = TASKS_KEY + currentUser.id;
+  try {
+    var raw = localStorage.getItem(key);
+    if (!raw) {
       var defaultTasks = {};
       for (var i = 0; i < TASKS_LIST.length; i++) {
-        defaultTasks[TASKS_LIST[i].id] = { completed: false, claimed: false };
+        defaultTasks[TASKS_LIST[i].id] = { completed: false, claimed: false, progress: 0, lastDailyClaim: null };
       }
       return defaultTasks;
     }
+    return JSON.parse(raw);
+  } catch (e) {
+    var defaultTasks = {};
+    for (var i = 0; i < TASKS_LIST.length; i++) {
+      defaultTasks[TASKS_LIST[i].id] = { completed: false, claimed: false, progress: 0, lastDailyClaim: null };
+    }
+    return defaultTasks;
   }
-  
-  function saveTasksData(data) {
-    var currentUser = getCurrentUser();
-    if (!currentUser) return;
-    var key = TASKS_KEY + currentUser.id;
-    localStorage.setItem(key, JSON.stringify(data));
+}
+
+function saveTasksData(data) {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  var key = TASKS_KEY + currentUser.id;
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+function checkBuildingUpgradeTask(buildingType, requiredLevel) {
+  var gameData = loadGameBuildings();
+  for (var i = 0; i < gameData.buildings.length; i++) {
+    var building = gameData.buildings[i];
+    if (building && building.type === buildingType && building.level >= requiredLevel) {
+      return true;
+    }
   }
+  return false;
+}
+
+function checkAllTasksCompletion() {
+  var tasksData = getTasksData();
+  if (!tasksData) return;
   
-  function checkBuildingUpgradeTask(buildingType, requiredLevel) {
-    var gameData = loadGameBuildings();
-    for (var i = 0; i < gameData.buildings.length; i++) {
-      var building = gameData.buildings[i];
-      if (building && building.type === buildingType && building.level >= requiredLevel) {
-        return true;
+  var needSave = false;
+  
+  for (var i = 0; i < TASKS_LIST.length; i++) {
+    var task = TASKS_LIST[i];
+    var taskData = tasksData[task.id];
+    
+    if (!taskData) {
+      tasksData[task.id] = { completed: false, claimed: false, progress: 0, lastDailyClaim: null };
+      taskData = tasksData[task.id];
+      needSave = true;
+    }
+    
+    if (!taskData.completed && !taskData.claimed) {
+      var isCompleted = false;
+      
+      if (task.type === "upgrade_building") {
+        isCompleted = checkBuildingUpgradeTask(task.buildingType, task.requiredLevel);
+      }
+      
+      if (isCompleted) {
+        taskData.completed = true;
+        needSave = true;
       }
     }
+  }
+  
+  if (needSave) {
+    saveTasksData(tasksData);
+  }
+  
+  renderTasksList();
+}
+
+function openTaskModal(task) {
+  var modal = document.getElementById("task-modal");
+  if (!modal) {
+    createTaskModal();
+    modal = document.getElementById("task-modal");
+  }
+  
+  document.getElementById("task-modal-title").textContent = task.title;
+  document.getElementById("task-modal-desc").textContent = task.desc;
+  document.getElementById("task-modal-reward").innerHTML = `⭐ ${task.rewardSkill} очков прокачки ${task.rewardToken > 0 ? `+ 💰 ${task.rewardToken} токенов` : ''}`;
+  
+  var inputContainer = document.getElementById("task-modal-input-container");
+  var inputField = document.getElementById("task-modal-input");
+  
+  if (task.type === "card_payment") {
+    inputContainer.style.display = "block";
+    inputField.placeholder = "Введите сумму покупки (₽)";
+    inputField.type = "number";
+    inputField.step = "0.01";
+    inputField.value = "";
+    
+    var confirmBtn = document.getElementById("task-modal-confirm");
+    confirmBtn.onclick = function() {
+      var amount = parseFloat(inputField.value);
+      if (isNaN(amount) || amount <= 0) {
+        showGameToast("❌ Введите корректную сумму!");
+        return;
+      }
+      
+      if (amount >= task.minAmount && amount <= task.maxAmount) {
+        claimTaskReward(task.id, task.rewardSkill, task.rewardToken);
+        closeTaskModal();
+      } else {
+        showGameToast(`❌ Сумма должна быть от ${task.minAmount} до ${task.maxAmount === Infinity ? '∞' : task.maxAmount} рублей!`);
+      }
+    };
+  } else if (task.type === "halva") {
+    inputContainer.style.display = "block";
+    inputField.placeholder = "Введите номер заявки или телефона";
+    inputField.type = "text";
+    inputField.value = "";
+    
+    var confirmBtn = document.getElementById("task-modal-confirm");
+    confirmBtn.onclick = function() {
+      var value = inputField.value.trim();
+      if (value.length < 3) {
+        showGameToast("❌ Введите корректные данные!");
+        return;
+      }
+      claimTaskReward(task.id, task.rewardSkill, task.rewardToken);
+      closeTaskModal();
+    };
+  } else if (task.type === "daily") {
+    inputContainer.style.display = "none";
+    var confirmBtn = document.getElementById("task-modal-confirm");
+    confirmBtn.onclick = function() {
+      claimDailyReward(task.id, task.rewardSkill, task.rewardToken);
+      closeTaskModal();
+    };
+  } else {
+    inputContainer.style.display = "none";
+    var confirmBtn = document.getElementById("task-modal-confirm");
+    confirmBtn.onclick = function() {
+      claimTaskReward(task.id, task.rewardSkill, task.rewardToken);
+      closeTaskModal();
+    };
+  }
+  
+  modal.removeAttribute("hidden");
+}
+
+function claimDailyReward(taskId, rewardSkill, rewardToken) {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return false;
+  
+  var tasksData = getTasksData();
+  var taskData = tasksData[taskId];
+  
+  var today = new Date().toDateString();
+  
+  if (taskData.lastDailyClaim === today) {
+    showGameToast("❌ Вы уже получили ежедневную награду сегодня!");
     return false;
   }
   
-  function checkAllTasksCompletion() {
-    var tasksData = getTasksData();
-    if (!tasksData) return;
-    
-    var needSave = false;
-    
-    for (var i = 0; i < TASKS_LIST.length; i++) {
-      var task = TASKS_LIST[i];
-      var taskData = tasksData[task.id];
-      
-      if (!taskData.completed && !taskData.claimed) {
-        var isCompleted = false;
-        
-        if (task.type === "upgrade_building") {
-          isCompleted = checkBuildingUpgradeTask(task.buildingType, task.requiredLevel);
-        }
-        
-        if (isCompleted) {
-          taskData.completed = true;
-          needSave = true;
-        }
-      }
-    }
-    
-    if (needSave) {
-      saveTasksData(tasksData);
-    }
-    
-    renderTasksList();
+  if (!taskData.completed) {
+    taskData.completed = true;
   }
   
-  function openTaskModal(task) {
-    var modal = document.getElementById("task-modal");
-    if (!modal) {
-      createTaskModal();
-      modal = document.getElementById("task-modal");
-    }
-    
-    document.getElementById("task-modal-title").textContent = task.title;
-    document.getElementById("task-modal-desc").textContent = task.desc;
-    document.getElementById("task-modal-reward").innerHTML = `⭐ ${task.rewardSkill} очков прокачки ${task.rewardToken > 0 ? `+ 💰 ${task.rewardToken} токенов` : ''}`;
-    
-    var inputContainer = document.getElementById("task-modal-input-container");
-    var inputField = document.getElementById("task-modal-input");
-    
-    if (task.type === "card_payment") {
-      inputContainer.style.display = "block";
-      inputField.placeholder = "Введите сумму покупки (₽)";
-      inputField.type = "number";
-      inputField.step = "0.01";
-      inputField.value = "";
-      
-      var confirmBtn = document.getElementById("task-modal-confirm");
-      confirmBtn.onclick = function() {
-        var amount = parseFloat(inputField.value);
-        if (isNaN(amount) || amount <= 0) {
-          showGameToast("❌ Введите корректную сумму!");
-          return;
-        }
-        
-        if (amount >= task.minAmount && amount <= task.maxAmount) {
-          claimTaskReward(task.id, task.rewardSkill, task.rewardToken);
-          closeTaskModal();
-        } else {
-          showGameToast(`❌ Сумма должна быть от ${task.minAmount} до ${task.maxAmount === Infinity ? '∞' : task.maxAmount} рублей!`);
-        }
-      };
-    } else if (task.type === "halva") {
-      inputContainer.style.display = "block";
-      inputField.placeholder = "Введите номер заявки или телефона";
-      inputField.type = "text";
-      inputField.value = "";
-      
-      var confirmBtn = document.getElementById("task-modal-confirm");
-      confirmBtn.onclick = function() {
-        var value = inputField.value.trim();
-        if (value.length < 3) {
-          showGameToast("❌ Введите корректные данные!");
-          return;
-        }
-        claimTaskReward(task.id, task.rewardSkill, task.rewardToken);
-        closeTaskModal();
-      };
-    } else {
-      inputContainer.style.display = "none";
-      var confirmBtn = document.getElementById("task-modal-confirm");
-      confirmBtn.onclick = function() {
-        claimTaskReward(task.id, task.rewardSkill, task.rewardToken);
-        closeTaskModal();
-      };
-    }
-    
-    modal.removeAttribute("hidden");
+  if (taskData.claimed) {
+    showGameToast("❌ Награда за сегодня уже получена!");
+    return false;
   }
   
-  function createTaskModal() {
-    var modalHtml = `
-      <div class="task-modal" id="task-modal" hidden>
-        <div class="task-modal__overlay"></div>
-        <div class="task-modal__content">
-          <button class="task-modal__close" id="task-modal-close">✕</button>
-          <h3 class="task-modal__title" id="task-modal-title">Название задания</h3>
-          <p class="task-modal__desc" id="task-modal-desc">Описание задания</p>
-          <div class="task-modal__reward" id="task-modal-reward">⭐ 0</div>
-          <div id="task-modal-input-container">
-            <input type="text" class="task-modal__input" id="task-modal-input" placeholder="Введите данные">
-          </div>
-          <button class="task-modal__btn" id="task-modal-confirm">Получить награду</button>
+  currentUser.balanceSkillPoints = (currentUser.balanceSkillPoints || 0) + rewardSkill;
+  currentUser.balanceMtBanks = (currentUser.balanceMtBanks || 0) + rewardToken;
+  
+  taskData.claimed = true;
+  taskData.lastDailyClaim = today;
+  
+  var users = loadAllUsers();
+  users[currentUser.id] = currentUser;
+  saveAllUsers(users);
+  saveTasksData(tasksData);
+  
+  balanceSkillPoints = currentUser.balanceSkillPoints;
+  balanceMtBanks = currentUser.balanceMtBanks;
+  syncBalancesToDom();
+  updateGameBalanceDisplay();
+  renderTasksList();
+  
+  showGameToast(`🎉 Ежедневная награда: ${rewardSkill} ⭐ и ${rewardToken} 💰!`);
+  addMtbankExp(10, "daily_task");
+  return true;
+}
+
+function createTaskModal() {
+  var modalHtml = `
+    <div class="task-modal" id="task-modal" hidden>
+      <div class="task-modal__overlay"></div>
+      <div class="task-modal__content">
+        <button class="task-modal__close" id="task-modal-close">✕</button>
+        <h3 class="task-modal__title" id="task-modal-title">Название задания</h3>
+        <p class="task-modal__desc" id="task-modal-desc">Описание задания</p>
+        <div class="task-modal__reward" id="task-modal-reward">⭐ 0</div>
+        <div id="task-modal-input-container">
+          <input type="text" class="task-modal__input" id="task-modal-input" placeholder="Введите данные">
         </div>
+        <button class="task-modal__btn" id="task-modal-confirm">Получить награду</button>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML("beforeend", modalHtml);
+  
+  document.getElementById("task-modal-close").addEventListener("click", closeTaskModal);
+  var overlay = document.querySelector("#task-modal .task-modal__overlay");
+  if (overlay) overlay.addEventListener("click", closeTaskModal);
+}
+
+function closeTaskModal() {
+  var modal = document.getElementById("task-modal");
+  if (modal) modal.setAttribute("hidden", "");
+}
+
+function claimTaskReward(taskId, rewardSkill, rewardToken) {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return false;
+  
+  var tasksData = getTasksData();
+  var taskData = tasksData[taskId];
+  
+  if (!taskData.completed) {
+    showGameToast("❌ Условие задания ещё не выполнено!");
+    return false;
+  }
+  
+  if (taskData.claimed) {
+    showGameToast("❌ Награда за это задание уже получена!");
+    return false;
+  }
+  
+  currentUser.balanceSkillPoints = (currentUser.balanceSkillPoints || 0) + rewardSkill;
+  currentUser.balanceMtBanks = (currentUser.balanceMtBanks || 0) + rewardToken;
+  
+  taskData.claimed = true;
+  
+  var users = loadAllUsers();
+  users[currentUser.id] = currentUser;
+  saveAllUsers(users);
+  saveTasksData(tasksData);
+  
+  balanceSkillPoints = currentUser.balanceSkillPoints;
+  balanceMtBanks = currentUser.balanceMtBanks;
+  syncBalancesToDom();
+  updateGameBalanceDisplay();
+  renderTasksList();
+  
+  showGameToast(`🎉 Получена награда: ${rewardSkill} ⭐ и ${rewardToken} 💰!`);
+  addMtbankExp(15, "task");
+  return true;
+}
+
+function renderTasksByType(category) {
+  var containerId = "tasks-list-" + category;
+  var container = document.getElementById(containerId);
+  if (!container) return;
+  
+  var tasksData = getTasksData();
+  if (!tasksData) return;
+  
+  // Фильтруем задания по категории
+  var filteredTasks = [];
+  for (var i = 0; i < TASKS_LIST.length; i++) {
+    var task = TASKS_LIST[i];
+    if (task.category === category) {
+      filteredTasks.push(task);
+    }
+  }
+  
+  container.innerHTML = "";
+  
+  if (filteredTasks.length === 0) {
+    var placeholderText = "";
+    var placeholderIcon = "";
+    if (category === "monthly") {
+      placeholderIcon = "📅";
+      placeholderText = "Ежемесячные задания появятся 1 числа!";
+    } else if (category === "seasonal") {
+      placeholderIcon = "🌸";
+      placeholderText = "Сезонные задания появятся при новом ивенте!";
+    } else if (category === "daily") {
+      placeholderIcon = "⭐";
+      placeholderText = "Ежедневные задания";
+    } else {
+      placeholderIcon = "🎯";
+      placeholderText = "Заданий пока нет";
+    }
+    
+    container.innerHTML = `
+      <div class="seasonal-placeholder">
+        <span class="seasonal-icon">${placeholderIcon}</span>
+        <p>${placeholderText}</p>
+        <span class="seasonal-hint">Следите за обновлениями</span>
       </div>
     `;
-    document.body.insertAdjacentHTML("beforeend", modalHtml);
-    
-    document.getElementById("task-modal-close").addEventListener("click", closeTaskModal);
-    document.getElementById("task-modal-overlay").addEventListener("click", closeTaskModal);
+    return;
   }
   
-  function closeTaskModal() {
-    var modal = document.getElementById("task-modal");
-    if (modal) modal.setAttribute("hidden", "");
-  }
-  
-  function claimTaskReward(taskId, rewardSkill, rewardToken) {
-    var currentUser = getCurrentUser();
-    if (!currentUser) return false;
+  // Рендерим задания
+  for (var i = 0; i < filteredTasks.length; i++) {
+    var task = filteredTasks[i];
+    var taskData = tasksData[task.id];
     
-    var tasksData = getTasksData();
-    var taskData = tasksData[taskId];
-    
-    if (!taskData.completed) {
-      showGameToast("❌ Условие задания ещё не выполнено!");
-      return false;
+    var taskDiv = document.createElement("div");
+    taskDiv.className = "task-item";
+    if (taskData && taskData.claimed) {
+      taskDiv.classList.add("task-item--completed");
     }
     
-    if (taskData.claimed) {
-      showGameToast("❌ Награда за это задание уже получена!");
-      return false;
+    var statusText = "";
+    var statusClass = "";
+    var showButton = false;
+    var buttonDisabled = false;
+    
+    if (taskData && taskData.claimed) {
+      statusText = "✓ Получено";
+      statusClass = "task-status--claimed";
+      showButton = false;
+    } else if (taskData && taskData.completed) {
+      statusText = "⭐ Готово к получению";
+      statusClass = "task-status--available";
+      showButton = true;
+      buttonDisabled = false;
+    } else {
+      statusText = "🔒 Не выполнено";
+      statusClass = "";
+      showButton = true;
+      buttonDisabled = true;
     }
     
-    currentUser.balanceSkillPoints = (currentUser.balanceSkillPoints || 0) + rewardSkill;
-    currentUser.balanceMtBanks = (currentUser.balanceMtBanks || 0) + rewardToken;
-    
-    taskData.claimed = true;
-    
-    var users = loadAllUsers();
-    users[currentUser.id] = currentUser;
-    saveAllUsers(users);
-    saveTasksData(tasksData);
-    
-    balanceSkillPoints = currentUser.balanceSkillPoints;
-    balanceMtBanks = currentUser.balanceMtBanks;
-    syncBalancesToDom();
-    updateGameBalanceDisplay();
-    renderTasksList();
-    
-    showGameToast(`🎉 Получена награда: ${rewardSkill} ⭐ и ${rewardToken} 💰!`);
-        // Начисляем опыт МТБанку за выполнение задания (15 EXP)
-    addMtbankExp(15, "task");
-    return true;
-  }
-  
-  function renderTasksList() {
-      console.log("renderTasksList called");  // Временная отладка
-   
-    var container = document.getElementById("tasks-list");
-   console.log("container:", container);  // Временная отладка
-    if (!container)  {
-      console.log("tasks-list not found");
-      return;
-    }
-    
-    var tasksData = getTasksData();
-    if (!tasksData) return;
-    
-    //checkAllTasksCompletion();
-    
-    container.innerHTML = "";
-    
-    for (var i = 0; i < TASKS_LIST.length; i++) {
-      var task = TASKS_LIST[i];
-      var taskData = tasksData[task.id];
-      
-      var taskDiv = document.createElement("div");
-      taskDiv.className = "task-item";
-      if (taskData.claimed) {
-        taskDiv.classList.add("task-item--completed");
-      }
-      
-      var statusText = "";
-      var statusClass = "";
-      var showButton = false;
-      var buttonDisabled = false;
-      
-      if (taskData.claimed) {
-        statusText = "✓ Получено";
+    // Для ежедневных заданий показываем особый статус
+    if (task.type === "daily" && taskData && !taskData.claimed) {
+      var today = new Date().toDateString();
+      if (taskData.lastDailyClaim === today) {
+        statusText = "✓ Получено сегодня";
         statusClass = "task-status--claimed";
         showButton = false;
-      } else if (taskData.completed) {
-        statusText = "⭐ Готово к получению";
+      } else if (!taskData.completed) {
+        statusText = "⭐ Доступно";
         statusClass = "task-status--available";
         showButton = true;
         buttonDisabled = false;
-      } else {
-        statusText = "🔒 Не выполнено";
-        statusClass = "";
-        showButton = true;
-        buttonDisabled = true;
       }
-      
-      taskDiv.innerHTML = `
-        <div class="task-info">
-          <div class="task-title">${task.title}</div>
-          <div class="task-desc">${task.desc}</div>
-          <div class="task-reward">
-            <span>⭐ ${task.rewardSkill}</span>
-            ${task.rewardToken > 0 ? `<span>💰 ${task.rewardToken}</span>` : ''}
-          </div>
-        </div>
-        <div class="task-status ${statusClass}">${statusText}</div>
-        ${showButton ? `<button class="task-btn" data-task-id="${task.id}" ${buttonDisabled ? 'disabled' : ''}>Получить</button>` : ''}
-      `;
-      
-      container.appendChild(taskDiv);
     }
     
-    var btns = container.querySelectorAll(".task-btn");
-    for (var j = 0; j < btns.length; j++) {
-      var btn = btns[j];
-      if (!btn.disabled) {
-        var taskId = btn.getAttribute("data-task-id");
-        var task = TASKS_LIST.find(function(t) { return t.id === taskId; });
-        if (task) {
-          btn.addEventListener("click", (function(t) {
-            return function() { openTaskModal(t); };
-          })(task));
-        }
+    taskDiv.innerHTML = `
+      <div class="task-info">
+        <div class="task-title">${task.title}</div>
+        <div class="task-desc">${task.desc}</div>
+        <div class="task-reward">
+          <span>⭐ ${task.rewardSkill}</span>
+          ${task.rewardToken > 0 ? `<span>💰 ${task.rewardToken}</span>` : ''}
+        </div>
+      </div>
+      <div class="task-status ${statusClass}">${statusText}</div>
+      ${showButton ? `<button class="task-btn" data-task-id="${task.id}" ${buttonDisabled ? 'disabled' : ''}>Получить</button>` : ''}
+    `;
+    
+    container.appendChild(taskDiv);
+  }
+  
+  // Добавляем обработчики для кнопок
+  var btns = container.querySelectorAll(".task-btn");
+  for (var j = 0; j < btns.length; j++) {
+    var btn = btns[j];
+    if (!btn.disabled) {
+      var taskId = btn.getAttribute("data-task-id");
+      var task = TASKS_LIST.find(function(t) { return t.id === taskId; });
+      if (task) {
+        btn.addEventListener("click", (function(t) {
+          return function() { openTaskModal(t); };
+        })(task));
       }
     }
   }
-  
-  function initTasks() {
-    checkAllTasksCompletion(); 
-  }
+}
 
+function renderTasksList() {
+  var activeTab = document.querySelector('.tasks-tab--active');
+  if (activeTab) {
+    var activeType = activeTab.getAttribute('data-tasks-tab');
+    renderTasksByType(activeType);
+  } else {
+    renderTasksByType('once');
+  }
+}
+
+function initTasksTabs() {
+  var tabs = document.querySelectorAll('.tasks-tab');
+  var contents = document.querySelectorAll('.tasks-content');
+  
+  for (var i = 0; i < tabs.length; i++) {
+    var tab = tabs[i];
+    tab.addEventListener('click', function(e) {
+      var targetTab = e.currentTarget;
+      var tabName = targetTab.getAttribute('data-tasks-tab');
+      
+      for (var j = 0; j < tabs.length; j++) {
+        tabs[j].classList.remove('tasks-tab--active');
+      }
+      targetTab.classList.add('tasks-tab--active');
+      
+      for (var k = 0; k < contents.length; k++) {
+        contents[k].classList.remove('tasks-content--active');
+      }
+      
+      var activeContent = document.getElementById('tasks-' + tabName);
+      if (activeContent) {
+        activeContent.classList.add('tasks-content--active');
+      }
+      
+      renderTasksByType(tabName);
+    });
+  }
+}
+
+function initTasks() {
+  checkAllTasksCompletion();
+  initTasksTabs();
+  renderTasksList();
+}
   // ========== ИГРОВАЯ МЕХАНИКА ==========
   
   function loadGameBuildings() {

@@ -2,29 +2,37 @@
   "use strict";
 
   var CATALOG = {
+    green: {
+      title: "Купон в Green",
+      subtitle: "Продуктовый магазин",
+      image: "images/1400x1400-1226222-1644526919957.jpg",
+      imageAlt: "Продуктовый магазин Green",
+      price: 1500,
+      description: "Скидочный купон на 50 рублей в сети продуктовых магазинов Green."
+    },
+    ozby: {
+      title: "Сертификат OZ.by",
+      subtitle: "Книги и канцелярия",
+      image: "images/101085345_3.jpg",
+      imageAlt: "Книжный магазин",
+      price: 750,
+      description: "Сертификат на 25 рублей в интернет-магазине OZ.by на книги, канцелярию и другие товары."
+    },
+    cactus: {
+      title: "Опция Кактус",
+      subtitle: "Дополнительная опция по карте",
+      image: "images/mtbank_kartuspleaser_1200x900_s13.jpg",
+      imageAlt: "Банковская карта с опциями",
+      price: 3000,
+      description: "Подключение опции 'Кактус' по вашей карте на 1 месяц. Узнайте подробности в приложении МТБанка."
+    },
     apple: {
-      title: "Сертификат в золотое яблоко",
-      image: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=900&auto=format&fit=crop&q=80",
+      title: "Сертификат в Золотое Яблоко",
+      subtitle: "Техника и аксессуары",
+      image: "images/yMmI2oRm6qH0xQxjU7J8FHPazdxgxOgOJkVJxl34.png",
       imageAlt: "Ноутбук и техника в магазине",
-      price: 5000
-    },
-    massage: {
-      title: "Сертификат в массажку",
-      image: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=900&auto=format&fit=crop&q=80",
-      imageAlt: "Релакс и массаж в спа",
-      price: 3500
-    },
-    cashback: {
-      title: "Кэшбек -5%",
-      image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=900&auto=format&fit=crop&q=80",
-      imageAlt: "Финансы и карты",
-      price: 10000
-    },
-    brain: {
-      title: "Мозги",
-      image: "https://images.unsplash.com/photo-1606324663549-80d987dfaa8b?w=900&auto=format&fit=crop&q=80",
-      imageAlt: "Головоломки и развитие мышления",
-      price: 1500
+      price: 5000,
+      description: "Подарочная карта на покупки в сети косметики 'Золотое Яблоко'."
     }
   };
 
@@ -53,7 +61,9 @@
 
     var img = document.getElementById("product-image");
     var titleEl = document.getElementById("product-title");
+    var subtitleEl = document.getElementById("product-subtitle");
     var priceDigits = document.getElementById("product-price-digits");
+    var descEl = document.getElementById("product-description");
     var buyBtn = document.getElementById("btn-buy");
     var toast = document.getElementById("buy-toast");
 
@@ -62,6 +72,8 @@
       img.alt = item.imageAlt;
     }
     if (titleEl) titleEl.textContent = item.title;
+    if (subtitleEl) subtitleEl.textContent = item.subtitle;
+    if (descEl) descEl.textContent = item.description;
     document.title = item.title + " — Магазин";
 
     if (priceDigits) priceDigits.textContent = formatMtbanks(item.price);

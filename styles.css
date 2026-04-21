@@ -1988,3 +1988,68 @@ a.shop-item {
   background: radial-gradient(circle at 30% 35%, #ffd700, #ffaa00);
   box-shadow: 0 0 0 2px #ffd700, inset 0 1px 3px rgba(255, 255, 255, 0.5);
 }
+/* Вкладки заданий */
+.tasks-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 8px;
+}
+
+.tasks-tab {
+  background: transparent;
+  border: none;
+  padding: 8px 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+}
+
+.tasks-tab:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tasks-tab--active {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.tasks-content {
+  display: none;
+}
+
+.tasks-content--active {
+  display: block;
+}
+
+/* Плейсхолдер для сезонных заданий */
+.seasonal-placeholder {
+  text-align: center;
+  padding: 40px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  margin: 20px 0;
+}
+
+.seasonal-icon {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 16px;
+  opacity: 0.7;
+}
+
+.seasonal-placeholder p {
+  margin: 0 0 8px;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.seasonal-hint {
+  font-size: 0.7rem;
+  opacity: 0.5;
+}

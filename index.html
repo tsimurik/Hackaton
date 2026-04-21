@@ -153,116 +153,181 @@
       </section>
       
       <section id="panel-tasks" class="panel" data-panel="tasks">
-        <div class="card card--panel tasks-card">
-          <h2 class="panel__title">📋 Ежедневные задания</h2>
-          
-          <div class="tasks-list" id="tasks-list"></div>
-          
-          <div class="calendar-section">
-            <div class="calendar-header">
-              <h3 class="calendar-title">📅 Ежедневный календарь</h3>
-              <div class="calendar-streak">
-                <div class="streak-flame">🔥</div>
-                <div class="streak-count" id="streak-count">0</div>
-                <div class="streak-label">дней подряд</div>
-              </div>
-            </div>
-            
-            <div class="calendar-grid" id="calendar-grid"></div>
-            
-            <div class="calendar-reset" id="calendar-reset-container">
-              <button class="reset-streak-btn" id="reset-streak-btn">
-                💎 Восстановить прогресс (500 MTBank Tokens)
-              </button>
-              <p class="reset-hint">Если вы пропустили день, можете восстановить календарь за 500 токенов</p>
-            </div>
-          </div>
+  <div class="card card--panel tasks-card">
+    <h2 class="panel__title">📋 Задания</h2>
+    
+    <!-- Вкладки -->
+    <div class="tasks-tabs">
+      <button class="tasks-tab tasks-tab--active" data-tasks-tab="once">🎯 Разовые</button>
+      <button class="tasks-tab" data-tasks-tab="monthly">📅 Ежемесячные</button>
+      <button class="tasks-tab" data-tasks-tab="seasonal">🌸 Сезонные</button>
+    </div>
+    
+    <!-- Контент разовых заданий -->
+    <div class="tasks-content tasks-content--active" id="tasks-once">
+      <div class="tasks-list" id="tasks-list-once"></div>
+    </div>
+    
+    <!-- Контент ежемесячных заданий -->
+    <div class="tasks-content" id="tasks-monthly">
+      <div class="tasks-list" id="tasks-list-monthly"></div>
+    </div>
+    
+    <!-- Контент сезонных заданий -->
+    <div class="tasks-content" id="tasks-seasonal">
+      <div class="seasonal-placeholder">
+        <span class="seasonal-icon">🌸</span>
+        <p>Сезонные задания появятся при новом ивенте!</p>
+        <span class="seasonal-hint">Следите за обновлениями</span>
+      </div>
+    </div>
+    
+    <div class="calendar-section">
+      <div class="calendar-header">
+        <h3 class="calendar-title">📅 Ежедневный календарь</h3>
+        <div class="calendar-streak">
+          <div class="streak-flame">🔥</div>
+          <div class="streak-count" id="streak-count">0</div>
+          <div class="streak-label">дней подряд</div>
         </div>
-      </section>
+      </div>
+      
+      <div class="calendar-grid" id="calendar-grid"></div>
+      
+      <div class="calendar-reset" id="calendar-reset-container">
+        <button class="reset-streak-btn" id="reset-streak-btn">
+          💎 Восстановить прогресс (500 MTBank Tokens)
+        </button>
+        <p class="reset-hint">Если вы пропустили день, можете восстановить календарь за 500 токенов</p>
+      </div>
+    </div>
+  </div>
+</section>
       
       <section id="panel-shop" class="panel" data-panel="shop">
-        <div class="shop-page">
-          <h2 class="panel__title shop-page__title">Магазин</h2>
-          <div class="shop-grid" role="list">
-            <a class="shop-item" role="listitem" href="product.html?p=apple">
-              <div class="shop-item__inner">
-                <div class="shop-item__visual shop-item__visual--apple" aria-hidden="true">
-                  <svg class="shop-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                      <linearGradient id="ga" x1="0" y1="0" x2="1" y2="1">
-                        <stop offset="0%" stop-color="#f6e27a" />
-                        <stop offset="45%" stop-color="#d4a017" />
-                        <stop offset="100%" stop-color="#8b6914" />
-                      </linearGradient>
-                    </defs>
-                    <path d="M62 28c4-12 18-18 28-16-2 10-8 18-18 22 6 4 10 12 10 22 0 22-16 38-36 38S10 78 10 56c0-18 14-32 32-34 6 8 14 10 20 6z" fill="url(#ga)" />
-                    <path d="M58 26c-2-8 2-16 8-20 4 6 4 14 0 20z" fill="#6b8e23" />
-                  </svg>
-                </div>
-                <div class="shop-item__hover">
-                  <p class="shop-item__name">Сертификат в золотое яблоко</p>
-                  <p class="shop-item__desc">Подарочная карта на покупки в сети техники и аксессуаров.</p>
-                </div>
-              </div>
-            </a>
-            <a class="shop-item" role="listitem" href="product.html?p=massage">
-              <div class="shop-item__inner">
-                <div class="shop-item__visual shop-item__visual--spa" aria-hidden="true">
-                  <svg class="shop-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="18" y="52" width="84" height="36" rx="10" fill="#e8dfd5" stroke="#c4b5a5" stroke-width="2" />
-                    <ellipse cx="60" cy="52" rx="28" ry="10" fill="#f5ebe0" stroke="#c4b5a5" stroke-width="2" />
-                    <path d="M42 40c6-10 18-10 18 0s12-10 18 0" stroke="#9a8b7a" stroke-width="3" stroke-linecap="round" fill="none" />
-                    <circle cx="48" cy="68" r="4" fill="#c9a96e" opacity="0.6" />
-                    <circle cx="72" cy="72" r="3" fill="#c9a96e" opacity="0.5" />
-                  </svg>
-                </div>
-                <div class="shop-item__hover">
-                  <p class="shop-item__name">Сертификат в массажку</p>
-                  <p class="shop-item__desc">Сеансы релакса и восстановления в выбранном салоне-партнёре.</p>
-                </div>
-              </div>
-            </a>
-            <a class="shop-item" role="listitem" href="product.html?p=cashback">
-              <div class="shop-item__inner">
-                <div class="shop-item__visual shop-item__visual--cash" aria-hidden="true">
-                  <svg class="shop-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="60" cy="60" r="44" fill="#1e8f4a" />
-                    <circle cx="60" cy="60" r="36" fill="#26a867" />
-                    <text x="60" y="72" text-anchor="middle" font-size="36" font-weight="700" fill="#fff" font-family="system-ui,sans-serif">%</text>
-                    <path d="M28 88l8-10 10 6 14-18 12 10 18-24" stroke="#b8f5d0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.9" />
-                  </svg>
-                </div>
-                <div class="shop-item__hover">
-                  <p class="shop-item__name">Кэшбек -5%</p>
-                  <p class="shop-item__desc">Постоянный возврат пяти процентов с покупок на ваш баланс.</p>
-                </div>
-              </div>
-            </a>
-            <a class="shop-item" role="listitem" href="product.html?p=brain">
-              <div class="shop-item__inner">
-                <div class="shop-item__visual shop-item__visual--brain" aria-hidden="true">
-                  <svg class="shop-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M60 22c-12 0-22 8-24 20-8 2-14 10-14 19 0 6 3 11 8 14-1 2-2 5-2 8 0 10 8 18 18 18 3 0 6-1 9-2 4 6 11 10 19 10 14 0 25-11 25-25 0-4-1-8-3-11 5-3 8-9 8-15 0-11-9-20-20-20h-4z"
-                      fill="#e8b8d8"
-                      stroke="#a8558c"
-                      stroke-width="2.5"
-                    />
-                    <path d="M48 48c4-6 10-9 12-4M68 46c6 4 8 12 4 16" stroke="#93346e" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.7" />
-                    <circle cx="52" cy="58" r="3" fill="#93346e" opacity="0.35" />
-                    <circle cx="72" cy="62" r="3" fill="#93346e" opacity="0.35" />
-                  </svg>
-                </div>
-                <div class="shop-item__hover">
-                  <p class="shop-item__name">Мозги</p>
-                  <p class="shop-item__desc">Мини-набор задач на логику, память и скорость мышления.</p>
-                </div>
-              </div>
-            </a>
+  <div class="shop-page">
+    <h2 class="panel__title shop-page__title">Магазин</h2>
+    <div class="shop-grid" role="list">
+      
+      <!-- Купон в Green (50 рублей) -->
+      <a class="shop-item" role="listitem" href="product.html?p=green">
+        <div class="shop-item__inner">
+          <div class="shop-item__visual shop-item__visual--green" aria-hidden="true">
+            <svg class="shop-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="greenGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#4CAF50" />
+                  <stop offset="100%" stop-color="#2E7D32" />
+                </linearGradient>
+              </defs>
+              <rect x="15" y="25" width="90" height="70" rx="8" fill="url(#greenGrad)" />
+              <rect x="15" y="25" width="90" height="18" rx="8" fill="#1B5E20" />
+              <text x="60" y="38" font-size="9" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">GREEN</text>
+              <rect x="30" y="50" width="60" height="30" rx="4" fill="#FFF" opacity="0.9" />
+              <text x="60" y="70" font-size="10" fill="#2E7D32" font-family="sans-serif" text-anchor="middle" font-weight="bold">50 ₽</text>
+              <path d="M28 85 L35 75 L42 82 L50 72 L58 80 L66 70 L74 78 L82 68 L90 76 L92 85 Z" fill="#FFC107" opacity="0.8" />
+            </svg>
+          </div>
+          <div class="shop-item__hover">
+            <p class="shop-item__name">Купон в Green</p>
+            <p class="shop-item__desc">Скидочный купон на 50 рублей в продуктовом магазине Green</p>
           </div>
         </div>
-      </section>
+      </a>
       
+      <!-- Сертификат в OZ.by (25 рублей) -->
+      <a class="shop-item" role="listitem" href="product.html?p=ozby">
+        <div class="shop-item__inner">
+          <div class="shop-item__visual shop-item__visual--ozby" aria-hidden="true">
+            <svg class="shop-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="ozbyGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#FF6F00" />
+                  <stop offset="100%" stop-color="#E65100" />
+                </linearGradient>
+              </defs>
+              <rect x="10" y="20" width="100" height="80" rx="6" fill="#FFF4E0" stroke="#FF6F00" stroke-width="2" />
+              <rect x="10" y="20" width="100" height="22" rx="6" fill="url(#ozbyGrad)" />
+              <text x="60" y="36" font-size="11" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">OZ.by</text>
+              <rect x="25" y="50" width="70" height="25" rx="4" fill="#FF6F00" opacity="0.15" />
+              <text x="60" y="67" font-size="10" fill="#E65100" font-family="sans-serif" text-anchor="middle" font-weight="bold">25 ₽</text>
+              <path d="M35 85 L50 80 L60 88 L70 80 L85 85" stroke="#FF6F00" stroke-width="2" fill="none" />
+              <circle cx="60" cy="82" r="3" fill="#FF6F00" />
+              <text x="60" y="100" font-size="6" fill="#FF6F00" text-anchor="middle" font-weight="bold">КНИГИ · КАНЦЕЛЯРИЯ</text>
+            </svg>
+          </div>
+          <div class="shop-item__hover">
+            <p class="shop-item__name">Сертификат OZ.by</p>
+            <p class="shop-item__desc">Сертификат на 25 рублей в магазине книг и канцелярии</p>
+          </div>
+        </div>
+      </a>
+      
+      <!-- Опция "Кактус" на 1 месяц -->
+      <a class="shop-item" role="listitem" href="product.html?p=cactus">
+        <div class="shop-item__inner">
+          <div class="shop-item__visual shop-item__visual--cactus" aria-hidden="true">
+            <svg class="shop-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="cactusGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#8BC34A" />
+                  <stop offset="100%" stop-color="#558B2F" />
+                </linearGradient>
+              </defs>
+              <rect x="10" y="15" width="100" height="90" rx="12" fill="#E8F5E9" stroke="#558B2F" stroke-width="2" />
+              <rect x="10" y="15" width="100" height="22" rx="12" fill="url(#cactusGrad)" />
+              <text x="60" y="32" font-size="9" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">🌵 КАКТУС</text>
+              <!-- Кактус -->
+              <ellipse cx="60" cy="95" rx="18" ry="6" fill="#A1887F" />
+              <rect x="56" y="65" width="8" height="30" rx="3" fill="#43A047" />
+              <ellipse cx="60" cy="65" rx="12" ry="14" fill="#66BB6A" />
+              <ellipse cx="52" cy="58" rx="8" ry="10" fill="#81C784" />
+              <ellipse cx="68" cy="58" rx="8" ry="10" fill="#81C784" />
+              <circle cx="55" cy="55" r="2" fill="#FFC107" />
+              <circle cx="65" cy="55" r="2" fill="#FFC107" />
+              <text x="60" y="78" font-size="6" fill="#2E7D32" text-anchor="middle" font-weight="bold">1 МЕСЯЦ</text>
+              <text x="60" y="110" font-size="5" fill="#558B2F" text-anchor="middle">ОПЦИЯ КАРТЫ</text>
+            </svg>
+          </div>
+          <div class="shop-item__hover">
+            <p class="shop-item__name">Опция "Кактус"</p>
+            <p class="shop-item__desc">Дополнительная опция по карте на 1 месяц</p>
+          </div>
+        </div>
+      </a>
+      
+      <!-- Сертификат в Золотое Яблоко -->
+      <a class="shop-item" role="listitem" href="product.html?p=apple">
+        <div class="shop-item__inner">
+          <div class="shop-item__visual shop-item__visual--apple" aria-hidden="true">
+            <svg class="shop-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="appleGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#FDD835" />
+                  <stop offset="45%" stop-color="#F9A825" />
+                  <stop offset="100%" stop-color="#F57F17" />
+                </linearGradient>
+              </defs>
+              <rect x="10" y="15" width="100" height="90" rx="12" fill="#FFF8E1" stroke="#F57F17" stroke-width="2" />
+              <rect x="10" y="15" width="100" height="22" rx="12" fill="url(#appleGrad)" />
+              <text x="60" y="32" font-size="8" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">🍎 ЗОЛОТОЕ ЯБЛОКО</text>
+              <path d="M60 45 C50 35 38 38 38 48 C38 55 45 62 52 62 C55 62 58 60 60 58 C62 60 65 62 68 62 C75 62 82 55 82 48 C82 38 70 35 60 45Z" fill="url(#appleGrad)" />
+              <path d="M60 58 L60 78" stroke="#F57F17" stroke-width="2" />
+              <ellipse cx="60" cy="80" rx="6" ry="3" fill="#F57F17" />
+              <text x="60" y="100" font-size="6" fill="#F57F17" text-anchor="middle" font-weight="bold">СЕРТИФИКАТ</text>
+            </svg>
+          </div>
+          <div class="shop-item__hover">
+            <p class="shop-item__name">Сертификат в Золотое Яблоко</p>
+            <p class="shop-item__desc">Подарочная карта на покупки в сети техники и аксессуаров</p>
+          </div>
+        </div>
+      </a>
+      
+    </div>
+  </div>
+</section>
+
       <section id="panel-profile" class="panel" data-panel="profile">
         <div class="profile-page">
           <div class="profile-balances">

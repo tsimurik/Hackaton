@@ -11,7 +11,6 @@
 </head>
 <body>
   <div class="product-page">
-    <!-- Ссылка теперь ведёт на index.html, но авторизация сохранится -->
     <a class="product-back" href="index.html">← В магазин</a>
 
     <div class="product-hero">
@@ -20,6 +19,7 @@
 
     <main class="product-main">
       <h1 class="product-title" id="product-title">Товар</h1>
+      <p class="product-subtitle" id="product-subtitle"></p>
 
       <div class="product-price-block">
         <div class="product-price-label">Цена в мтбанках</div>
@@ -34,6 +34,10 @@
           </span>
           <span class="product-price__unit">мтбанков</span>
         </p>
+      </div>
+
+      <div class="product-description-block">
+        <p class="product-description" id="product-description"></p>
       </div>
 
       <button type="button" class="btn-buy" id="btn-buy">Купить</button>

@@ -169,3 +169,21 @@ body {
 .buy-toast.is-visible {
   display: block;
 }
+.product-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: -8px 0 20px 0;
+}
+
+.product-description-block {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.product-description {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #555;
+  margin: 0;
+}
