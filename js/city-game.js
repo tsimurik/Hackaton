@@ -50,19 +50,19 @@ let isDragging = false, hasMoved = false;
 let dragStartX = 0, dragStartY = 0;
 let dragCameraStartX = 0, dragCameraStartY = 0;
 let initialPinchDistance = 0, initialZoom = 1.3;
+let buildModeActive = false; // Режим строительства
 
 // ========== ФУНКЦИИ ДЛЯ PNG СПРАЙТОВ ==========
-function getBldSpriteHTML(id, level) {
+function getBldSpriteHTML(id, level, size) {
   const def = DM[id];
   if (!def) return '';
   
-  const size = 55;
+  const spriteSize = 55;
   
   return `
-    <div style="position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:${size}px;height:${size}px;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;filter:drop-shadow(0 6px 4px rgba(0,0,0,0.35));">
+    <div style="position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:${spriteSize}px;height:${spriteSize}px;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;filter:drop-shadow(0 6px 4px rgba(0,0,0,0.25));z-index:10;">
       <img src="${SPRITE_PATH}${def.sprite}" alt="${def.name}" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
       <div style="display:none;width:100%;height:100%;background:${def.bg};border-radius:8px;align-items:center;justify-content:center;font-size:24px;font-weight:bold;color:#333;border:2px dashed #999;">${def.name.charAt(0)}</div>
-      <div style="position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);color:#fff;padding:2px 6px;border-radius:12px;font-size:9px;font-weight:bold;white-space:nowrap;">Lv.${level}</div>
     </div>
   `;
 }
@@ -112,33 +112,129 @@ window.resetCity = function() {
   console.log('✅ Город полностью сброшен');
 };
 // ========== ПЛИТКА ==========
-function tileBg(r, c) {
+function tileBg(r, c, size) {
   const isTownhall = (r === 2 && c === 2);
-  const sh = isTownhall ? '#f5d060' : ((r + c) % 2 === 0 ? '#72c85a' : '#68ba50');
-  const lsh = isTownhall ? '#d4a020' : '#50a038';
-  const rsh = isTownhall ? '#b08010' : '#427828';
-  const strokeColor = isTownhall ? '#ffd700' : '#58a840';
+  
+  const sh = isTownhall ? '#F5D060' : ((r + c) % 2 === 0 ? '#5BC0BE' : '#4AB0AE');
+  const lsh = isTownhall ? '#D4A020' : '#3AA8A0';
+  const rsh = isTownhall ? '#B08010' : '#2A8A82';
+  const strokeColor = isTownhall ? '#FFD700' : 'rgba(255,255,255,0.4)';
+  
+  // Зелёный маркер-ромбик для пустой клетки
+  const key = `${r},${c}`;
+  const isEmpty = !buildings[key];
+  const emptyMarker = (isEmpty && !isTownhall) ? `
+    <polygon points="36,12 52,20 36,28 20,20" fill="#4CAF50" opacity="0.7" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>
+  ` : '';
   
   return `
-    <svg viewBox="0 0 72 64" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;">
+    <svg viewBox="0 0 72 64" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;">
       <polygon points="36,1 71,19 36,37 1,19" fill="${sh}" stroke="${strokeColor}" stroke-width="${isTownhall ? '2.5' : '1.5'}"/>
       <polygon points="1,19 36,37 36,52 1,34" fill="${lsh}"/>
       <polygon points="36,37 71,19 71,34 36,52" fill="${rsh}"/>
+      ${emptyMarker}
     </svg>
   `;
 }
+function getDecorForTile(r, c) {
+  const seed = (r * 7 + c * 13) % 100;
+  const size = 72;
+  
+  // Разные декорации в зависимости от seed
+  if (seed < 15) {
+    // Группа травинок
+    return `
+      <g opacity="0.7">
+        <line x1="18" y1="22" x2="15" y2="12" stroke="#2d6e2d" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="22" y1="20" x2="24" y2="10" stroke="#3a8a3a" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="26" y1="21" x2="29" y2="13" stroke="#2d6e2d" stroke-width="1" stroke-linecap="round"/>
+        <line x1="20" y1="23" x2="17" y2="15" stroke="#4a9a4a" stroke-width="1" stroke-linecap="round"/>
+      </g>
+    `;
+  } else if (seed < 25) {
+    // Камушки
+    return `
+      <g opacity="0.6">
+        <ellipse cx="45" cy="28" rx="5" ry="3" fill="#8a8a7a"/>
+        <ellipse cx="50" cy="30" rx="3.5" ry="2.5" fill="#a0a090"/>
+        <ellipse cx="42" cy="31" rx="2.5" ry="2" fill="#7a7a6a"/>
+      </g>
+    `;
+  } else if (seed < 32) {
+    // Маленький кустик
+    return `
+      <g opacity="0.65">
+        <circle cx="30" cy="22" r="6" fill="#3a7a3a"/>
+        <circle cx="26" cy="20" r="5" fill="#4a8a4a"/>
+        <circle cx="34" cy="20" r="5" fill="#3a7a3a"/>
+        <circle cx="30" cy="18" r="4" fill="#5a9a5a"/>
+      </g>
+    `;
+  } else if (seed < 38) {
+    // Тропинка (светлое пятно)
+    return `
+      <ellipse cx="40" cy="25" rx="8" ry="4" fill="rgba(180,170,140,0.15)"/>
+    `;
+  } else if (seed < 45) {
+    // Цветочки (мелкие)
+    return `
+      <g opacity="0.7">
+        <circle cx="55" cy="20" r="2" fill="#ffeb3b"/>
+        <circle cx="58" cy="22" r="1.5" fill="#ff9800"/>
+        <circle cx="52" cy="23" r="1.5" fill="#ffeb3b"/>
+      </g>
+    `;
+  } else if (seed < 52) {
+    // Высокая трава
+    return `
+      <g opacity="0.6">
+        <line x1="15" y1="25" x2="12" y2="10" stroke="#3a6a3a" stroke-width="2" stroke-linecap="round"/>
+        <line x1="20" y1="24" x2="22" y2="8" stroke="#4a7a4a" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="25" y1="25" x2="28" y2="12" stroke="#3a6a3a" stroke-width="1.5" stroke-linecap="round"/>
+      </g>
+    `;
+  } else if (seed < 60) {
+    // Пятно мха
+    return `
+      <ellipse cx="35" cy="30" rx="6" ry="3" fill="rgba(80,100,60,0.15)"/>
+      <ellipse cx="38" cy="32" rx="4" ry="2" fill="rgba(90,110,70,0.1)"/>
+    `;
+  }
+  
+  // Для остальных — ничего или редкие травинки
+  if (seed < 70) {
+    return `
+      <line x1="40" y1="18" x2="42" y2="12" stroke="#3a7a3a" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+    `;
+  }
+  
+  return '';
+}
 
-function makeTile(r, c) {
+
+function makeTile(r, c, size) {
   const key = `${r},${c}`;
   const b = buildings[key];
+  const d = b ? DM[b.id] : null;
   
-  const bldHTML = b ? getBldSpriteHTML(b.id, b.lv) : `
-    <div style="position:absolute;top:40%;left:50%;transform:translate(-50%, -50%);width:40px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:rgba(255,255,255,.2);border:2px dashed rgba(255,255,255,.6);font-size:16px;color:rgba(255,255,255,.9);pointer-events:none;">+</div>
-  `;
+  const showPlus = !b && buildModeActive;
+  
+  const bldHTML = b ? getBldSpriteHTML(b.id, b.lv, size) : '';
+  
+  // Шильдик: выше (bottom:15px) и больше (padding, font-size)
+  const labelHTML = b ? `
+    <div style="position:absolute;bottom:17px;left:50%;transform:translateX(-50%);background:rgba(30,30,30,0.35);backdrop-filter:blur(6px);border-radius:18px;padding:2px 6px;z-index:15;white-space:nowrap;border:0.5px solid rgba(255,255,255,0.3);box-shadow:0 1px 4px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;">
+      <span style="font-family:'Nunito',sans-serif;font-size:8px;font-weight:600;color:rgba(255,255,255,0.95);letter-spacing:0.2px;text-shadow:0 1px 2px rgba(0,0,0,0.2);line-height:1;display:block;">Lv.${b.lv}</span>
+    </div>
+  ` : '';
+  
+  const plusHTML = showPlus ? `
+    <div style="position:absolute;top:35%;left:50%;transform:translate(-50%, -50%);width:40px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(100,100,100,0.45);border:2px dashed rgba(220,220,220,0.8);font-size:20px;font-weight:bold;color:rgba(255,255,255,0.95);pointer-events:none;z-index:20;backdrop-filter:blur(3px);">+</div>
+  ` : '';
   
   const dot = b ? `<div class="city-dot" id="dot-${key}"></div>` : '';
   
-  return tileBg(r, c) + dot + bldHTML;
+  return tileBg(r, c, size) + dot + labelHTML + bldHTML + plusHTML;
 }
 
 // ========== ОСНОВНЫЕ ФУНКЦИИ ==========
@@ -198,7 +294,6 @@ function saveBuildings() {
   localStorage.setItem(storageKey, JSON.stringify(buildings)); 
 }
 
-
 function renderGrid() {
   if (!isoContainer) return;
   
@@ -221,8 +316,7 @@ function renderGrid() {
       div.className = 'city-tile';
       div.style.cssText = `left:${sx}px;top:${sy}px;width:72px;height:64px;`;
       div.style.pointerEvents = 'auto';
-      div.style.zIndex = '10';
-      div.innerHTML = makeTile(r, c);
+      div.innerHTML = makeTile(r, c, 72);
       div.onclick = () => onTileClick(r, c);
       
       isoContainer.appendChild(div);
@@ -273,7 +367,16 @@ function refreshTile(key) {
 function onTileClick(r, c) {
   if (hasMoved) return;
   const key = `${r},${c}`;
-  buildings[key] ? openPopup(key) : (pendingTile = key, openBuildMenu());
+  
+  if (buildings[key]) {
+    // Если есть здание — всегда показываем информацию
+    openPopup(key);
+  } else if (buildModeActive) {
+    // Пустая клетка + режим строительства — строим
+    pendingTile = key;
+    openBuildMenu();
+  }
+  // Если нет здания и не режим строительства — ничего не делаем
 }
 
 function openPopup(key) {
@@ -322,21 +425,51 @@ function openBuildMenu() {
       `;
       
       div.onclick = () => {
-        if (!pendingTile) { notify('Нажми на пустую клетку'); closeBuildMenu(); return; }
-        if (buildings[pendingTile]) { notify('Клетка занята!'); return; }
-        if (cityCoins < d.bc) { notify('Недостаточно MtB!'); return; }
+        if (!pendingTile) { 
+          notify('Нажми на пустую клетку'); 
+          closeBuildMenu(); 
+          return; 
+        }
+        if (buildings[pendingTile]) { 
+          notify('Клетка занята!'); 
+          return; 
+        }
+        if (cityCoins < d.bc) { 
+          notify('Недостаточно MtB!'); 
+          return; 
+        }
         
         cityCoins -= d.bc;
         buildings[pendingTile] = {id: d.id, lv: 1, acc: 0, tick: Date.now()};
-        refreshTile(pendingTile); updateCoins(); saveBuildings(); syncBalance(); burst();
+        refreshTile(pendingTile); 
+        updateCoins(); 
+        saveBuildings(); 
+        syncBalance(); 
+        burst();
         notify(`${d.name} построена! 🏗`);
-        pendingTile = null; closeBuildMenu(); updateCityLevel();
+        
+        // Закрываем меню постройки
+        pendingTile = null; 
+        closeBuildMenu(); 
+        updateCityLevel();
+        
+        // 🔴 ВЫКЛЮЧАЕМ РЕЖИМ СТРОИТЕЛЬСТВА ПОСЛЕ ПОСТРОЙКИ
+        buildModeActive = false;
+        const btn = document.getElementById('city-build-btn');
+        if (btn) {
+          btn.style.background = '#34d399';
+          btn.style.boxShadow = '0 3px 0 #047857';
+        }
+        
+        // Перерисовываем поле чтобы скрыть плюсики
+        renderGrid();
       };
       
       grid.appendChild(div);
     });
   };
   
+  // Создаём табы если их нет
   if (!categoryTabs) {
     const tabsDiv = document.createElement('div');
     tabsDiv.id = 'build-categories';
@@ -361,7 +494,11 @@ function openBuildMenu() {
   buildOverlay.classList.add('open');
 }
 
-function closeBuildMenu() { buildOverlay.classList.remove('open'); pendingTile = null; }
+function closeBuildMenu() { 
+  buildOverlay.classList.remove('open'); 
+  pendingTile = null; 
+  // Режим строительства остаётся активным
+}
 function closePopup() { popupOverlay.classList.remove('open'); selectedKey = null; }
 
 function collectFromPopup() {
@@ -440,16 +577,18 @@ function setupCameraControls() {
   // Зум колёсиком
   gameArea.addEventListener('wheel', (e) => {
     e.preventDefault();
-    cameraZoom = Math.min(2.2, Math.max(0.9, cameraZoom + (e.deltaY > 0 ? -0.05 : 0.05)));
+    const delta = e.deltaY > 0 ? -0.05 : 0.05;
+    cameraZoom = Math.min(2.2, Math.max(0.9, cameraZoom + delta));
     updateCameraTransform();
   }, { passive: false });
   
-  // Перемещение ТОЛЬКО при зажатии на ПУСТОМ месте
+  // Перемещение мышью — ТОЛЬКО на пустом месте (не на плитках)
   gameArea.addEventListener('mousedown', (e) => {
-    // Не перетаскиваем если кликнули по плитке
-    if (e.target.closest('.city-tile')) return;
+    // Не перетаскиваем если кликнули по плитке или кнопке
+    if (e.target.closest('.city-tile') || e.target.closest('button')) return;
     
     isDragging = true;
+    hasMoved = false;
     dragStartX = e.clientX; 
     dragStartY = e.clientY;
     dragCameraStartX = cameraX; 
@@ -460,20 +599,34 @@ function setupCameraControls() {
   
   window.addEventListener('mousemove', (e) => {
     if (!isDragging) return;
-    cameraX = dragCameraStartX + (e.clientX - dragStartX);
-    cameraY = dragCameraStartY + (e.clientY - dragStartY);
+    
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    
+    if (Math.abs(dx) > 5 || Math.abs(dy) > 5) {
+      hasMoved = true;
+    }
+    
+    cameraX = dragCameraStartX + dx;
+    cameraY = dragCameraStartY + dy;
     updateCameraTransform();
   });
   
   window.addEventListener('mouseup', () => { 
     isDragging = false; 
-    if (gameArea) gameArea.style.cursor = 'default';
+    if (gameArea) gameArea.style.cursor = 'grab';
+    setTimeout(() => { hasMoved = false; }, 50);
   });
   
-  // Touch для телефона — ТОЛЬКО на пустом месте
+  // Touch для телефона
   gameArea.addEventListener('touchstart', (e) => {
     // Если кликнули по плитке — не перетаскиваем
-    if (e.target.closest('.city-tile')) return;
+    if (e.target.closest('.city-tile')) {
+      isDragging = false;
+      return;
+    }
+    
+    hasMoved = false;
     
     if (e.touches.length === 1) {
       isDragging = true;
@@ -482,42 +635,86 @@ function setupCameraControls() {
       dragCameraStartX = cameraX; 
       dragCameraStartY = cameraY;
     } else if (e.touches.length === 2) {
+      isDragging = false;
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
-      initialPinchDistance = Math.sqrt(dx*dx + dy*dy);
+      initialPinchDistance = Math.sqrt(dx * dx + dy * dy);
       initialZoom = cameraZoom;
     }
+    e.preventDefault();
   }, { passive: false });
   
   gameArea.addEventListener('touchmove', (e) => {
     if (e.touches.length === 1 && isDragging) {
       e.preventDefault();
-      cameraX = dragCameraStartX + (e.touches[0].clientX - dragStartX);
-      cameraY = dragCameraStartY + (e.touches[0].clientY - dragStartY);
+      
+      const dx = e.touches[0].clientX - dragStartX;
+      const dy = e.touches[0].clientY - dragStartY;
+      
+      if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+        hasMoved = true;
+      }
+      
+      cameraX = dragCameraStartX + dx;
+      cameraY = dragCameraStartY + dy;
       updateCameraTransform();
     } else if (e.touches.length === 2) {
       e.preventDefault();
+      hasMoved = true;
+      
       const dx = e.touches[0].clientX - e.touches[1].clientX;
       const dy = e.touches[0].clientY - e.touches[1].clientY;
-      const distance = Math.sqrt(dx*dx + dy*dy);
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
       if (initialPinchDistance > 0) {
-        cameraZoom = Math.min(2.2, Math.max(0.9, initialZoom * (distance / initialPinchDistance)));
+        const scale = distance / initialPinchDistance;
+        cameraZoom = Math.min(2.2, Math.max(0.9, initialZoom * scale));
         updateCameraTransform();
       }
     }
   }, { passive: false });
   
-  gameArea.addEventListener('touchend', () => { 
-    isDragging = false; 
+  gameArea.addEventListener('touchend', (e) => {
+    if (e.touches.length === 0) {
+      setTimeout(() => { 
+        isDragging = false; 
+        hasMoved = false; 
+      }, 50);
+      initialPinchDistance = 0;
+    }
+  });
+  
+  gameArea.addEventListener('touchcancel', (e) => {
+    isDragging = false;
+    hasMoved = false;
     initialPinchDistance = 0;
   });
   
-  gameArea.style.cursor = 'default';
+  gameArea.style.cursor = 'grab';
 }
 
 function bindEvents() {
   document.getElementById('city-reset-camera')?.addEventListener('click', resetCamera);
-  document.getElementById('city-build-btn')?.addEventListener('click', () => { pendingTile = null; openBuildMenu(); });
+  
+  // Кнопка "Строить" переключает режим
+  document.getElementById('city-build-btn')?.addEventListener('click', () => {
+    buildModeActive = !buildModeActive;
+    const btn = document.getElementById('city-build-btn');
+    if (buildModeActive) {
+      btn.style.background = '#ff9800';
+      btn.style.boxShadow = '0 3px 0 #e65100';
+      notify('🏗 Режим строительства включён. Нажмите на пустую клетку');
+      pendingTile = null;
+    } else {
+      btn.style.background = '#34d399';
+      btn.style.boxShadow = '0 3px 0 #047857';
+      notify('👀 Режим осмотра');
+      closeBuildMenu();
+    }
+    // Перерисовываем поле чтобы показать/скрыть плюсики
+    renderGrid();
+  });
+  
   document.getElementById('city-collect-all-btn')?.addEventListener('click', collectAll);
   document.getElementById('popup-close-btn')?.addEventListener('click', closePopup);
   document.getElementById('popup-collect')?.addEventListener('click', collectFromPopup);
