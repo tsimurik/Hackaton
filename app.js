@@ -496,43 +496,16 @@
   }
   
   function initGame() {
-    updateGameUI();
-    
-    var tokenBtn = document.getElementById("game-token-btn");
-    if (tokenBtn) {
-      tokenBtn.addEventListener("click", handleTokenClick);
-    }
-    
-    // Обновляем UI игры при переключении на вкладку игры
-    var gamePanel = document.getElementById("panel-game");
-    if (gamePanel) {
-      var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          if (mutation.attributeName === "class") {
-            if (gamePanel.classList.contains("is-active")) {
-              updateGameUI();
-            }
-          }
-        });
-      });
-      observer.observe(gamePanel, { attributes: true });
-    }
-    
-    // Также обновляем профиль при переключении на него
-    var profilePanel = document.getElementById("panel-profile");
-    if (profilePanel) {
-      var profileObserver = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          if (mutation.attributeName === "class") {
-            if (profilePanel.classList.contains("is-active")) {
-              refreshProfileFromUser();
-            }
-          }
-        });
-      });
-      profileObserver.observe(profilePanel, { attributes: true });
-    }
+  updateGameUI();
+  
+  var tokenBtn = document.getElementById("game-token-btn");
+  if (tokenBtn) {
+    tokenBtn.addEventListener("click", handleTokenClick);
   }
+  
+  // ВСЁ! Никаких observer'ов для города здесь не нужно
+  // Город инициализируется сам через city-game.js
+}
   
   // ========== КОНЕЦ БЛОКА ИГРЫ ==========
 

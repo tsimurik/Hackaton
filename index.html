@@ -5,9 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Регистрация</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="iso-styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
   <!-- Экран регистрации -->
@@ -21,36 +23,16 @@
         </div>
         <div class="field">
           <label class="field__label" for="inviter-referral">Реферальный код пригласившего (необязательно)</label>
-          <input
-            class="field__input"
-            id="inviter-referral"
-            name="inviterReferral"
-            type="text"
-            autocomplete="off"
-            maxlength="64"
-            placeholder="Код другого пользователя"
-          />
+          <input class="field__input" id="inviter-referral" name="inviterReferral" type="text" autocomplete="off" maxlength="64" placeholder="Код другого пользователя" />
         </div>
         <div class="field">
           <label class="field__label" for="nickname">Никнейм</label>
-          <input
-            class="field__input"
-            id="nickname"
-            name="nickname"
-            type="text"
-            autocomplete="username"
-            required
-            minlength="2"
-            maxlength="32"
-            placeholder="Уникальное имя"
-          />
+          <input class="field__input" id="nickname" name="nickname" type="text" autocomplete="username" required minlength="2" maxlength="32" placeholder="Уникальное имя" />
           <p class="field__hint" id="nickname-error" hidden></p>
         </div>
         <button type="submit" class="btn btn--pill">Зарегистрироваться</button>
       </form>
-      <p class="auth-switch">
-        Уже есть аккаунт? <a href="#" id="show-login" class="auth-link">Войти</a>
-      </p>
+      <p class="auth-switch">Уже есть аккаунт? <a href="#" id="show-login" class="auth-link">Войти</a></p>
     </div>
   </div>
 
@@ -61,38 +43,20 @@
       <form id="form-login" class="form" novalidate>
         <div class="field">
           <label class="field__label" for="login-id">Ваш ID</label>
-          <input
-            class="field__input"
-            id="login-id"
-            name="loginId"
-            type="text"
-            autocomplete="off"
-            required
-            placeholder="Введите ваш ID"
-          />
+          <input class="field__input" id="login-id" name="loginId" type="text" autocomplete="off" required placeholder="Введите ваш ID" />
         </div>
         <div class="field">
           <label class="field__label" for="login-nickname">Никнейм</label>
-          <input
-            class="field__input"
-            id="login-nickname"
-            name="loginNickname"
-            type="text"
-            autocomplete="username"
-            required
-            placeholder="Введите ваш никнейм"
-          />
+          <input class="field__input" id="login-nickname" name="loginNickname" type="text" autocomplete="username" required placeholder="Введите ваш никнейм" />
           <p class="field__hint" id="login-error" hidden></p>
         </div>
         <button type="submit" class="btn btn--pill">Войти</button>
       </form>
-      <p class="auth-switch">
-        Нет аккаунта? <a href="#" id="show-register" class="auth-link">Зарегистрироваться</a>
-      </p>
+      <p class="auth-switch">Нет аккаунта? <a href="#" id="show-register" class="auth-link">Зарегистрироваться</a></p>
     </div>
   </div>
 
-  <!-- Основное приложение (скрыто до регистрации/входа) -->
+  <!-- Основное приложение -->
   <div id="screen-app" class="screen screen--app is-hidden" hidden>
     <main class="app-main">
       <section id="panel-leaderboard" class="panel is-active" data-panel="leaderboard">
@@ -101,59 +65,11 @@
           <p class="panel__empty">Раздел в разработке.</p>
         </div>
       </section>
+      
       <section id="panel-game" class="panel" data-panel="game">
-        <section id="panel-game" class="panel" data-panel="game">
-          <!--мини игра-->
-  <div class="card card--panel game-container">
-    <h2 class="panel__title">Кликер МТБанк</h2>
-    <div class="game-content">
-      <div class="game-stats">
-        <div class="game-stat">
-          <span class="game-stat__label">МТБанков:</span>
-          <span class="game-stat__value" id="game-mtb-balance">0</span>
-        </div>
-        <div class="game-stat">
-          <span class="game-stat__label">Кликов сегодня:</span>
-          <span class="game-stat__value" id="game-today-clicks">0</span>
-        </div>
-        <div class="game-stat">
-          <span class="game-stat__label">До следующего бонуса:</span>
-          <span class="game-stat__value" id="game-next-bonus">10</span>
-        </div>
-      </div>
-      
-      <button class="game-token" id="game-token-btn" aria-label="Нажми на токен">
-        <svg class="game-token__svg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <radialGradient id="tokenGrad" cx="50%" cy="40%" r="50%">
-              <stop offset="0%" stop-color="#ffe082" />
-              <stop offset="60%" stop-color="#ffca28" />
-              <stop offset="100%" stop-color="#f57f17" />
-            </radialGradient>
-            <filter id="tokenShadow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#f57f17" flood-opacity="0.4" />
-            </filter>
-          </defs>
-          <circle cx="100" cy="100" r="85" fill="url(#tokenGrad)" filter="url(#tokenShadow)" />
-          <circle cx="100" cy="100" r="75" fill="none" stroke="#fff" stroke-width="3" opacity="0.4" />
-          <circle cx="100" cy="100" r="65" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.3" />
-          <text x="100" y="115" text-anchor="middle" font-size="48" font-weight="700" fill="#fff" font-family="system-ui,sans-serif" filter="drop-shadow(0 2px 4px rgba(0,0,0,0.2))">₿</text>
-          <ellipse cx="80" cy="70" rx="15" ry="8" fill="#fff" opacity="0.3" transform="rotate(-30 80 70)" />
-        </svg>
-        <span class="game-token__hint">Нажми на токен!</span>
-      </button>
-      
-      <div class="game-info">
-        <p class="game-info__text">💡 За каждый клик получаешь <strong>+1 МТБанк</strong></p>
-        <p class="game-info__text">🎯 Каждые <strong>10 кликов</strong> дают <strong>+50 бонусных МТБанков</strong>!</p>
-        <p class="game-info__text">🔄 Счётчик кликов сбрасывается в полночь</p>
-      </div>
-      
-      <div id="game-animation-container" class="game-animation-container"></div>
-    </div>
-  </div>
-</section>
+        <!-- SVG-город загружается через js/city-game.js -->
       </section>
+      
       <section id="panel-shop" class="panel" data-panel="shop">
         <div class="shop-page">
           <h2 class="panel__title shop-page__title">Магазин</h2>
@@ -161,7 +77,7 @@
             <a class="shop-item" role="listitem" href="product.html?p=apple">
               <div class="shop-item__inner">
                 <div class="shop-item__visual shop-item__visual--apple" aria-hidden="true">
-                  <svg class="shop-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg class="shop-svg" viewBox="0 0 120 120" fill="none">
                     <defs>
                       <linearGradient id="ga" x1="0" y1="0" x2="1" y2="1">
                         <stop offset="0%" stop-color="#f6e27a" />
@@ -182,12 +98,10 @@
             <a class="shop-item" role="listitem" href="product.html?p=massage">
               <div class="shop-item__inner">
                 <div class="shop-item__visual shop-item__visual--spa" aria-hidden="true">
-                  <svg class="shop-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <svg class="shop-svg" viewBox="0 0 120 120" fill="none">
                     <rect x="18" y="52" width="84" height="36" rx="10" fill="#e8dfd5" stroke="#c4b5a5" stroke-width="2" />
                     <ellipse cx="60" cy="52" rx="28" ry="10" fill="#f5ebe0" stroke="#c4b5a5" stroke-width="2" />
                     <path d="M42 40c6-10 18-10 18 0s12-10 18 0" stroke="#9a8b7a" stroke-width="3" stroke-linecap="round" fill="none" />
-                    <circle cx="48" cy="68" r="4" fill="#c9a96e" opacity="0.6" />
-                    <circle cx="72" cy="72" r="3" fill="#c9a96e" opacity="0.5" />
                   </svg>
                 </div>
                 <div class="shop-item__hover">
@@ -196,110 +110,27 @@
                 </div>
               </div>
             </a>
-            <a class="shop-item" role="listitem" href="product.html?p=cashback">
-              <div class="shop-item__inner">
-                <div class="shop-item__visual shop-item__visual--cash" aria-hidden="true">
-                  <svg class="shop-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <circle cx="60" cy="60" r="44" fill="#1e8f4a" />
-                    <circle cx="60" cy="60" r="36" fill="#26a867" />
-                    <text x="60" y="72" text-anchor="middle" font-size="36" font-weight="700" fill="#fff" font-family="system-ui,sans-serif">%</text>
-                    <path d="M28 88l8-10 10 6 14-18 12 10 18-24" stroke="#b8f5d0" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.9" />
-                  </svg>
-                </div>
-                <div class="shop-item__hover">
-                  <p class="shop-item__name">Кэшбек -5%</p>
-                  <p class="shop-item__desc">Постоянный возврат пяти процентов с покупок на ваш баланс.</p>
-                </div>
-              </div>
-            </a>
-            <a class="shop-item" role="listitem" href="product.html?p=brain">
-              <div class="shop-item__inner">
-                <div class="shop-item__visual shop-item__visual--brain" aria-hidden="true">
-                  <svg class="shop-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path
-                      d="M60 22c-12 0-22 8-24 20-8 2-14 10-14 19 0 6 3 11 8 14-1 2-2 5-2 8 0 10 8 18 18 18 3 0 6-1 9-2 4 6 11 10 19 10 14 0 25-11 25-25 0-4-1-8-3-11 5-3 8-9 8-15 0-11-9-20-20-20h-4z"
-                      fill="#e8b8d8"
-                      stroke="#a8558c"
-                      stroke-width="2.5"
-                    />
-                    <path d="M48 48c4-6 10-9 12-4M68 46c6 4 8 12 4 16" stroke="#93346e" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.7" />
-                    <circle cx="52" cy="58" r="3" fill="#93346e" opacity="0.35" />
-                    <circle cx="72" cy="62" r="3" fill="#93346e" opacity="0.35" />
-                  </svg>
-                </div>
-                <div class="shop-item__hover">
-                  <p class="shop-item__name">Мозги</p>
-                  <p class="shop-item__desc">Мини-набор задач на логику, память и скорость мышления.</p>
-                </div>
-              </div>
-            </a>
           </div>
         </div>
       </section>
+      
       <section id="panel-profile" class="panel" data-panel="profile">
         <div class="profile-page">
           <div class="profile-balances">
             <div class="card balance-card">
               <span class="balance-card__label">Баланс очков прокачки</span>
-              <p class="balance-card__value">
-                <span id="profile-balance-skill" class="balance-card__digits">00000000</span>
-                <span class="balance-card__glyph" aria-hidden="true">
-                  <svg class="balance-card__svg" viewBox="0 0 24 24" focusable="false">
-                    <path
-                      fill="currentColor"
-                      fill-rule="evenodd"
-                      d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"
-                    />
-                  </svg>
-                </span>
-              </p>
+              <p class="balance-card__value"><span id="profile-balance-skill" class="balance-card__digits">00000000</span></p>
             </div>
             <div class="card balance-card">
               <span class="balance-card__label">Баланс мтбанков</span>
-              <p class="balance-card__value">
-                <span id="profile-balance-mtb" class="balance-card__digits">00000000</span>
-                <span class="balance-card__glyph" aria-hidden="true">
-                  <svg class="balance-card__svg" viewBox="0 0 24 24" focusable="false">
-                    <circle cx="12" cy="12" r="9.5" fill="#ffe082" stroke="rgba(255,255,255,0.55)" stroke-width="1.25" />
-                    <circle cx="12" cy="12" r="6.5" fill="#ffca28" stroke="#f57f17" stroke-width="0.75" />
-                    <ellipse cx="12" cy="9" rx="5" ry="2.2" fill="rgba(255,255,255,0.35)" />
-                  </svg>
-                </span>
-              </p>
+              <p class="balance-card__value"><span id="profile-balance-mtb" class="balance-card__digits">00000000</span></p>
             </div>
           </div>
           <div class="card card--panel card--profile">
             <h2 class="panel__title">Профиль</h2>
             <div class="profile-grid">
-              <div class="profile-item">
-                <span class="profile-item__label">Ваш id</span>
-                <p class="profile-item__value" id="profile-id">—</p>
-              </div>
-              <div class="profile-item">
-                <span class="profile-item__label">Никнейм</span>
-                <p class="profile-item__value" id="profile-nickname">—</p>
-              </div>
-              <div class="profile-item profile-item--full">
-                <span class="profile-item__label">Реферальный код пригласившего</span>
-                <p class="profile-item__value" id="profile-inviter-code">—</p>
-              </div>
-              <div class="profile-item">
-                <span class="profile-item__label">Ваш реферальный код</span>
-                <p class="profile-item__value" id="profile-referral-code">—</p>
-              </div>
-              <div class="profile-item profile-item--full">
-                <span class="profile-item__label">Ваша реферальная ссылка</span>
-                <button
-                  type="button"
-                  class="link-copy"
-                  id="btn-copy-referral-link"
-                  aria-label="Скопировать реферальную ссылку"
-                >
-                  <span class="link-copy__text profile-item__value profile-item__value--break" id="profile-referral-link">—</span>
-                  <span class="link-copy__hint">Нажмите, чтобы скопировать</span>
-                </button>
-                <p class="copy-toast" id="copy-toast" hidden aria-live="polite">Скопировано</p>
-              </div>
+              <div class="profile-item"><span class="profile-item__label">Ваш id</span><p class="profile-item__value" id="profile-id">—</p></div>
+              <div class="profile-item"><span class="profile-item__label">Никнейм</span><p class="profile-item__value" id="profile-nickname">—</p></div>
               <div class="profile-item profile-item--full">
                 <button type="button" class="btn btn--pill btn--logout" id="btn-logout">Выйти из аккаунта</button>
               </div>
@@ -309,26 +140,15 @@
       </section>
     </main>
 
-    <nav id="bottom-nav" class="bottom-nav" aria-label="Основная навигация">
-      <button type="button" class="bottom-nav__tab" data-tab="leaderboard" aria-current="page">
-        <span class="bottom-nav__icon" aria-hidden="true">🏆</span>
-        <span class="bottom-nav__text">Лидерборд</span>
-      </button>
-      <button type="button" class="bottom-nav__tab" data-tab="game">
-        <span class="bottom-nav__icon" aria-hidden="true">🎮</span>
-        <span class="bottom-nav__text">Игра</span>
-      </button>
-      <button type="button" class="bottom-nav__tab" data-tab="shop">
-        <span class="bottom-nav__icon" aria-hidden="true">🛒</span>
-        <span class="bottom-nav__text">Магазин</span>
-      </button>
-      <button type="button" class="bottom-nav__tab" data-tab="profile">
-        <span class="bottom-nav__icon" aria-hidden="true">👤</span>
-        <span class="bottom-nav__text">Профиль</span>
-      </button>
+    <nav id="bottom-nav" class="bottom-nav">
+      <button type="button" class="bottom-nav__tab" data-tab="leaderboard">🏆 Лидерборд</button>
+      <button type="button" class="bottom-nav__tab" data-tab="game">🎮 Игра</button>
+      <button type="button" class="bottom-nav__tab" data-tab="shop">🛒 Магазин</button>
+      <button type="button" class="bottom-nav__tab" data-tab="profile">👤 Профиль</button>
     </nav>
   </div>
 
+  <script src="js/city-game.js" defer></script>
   <script src="app.js" defer></script>
 </body>
 </html>

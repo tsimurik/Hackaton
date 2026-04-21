@@ -1,0 +1,3991 @@
+=== ПОЛНЫЙ ПРОЕКТ ===
+
+
+========================================
+ФАЙЛ: index.html
+========================================
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Регистрация</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="iso-styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- Экран регистрации -->
+  <div id="screen-register" class="screen screen--center">
+    <div class="card card--form">
+      <h1 class="card__title">Создать аккаунт</h1>
+      <form id="form-register" class="form" novalidate>
+        <div class="field">
+          <span class="field__label">Ваш id</span>
+          <p class="field__readonly" id="register-preview-id" aria-live="polite">—</p>
+        </div>
+        <div class="field">
+          <label class="field__label" for="inviter-referral">Реферальный код пригласившего (необязательно)</label>
+          <input class="field__input" id="inviter-referral" name="inviterReferral" type="text" autocomplete="off" maxlength="64" placeholder="Код другого пользователя" />
+        </div>
+        <div class="field">
+          <label class="field__label" for="nickname">Никнейм</label>
+          <input class="field__input" id="nickname" name="nickname" type="text" autocomplete="username" required minlength="2" maxlength="32" placeholder="Уникальное имя" />
+          <p class="field__hint" id="nickname-error" hidden></p>
+        </div>
+        <button type="submit" class="btn btn--pill">Зарегистрироваться</button>
+      </form>
+      <p class="auth-switch">Уже есть аккаунт? <a href="#" id="show-login" class="auth-link">Войти</a></p>
+    </div>
+  </div>
+
+  <!-- Экран входа -->
+  <div id="screen-login" class="screen screen--center" hidden>
+    <div class="card card--form">
+      <h1 class="card__title">Вход в аккаунт</h1>
+      <form id="form-login" class="form" novalidate>
+        <div class="field">
+          <label class="field__label" for="login-id">Ваш ID</label>
+          <input class="field__input" id="login-id" name="loginId" type="text" autocomplete="off" required placeholder="Введите ваш ID" />
+        </div>
+        <div class="field">
+          <label class="field__label" for="login-nickname">Никнейм</label>
+          <input class="field__input" id="login-nickname" name="loginNickname" type="text" autocomplete="username" required placeholder="Введите ваш никнейм" />
+          <p class="field__hint" id="login-error" hidden></p>
+        </div>
+        <button type="submit" class="btn btn--pill">Войти</button>
+      </form>
+      <p class="auth-switch">Нет аккаунта? <a href="#" id="show-register" class="auth-link">Зарегистрироваться</a></p>
+    </div>
+  </div>
+
+  <!-- Основное приложение -->
+  <div id="screen-app" class="screen screen--app is-hidden" hidden>
+    <main class="app-main">
+      <section id="panel-leaderboard" class="panel is-active" data-panel="leaderboard">
+        <div class="card card--panel">
+          <h2 class="panel__title">Лидерборд</h2>
+          <p class="panel__empty">Раздел в разработке.</p>
+        </div>
+      </section>
+      
+      <section id="panel-game" class="panel" data-panel="game">
+        <!-- SVG-город загружается через js/city-game.js -->
+      </section>
+      
+      <section id="panel-shop" class="panel" data-panel="shop">
+        <div class="shop-page">
+          <h2 class="panel__title shop-page__title">Магазин</h2>
+          <div class="shop-grid" role="list">
+            <a class="shop-item" role="listitem" href="product.html?p=apple">
+              <div class="shop-item__inner">
+                <div class="shop-item__visual shop-item__visual--apple" aria-hidden="true">
+                  <svg class="shop-svg" viewBox="0 0 120 120" fill="none">
+                    <defs>
+                      <linearGradient id="ga" x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stop-color="#f6e27a" />
+                        <stop offset="45%" stop-color="#d4a017" />
+                        <stop offset="100%" stop-color="#8b6914" />
+                      </linearGradient>
+                    </defs>
+                    <path d="M62 28c4-12 18-18 28-16-2 10-8 18-18 22 6 4 10 12 10 22 0 22-16 38-36 38S10 78 10 56c0-18 14-32 32-34 6 8 14 10 20 6z" fill="url(#ga)" />
+                    <path d="M58 26c-2-8 2-16 8-20 4 6 4 14 0 20z" fill="#6b8e23" />
+                  </svg>
+                </div>
+                <div class="shop-item__hover">
+                  <p class="shop-item__name">Сертификат в золотое яблоко</p>
+                  <p class="shop-item__desc">Подарочная карта на покупки в сети техники и аксессуаров.</p>
+                </div>
+              </div>
+            </a>
+            <a class="shop-item" role="listitem" href="product.html?p=massage">
+              <div class="shop-item__inner">
+                <div class="shop-item__visual shop-item__visual--spa" aria-hidden="true">
+                  <svg class="shop-svg" viewBox="0 0 120 120" fill="none">
+                    <rect x="18" y="52" width="84" height="36" rx="10" fill="#e8dfd5" stroke="#c4b5a5" stroke-width="2" />
+                    <ellipse cx="60" cy="52" rx="28" ry="10" fill="#f5ebe0" stroke="#c4b5a5" stroke-width="2" />
+                    <path d="M42 40c6-10 18-10 18 0s12-10 18 0" stroke="#9a8b7a" stroke-width="3" stroke-linecap="round" fill="none" />
+                  </svg>
+                </div>
+                <div class="shop-item__hover">
+                  <p class="shop-item__name">Сертификат в массажку</p>
+                  <p class="shop-item__desc">Сеансы релакса и восстановления в выбранном салоне-партнёре.</p>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+      
+      <section id="panel-profile" class="panel" data-panel="profile">
+        <div class="profile-page">
+          <div class="profile-balances">
+            <div class="card balance-card">
+              <span class="balance-card__label">Баланс очков прокачки</span>
+              <p class="balance-card__value"><span id="profile-balance-skill" class="balance-card__digits">00000000</span></p>
+            </div>
+            <div class="card balance-card">
+              <span class="balance-card__label">Баланс мтбанков</span>
+              <p class="balance-card__value"><span id="profile-balance-mtb" class="balance-card__digits">00000000</span></p>
+            </div>
+          </div>
+          <div class="card card--panel card--profile">
+            <h2 class="panel__title">Профиль</h2>
+            <div class="profile-grid">
+              <div class="profile-item"><span class="profile-item__label">Ваш id</span><p class="profile-item__value" id="profile-id">—</p></div>
+              <div class="profile-item"><span class="profile-item__label">Никнейм</span><p class="profile-item__value" id="profile-nickname">—</p></div>
+              <div class="profile-item profile-item--full">
+                <button type="button" class="btn btn--pill btn--logout" id="btn-logout">Выйти из аккаунта</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <nav id="bottom-nav" class="bottom-nav">
+      <button type="button" class="bottom-nav__tab" data-tab="leaderboard">🏆 Лидерборд</button>
+      <button type="button" class="bottom-nav__tab" data-tab="game">🎮 Игра</button>
+      <button type="button" class="bottom-nav__tab" data-tab="shop">🛒 Магазин</button>
+      <button type="button" class="bottom-nav__tab" data-tab="profile">👤 Профиль</button>
+    </nav>
+  </div>
+
+  <script src="js/city-game.js" defer></script>
+  <script src="app.js" defer></script>
+</body>
+</html>
+
+========================================
+ФАЙЛ: app.js
+========================================
+
+(function () {
+  "use strict";
+
+  var BASE_REF_URL = "https://myapp.com/ref";
+
+  /** Балансы (восьмизначные строки), дальше можно менять переменные — UI обновится через syncBalancesToDom */
+  var balanceSkillPoints = 0;
+  var balanceMtBanks = 0;
+
+  /** Латиница + цифры, длина len */
+  function randomAlphanumeric(len) {
+    var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    var out = "";
+    for (var i = 0; i < len; i += 1) {
+      out += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return out;
+  }
+
+  var STORAGE_KEY = "rr_registered_users"; // Храним всех пользователей
+  var USER_KEY = "rr_current_user_id"; // Храним ID текущего пользователя
+
+  // Загрузка всех пользователей
+  function loadAllUsers() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return {};
+      return JSON.parse(raw);
+    } catch (e) {
+      return {};
+    }
+  }
+
+  // Сохранение всех пользователей
+  function saveAllUsers(users) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+  }
+
+  // Получение текущего пользователя
+  function getCurrentUser() {
+    try {
+      var userId = localStorage.getItem(USER_KEY);
+      if (!userId) return null;
+      var users = loadAllUsers();
+      return users[userId] || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Сохранение текущего пользователя
+  function setCurrentUser(userId) {
+    localStorage.setItem(USER_KEY, userId);
+  }
+
+  // Очистка текущего пользователя (выход)
+  function logout() {
+    localStorage.removeItem(USER_KEY);
+    showRegisterScreen();
+    // Очищаем форму входа
+    var loginIdInput = document.getElementById("login-id");
+    var loginNicknameInput = document.getElementById("login-nickname");
+    if (loginIdInput) loginIdInput.value = "";
+    if (loginNicknameInput) loginNicknameInput.value = "";
+  }
+
+  function normalizeNickname(n) {
+    return String(n).trim().toLowerCase();
+  }
+
+  function refreshRegistrationPreview() {
+    var preUserId = randomAlphanumeric(16);
+    var preReferralCode = randomAlphanumeric(10);
+    var preReferralLink = BASE_REF_URL + "?id=" + encodeURIComponent(preReferralCode);
+
+    var elId = document.getElementById("register-preview-id");
+    if (elId) elId.textContent = preUserId;
+    
+    // Сохраняем временные данные для регистрации
+    window._tempRegistration = {
+      id: preUserId,
+      referralCode: preReferralCode,
+      referralLink: preReferralLink
+    };
+  }
+
+  function syncBalancesToDom() {
+    var elS = document.getElementById("profile-balance-skill");
+    var elM = document.getElementById("profile-balance-mtb");
+    if (elS) elS.textContent = String(balanceSkillPoints).padStart(8, '0');
+    if (elM) elM.textContent = String(balanceMtBanks).padStart(8, '0');
+  }
+
+  // Принудительное обновление профиля из данных пользователя
+  function refreshProfileFromUser() {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return;
+    
+    balanceSkillPoints = currentUser.balanceSkillPoints || 0;
+    balanceMtBanks = currentUser.balanceMtBanks || 0;
+    syncBalancesToDom();
+  }
+
+  function hideRegisterShowApp() {
+    var reg = document.getElementById("screen-register");
+    var login = document.getElementById("screen-login");
+    var app = document.getElementById("screen-app");
+    
+    if (reg) {
+      reg.setAttribute("hidden", "");
+      reg.classList.add("is-hidden");
+    }
+    if (login) {
+      login.setAttribute("hidden", "");
+      login.classList.add("is-hidden");
+    }
+    if (app) {
+      app.removeAttribute("hidden");
+      app.classList.remove("is-hidden");
+    }
+  }
+
+  function showRegisterScreen() {
+    var reg = document.getElementById("screen-register");
+    var login = document.getElementById("screen-login");
+    var app = document.getElementById("screen-app");
+    
+    if (reg) {
+      reg.removeAttribute("hidden");
+      reg.classList.remove("is-hidden");
+      refreshRegistrationPreview();
+    }
+    if (login) {
+      login.setAttribute("hidden", "");
+      login.classList.add("is-hidden");
+    }
+    if (app) {
+      app.setAttribute("hidden", "");
+      app.classList.add("is-hidden");
+    }
+  }
+
+  function showLoginScreen() {
+    var reg = document.getElementById("screen-register");
+    var login = document.getElementById("screen-login");
+    var app = document.getElementById("screen-app");
+    
+    if (reg) {
+      reg.setAttribute("hidden", "");
+      reg.classList.add("is-hidden");
+    }
+    if (login) {
+      login.removeAttribute("hidden");
+      login.classList.remove("is-hidden");
+    }
+    if (app) {
+      app.setAttribute("hidden", "");
+      app.classList.add("is-hidden");
+    }
+  }
+
+  function copyTextToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function (resolve, reject) {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        if (document.execCommand("copy")) resolve();
+        else reject(new Error("copy failed"));
+      } catch (err) {
+        reject(err);
+      }
+      document.body.removeChild(ta);
+    });
+  }
+
+  function showCopyToast() {
+    var toast = document.getElementById("copy-toast");
+    if (!toast) return;
+    toast.hidden = false;
+    window.setTimeout(function () {
+      toast.hidden = true;
+    }, 1800);
+  }
+
+  function updateProfileUI(user) {
+    var pid = document.getElementById("profile-id");
+    var pn = document.getElementById("profile-nickname");
+    var pc = document.getElementById("profile-referral-code");
+    var pl = document.getElementById("profile-referral-link");
+    var pi = document.getElementById("profile-inviter-code");
+    
+    if (pid) pid.textContent = user.id;
+    if (pn) pn.textContent = user.nickname;
+    if (pc) pc.textContent = user.referralCode;
+    if (pl) pl.textContent = user.referralLink;
+    if (pi) pi.textContent = user.inviterReferral || "—";
+    
+    balanceSkillPoints = user.balanceSkillPoints || 0;
+    balanceMtBanks = user.balanceMtBanks || 0;
+    syncBalancesToDom();
+  }
+
+  function showApp(user) {
+    hideRegisterShowApp();
+    updateProfileUI(user);
+    switchTab("profile");
+  }
+
+  function switchTab(tab) {
+    var panels = document.querySelectorAll(".panel");
+    for (var i = 0; i < panels.length; i += 1) {
+      var p = panels[i];
+      if (p.getAttribute("data-panel") === tab) {
+        p.classList.add("is-active");
+      } else {
+        p.classList.remove("is-active");
+      }
+    }
+
+    var tabs = document.querySelectorAll(".bottom-nav__tab");
+    for (var j = 0; j < tabs.length; j += 1) {
+      var btn = tabs[j];
+      if (btn.getAttribute("data-tab") === tab) {
+        btn.setAttribute("aria-current", "page");
+      } else {
+        btn.removeAttribute("aria-current");
+      }
+    }
+
+    if (tab === "profile") syncBalancesToDom();
+  }
+
+  // Регистрация нового пользователя
+  function registerUser(nicknameRaw, inviterCode) {
+    var nickname = nicknameRaw.trim();
+    var normalizedNickname = normalizeNickname(nickname);
+    
+    var users = loadAllUsers();
+    
+    // Проверка на существующий никнейм
+    for (var userId in users) {
+      if (users[userId].nicknameLower === normalizedNickname) {
+        return { success: false, error: "Этот ник уже занят. Выберите другой." };
+      }
+    }
+    
+    // Проверка длины никнейма
+    if (nickname.length < 2) {
+      return { success: false, error: "Никнейм слишком короткий." };
+    }
+    
+    // Создаём нового пользователя
+    var newUser = {
+      id: window._tempRegistration.id,
+      nickname: nickname,
+      nicknameLower: normalizedNickname,
+      referralCode: window._tempRegistration.referralCode,
+      referralLink: window._tempRegistration.referralLink,
+      inviterReferral: inviterCode || "",
+      balanceSkillPoints: 0,
+      balanceMtBanks: 0,
+      createdAt: Date.now()
+    };
+    
+    // Начисление бонуса за реферальный код
+    if (inviterCode && inviterCode.trim() !== "") {
+      var inviterFound = false;
+      for (var uid in users) {
+        if (users[uid].referralCode === inviterCode) {
+          inviterFound = true;
+          // Начисляем бонус новому пользователю
+          newUser.balanceSkillPoints = 1000;
+          newUser.balanceMtBanks = 1000;
+          break;
+        }
+      }
+      if (!inviterFound) {
+        return { success: false, error: "Неверный реферальный код." };
+      }
+    }
+    
+    // Сохраняем пользователя
+    users[newUser.id] = newUser;
+    saveAllUsers(users);
+    setCurrentUser(newUser.id);
+    
+    return { success: true, user: newUser };
+  }
+  
+  // Вход в аккаунт
+  function loginUser(id, nickname) {
+    var users = loadAllUsers();
+    var normalizedNickname = normalizeNickname(nickname);
+    
+    for (var userId in users) {
+      var user = users[userId];
+      if (user.id === id && user.nicknameLower === normalizedNickname) {
+        setCurrentUser(userId);
+        return { success: true, user: user };
+      }
+    }
+    
+    return { success: false, error: "Неверный ID или никнейм." };
+  }
+
+  // Проверка авторизации при загрузке страницы
+  function checkAuthAndRedirect() {
+    var currentUser = getCurrentUser();
+    if (currentUser) {
+      showApp(currentUser);
+    } else {
+      showRegisterScreen();
+    }
+  }
+
+  // ========== НАЧАЛО БЛОКА ИГРЫ ==========
+  
+  function getTodayKey() {
+    var today = new Date();
+    return today.toISOString().split('T')[0];
+  }
+  
+  function loadGameData() {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return { clicks: 0, lastDate: getTodayKey() };
+    
+    var gameDataKey = "rr_game_data_" + currentUser.id;
+    try {
+      var raw = localStorage.getItem(gameDataKey);
+      if (!raw) return { clicks: 0, lastDate: getTodayKey() };
+      return JSON.parse(raw);
+    } catch (e) {
+      return { clicks: 0, lastDate: getTodayKey() };
+    }
+  }
+  
+  function saveGameData(data) {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return;
+    
+    var gameDataKey = "rr_game_data_" + currentUser.id;
+    localStorage.setItem(gameDataKey, JSON.stringify(data));
+  }
+  
+  function updateGameUI() {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return;
+    
+    // Синхронизируем глобальную переменную с актуальным балансом
+    balanceMtBanks = currentUser.balanceMtBanks || 0;
+    
+    var mtbSpan = document.getElementById("game-mtb-balance");
+    if (mtbSpan) mtbSpan.textContent = currentUser.balanceMtBanks || 0;
+    
+    // Также обновляем профиль, если он виден
+    var profileMtbSpan = document.getElementById("profile-balance-mtb");
+    if (profileMtbSpan) {
+      profileMtbSpan.textContent = String(balanceMtBanks).padStart(8, '0');
+    }
+    
+    var gameData = loadGameData();
+    var todayKey = getTodayKey();
+    
+    // Проверяем, не новый ли день
+    if (gameData.lastDate !== todayKey) {
+      gameData.clicks = 0;
+      gameData.lastDate = todayKey;
+      saveGameData(gameData);
+    }
+    
+    var clicksSpan = document.getElementById("game-today-clicks");
+    if (clicksSpan) clicksSpan.textContent = gameData.clicks || 0;
+    
+    var nextBonusSpan = document.getElementById("game-next-bonus");
+    if (nextBonusSpan) {
+      var clicksLeft = 10 - ((gameData.clicks || 0) % 10);
+      nextBonusSpan.textContent = clicksLeft;
+    }
+  }
+  
+  function showClickAnimation(x, y, value) {
+    var container = document.getElementById("game-animation-container");
+    if (!container) return;
+    
+    var animation = document.createElement("div");
+    animation.className = "click-animation";
+    animation.textContent = "+" + value;
+    animation.style.left = x + "px";
+    animation.style.top = y + "px";
+    container.appendChild(animation);
+    
+    setTimeout(function() {
+      if (animation.parentNode) {
+        animation.parentNode.removeChild(animation);
+      }
+    }, 1000);
+  }
+  
+  function addMtbanks(amount, clickEvent) {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return false;
+    
+    // Обновляем баланс пользователя в объекте
+    currentUser.balanceMtBanks = (currentUser.balanceMtBanks || 0) + amount;
+    
+    // Сохраняем обновлённого пользователя в хранилище
+    var users = loadAllUsers();
+    users[currentUser.id] = currentUser;
+    saveAllUsers(users);
+    
+    // ВАЖНО: обновляем глобальные переменные балансов
+    balanceMtBanks = currentUser.balanceMtBanks;
+    
+    // Обновляем UI везде, где отображается баланс
+    syncBalancesToDom();  // Обновляет цифры в профиле
+    updateGameUI();       // Обновляет цифры в игре
+    
+    // Также обновляем отображение в профиле, если оно открыто
+    var profileMtbSpan = document.getElementById("profile-balance-mtb");
+    if (profileMtbSpan) {
+      profileMtbSpan.textContent = String(balanceMtBanks).padStart(8, '0');
+    }
+    
+    // Показываем анимацию если нужно
+    if (clickEvent && clickEvent.clientX) {
+      showClickAnimation(clickEvent.clientX, clickEvent.clientY, amount);
+    }
+    
+    return true;
+  }
+  
+  function handleTokenClick(event) {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return;
+    
+    var gameData = loadGameData();
+    var todayKey = getTodayKey();
+    
+    // Сброс если новый день
+    if (gameData.lastDate !== todayKey) {
+      gameData.clicks = 0;
+      gameData.lastDate = todayKey;
+    }
+    
+    // Добавляем клик
+    gameData.clicks = (gameData.clicks || 0) + 1;
+    var currentClicks = gameData.clicks;
+    
+    // Начисляем 1 МТБанк за клик
+    addMtbanks(1, event);
+    
+    // Проверяем бонус каждые 10 кликов
+    var bonusAmount = 0;
+    if (currentClicks % 10 === 0) {
+      bonusAmount = 50;
+      addMtbanks(bonusAmount, null);
+      
+      // Показываем уведомление о бонусе
+      var toast = document.getElementById("buy-toast");
+      if (toast) {
+        var originalText = toast.textContent;
+        toast.textContent = "🎉 Бонус! +50 МТБанков за 10 кликов! 🎉";
+        toast.classList.add("is-visible");
+        setTimeout(function() {
+          toast.classList.remove("is-visible");
+          toast.textContent = originalText;
+        }, 2000);
+      }
+    }
+    
+    // Сохраняем данные игры
+    saveGameData(gameData);
+    
+    // Обновляем UI
+    updateGameUI();
+    
+    // Дополнительная анимация для бонуса
+    if (bonusAmount > 0 && event) {
+      setTimeout(function() {
+        showClickAnimation(event.clientX, event.clientY - 30, bonusAmount);
+      }, 100);
+    }
+    
+    // Небольшая вибрация если поддерживается
+    if (navigator.vibrate) {
+      navigator.vibrate(50);
+    }
+  }
+  
+  function initGame() {
+  updateGameUI();
+  
+  var tokenBtn = document.getElementById("game-token-btn");
+  if (tokenBtn) {
+    tokenBtn.addEventListener("click", handleTokenClick);
+  }
+  
+  // Обновляем UI игры при переключении на вкладку игры
+  var gamePanel = document.getElementById("panel-game");
+  if (gamePanel) {
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.attributeName === "class") {
+          if (gamePanel.classList.contains("is-active")) {
+            updateGameUI();
+            // Обновляем город при переключении на вкладку
+            if (typeof renderCity === 'function') {
+              renderCity();
+            }
+          }
+        }
+      });
+    });
+    observer.observe(gamePanel, { attributes: true });
+  }
+  
+  // Также обновляем профиль при переключении на него
+  var profilePanel = document.getElementById("panel-profile");
+  if (profilePanel) {
+    var profileObserver = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.attributeName === "class") {
+          if (profilePanel.classList.contains("is-active")) {
+            refreshProfileFromUser();
+          }
+        }
+      });
+    });
+    profileObserver.observe(profilePanel, { attributes: true });
+  }
+  
+  // ===== НОВОЕ: Инициализация города =====
+  if (typeof initCityUI === 'function') {
+    initCityUI();
+  }
+}
+  
+  // ========== КОНЕЦ БЛОКА ИГРЫ ==========
+
+  function init() {
+    // Проверяем авторизацию при загрузке
+    checkAuthAndRedirect();
+    
+    // Регистрация
+    var form = document.getElementById("form-register");
+    var nicknameInput = document.getElementById("nickname");
+    var inviterInput = document.getElementById("inviter-referral");
+    var nicknameError = document.getElementById("nickname-error");
+    
+    if (form) {
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (nicknameError) {
+          nicknameError.hidden = true;
+          nicknameError.textContent = "";
+        }
+        
+        var nicknameRaw = nicknameInput ? nicknameInput.value : "";
+        var inviterCode = inviterInput ? inviterInput.value.trim() : "";
+        
+        var result = registerUser(nicknameRaw, inviterCode);
+        
+        if (!result.success) {
+          if (nicknameError) {
+            nicknameError.textContent = result.error;
+            nicknameError.hidden = false;
+          }
+          return;
+        }
+        
+        showApp(result.user);
+      });
+    }
+    
+    // Вход в аккаунт
+    var loginForm = document.getElementById("form-login");
+    var loginIdInput = document.getElementById("login-id");
+    var loginNicknameInput = document.getElementById("login-nickname");
+    var loginError = document.getElementById("login-error");
+    
+    if (loginForm) {
+      loginForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        if (loginError) {
+          loginError.hidden = true;
+          loginError.textContent = "";
+        }
+        
+        var id = loginIdInput ? loginIdInput.value.trim() : "";
+        var nickname = loginNicknameInput ? loginNicknameInput.value.trim() : "";
+        
+        if (!id || !nickname) {
+          if (loginError) {
+            loginError.textContent = "Заполните оба поля.";
+            loginError.hidden = false;
+          }
+          return;
+        }
+        
+        var result = loginUser(id, nickname);
+        
+        if (!result.success) {
+          if (loginError) {
+            loginError.textContent = result.error;
+            loginError.hidden = false;
+          }
+          return;
+        }
+        
+        showApp(result.user);
+      });
+    }
+    
+    // Кнопка выхода
+    var logoutBtn = document.getElementById("btn-logout");
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", function () {
+        logout();
+      });
+    }
+    
+    // Копирование реферальной ссылки
+    var copyBtn = document.getElementById("btn-copy-referral-link");
+    if (copyBtn) {
+      copyBtn.addEventListener("click", function () {
+        var span = document.getElementById("profile-referral-link");
+        var url = span ? span.textContent.trim() : "";
+        if (!url || url === "—") return;
+        copyTextToClipboard(url).then(
+          function () {
+            showCopyToast();
+          },
+          function () {
+            window.prompt("Скопируйте ссылку:", url);
+          }
+        );
+      });
+    }
+    
+    // Навигация
+    var nav = document.getElementById("bottom-nav");
+    if (nav) {
+      nav.addEventListener("click", function (e) {
+        var target = e.target;
+        if (!target || !target.closest) return;
+        var btn = target.closest(".bottom-nav__tab");
+        if (!btn || !nav.contains(btn)) return;
+        var tab = btn.getAttribute("data-tab");
+        if (tab) switchTab(tab);
+      });
+    }
+    
+    // Переключение между экранами регистрации и входа
+    var showLoginLink = document.getElementById("show-login");
+    var showRegisterLink = document.getElementById("show-register");
+    
+    if (showLoginLink) {
+      showLoginLink.addEventListener("click", function (e) {
+        e.preventDefault();
+        showLoginScreen();
+      });
+    }
+    
+    if (showRegisterLink) {
+      showRegisterLink.addEventListener("click", function (e) {
+        e.preventDefault();
+        showRegisterScreen();
+      });
+    }
+    
+    // Инициализация игры
+    initGame();
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+
+function showApp(user) {
+  hideRegisterShowApp();
+  updateProfileUI(user);
+  switchTab("profile");
+  
+  // ДОБАВЬ ЭТУ СТРОКУ:
+  setTimeout(function() {
+    if (typeof initCityUI === 'function') {
+      initCityUI();
+    }
+  }, 100);
+}
+========================================
+ФАЙЛ: js/city-game.js
+========================================
+
+// 🏙️ MtBank City — ПОЛНАЯ ВЕРСИЯ СО ВСЕМИ 15 ЗДАНИЯМИ
+console.log('🚀 city-game.js загружается...');
+
+// ========== КОНФИГУРАЦИЯ ВСЕХ 15 ЗДАНИЙ ==========
+const DEFS = [
+  // КАТЕГОРИЯ 1 — СТАРТОВЫЕ (дешёвые)
+  {id:'cafe', name:'Кофейня', cat:'⭐ Старт', inc:6, uc:80, maxLv:5, bc:50, bg:'#fff4e0', sprite:'cafe.png'},
+  {id:'flower', name:'Цветочный', cat:'⭐ Старт', inc:5, uc:70, maxLv:5, bc:45, bg:'#ffe0f0', sprite:'flower.png'},
+  {id:'minimarket', name:'Мини-маркет', cat:'⭐ Старт', inc:7, uc:90, maxLv:5, bc:60, bg:'#e0ffe0', sprite:'minimarket.png'},
+  {id:'foodtruck', name:'Фудтрак', cat:'⭐ Старт', inc:8, uc:85, maxLv:5, bc:55, bg:'#ffe8d0', sprite:'foodtruck.png'},
+  {id:'icecream', name:'Мороженое', cat:'⭐ Старт', inc:6, uc:75, maxLv:5, bc:40, bg:'#e0f0ff', sprite:'icecream.png'},
+  
+  // КАТЕГОРИЯ 2 — СРЕДНИЕ
+  {id:'restaurant', name:'Ресторан', cat:'🏢 Средний', inc:18, uc:200, maxLv:5, bc:180, bg:'#f0e0e0', sprite:'restaurant.png'},
+  {id:'store', name:'Магазин', cat:'🏢 Средний', inc:15, uc:170, maxLv:5, bc:150, bg:'#e0e0ff', sprite:'store.png'},
+  {id:'autoservice', name:'Автосервис', cat:'🏢 Средний', inc:20, uc:220, maxLv:5, bc:200, bg:'#d0d0d0', sprite:'autoservice.png'},
+  {id:'itoffice', name:'ИТ-офис', cat:'🏢 Средний', inc:22, uc:250, maxLv:5, bc:220, bg:'#c0e0ff', sprite:'itoffice.png'},
+  {id:'gasstation', name:'Заправка', cat:'🏢 Средний', inc:17, uc:190, maxLv:5, bc:170, bg:'#ffe0c0', sprite:'gasstation.png'},
+  
+  // КАТЕГОРИЯ 3 — ЭЛИТНЫЕ
+  {id:'bank', name:'Банк', cat:'🏦 Элит', inc:45, uc:400, maxLv:5, bc:500, bg:'#e0eeff', sprite:'bank.png'},
+  {id:'cinema', name:'Кинотеатр', cat:'🏦 Элит', inc:50, uc:450, maxLv:5, bc:550, bg:'#e0d0ff', sprite:'cinema.png'},
+  {id:'construction', name:'Стройка', cat:'🏦 Элит', inc:55, uc:500, maxLv:5, bc:600, bg:'#ffe8a0', sprite:'construction.png'},
+  {id:'warehouse', name:'Склад', cat:'🏦 Элит', inc:40, uc:380, maxLv:5, bc:450, bg:'#d0c0a0', sprite:'warehouse.png'},
+  {id:'mall', name:'ТЦ', cat:'🏦 Элит', inc:60, uc:550, maxLv:5, bc:700, bg:'#ffd0e0', sprite:'mall.png'}
+];
+
+const DM = {};
+DEFS.forEach(d => DM[d.id] = d);
+
+// Категории для фильтрации
+const CATEGORIES = {
+  starter: DEFS.slice(0, 5),
+  medium: DEFS.slice(5, 10),
+  elite: DEFS.slice(10, 15)
+};
+
+// Путь к спрайтам
+const SPRITE_PATH = 'assets/sprites/buildings/';
+
+// Глобальные переменные
+let cityCoins = 1500, cityLevel = 1, selectedKey = null, pendingTile = null;
+const buildings = {};
+const GRID = 5;
+let isoContainer, coinDisplay, levelDisplay, tileElements = {}, popupOverlay, buildOverlay, notifEl, notifyTimeout;
+let currentCategory = 'starter';
+
+// ========== ФУНКЦИИ ДЛЯ PNG СПРАЙТОВ ==========
+function getBldSpriteHTML(id, level) {
+  const def = DM[id];
+  if (!def) return '';
+  
+  const spritePath = SPRITE_PATH + def.sprite;
+  const scale = 0.85 + (level * 0.04);
+  const size = Math.floor(60 * scale);
+  
+  return `
+    <div style="position:absolute;bottom:5px;left:50%;transform:translateX(-50%);width:${size}px;height:${size}px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;pointer-events:none;filter:drop-shadow(0 6px 4px rgba(0,0,0,0.35));">
+      <img src="${spritePath}" alt="${def.name}" style="width:100%;height:100%;object-fit:contain;image-rendering:crisp-edges;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div style="display:none;width:100%;height:100%;background:${def.bg};border-radius:8px;align-items:center;justify-content:center;font-size:24px;font-weight:bold;color:#333;border:2px dashed #999;">${def.name.charAt(0)}</div>
+      <div style="margin-top:2px;background:rgba(0,0,0,0.6);color:#fff;padding:2px 6px;border-radius:12px;font-size:9px;font-weight:bold;white-space:nowrap;">Lv.${level}</div>
+    </div>
+  `;
+}
+
+function getPreviewSpriteHTML(id) {
+  const def = DM[id];
+  if (!def) return '';
+  
+  return `
+    <div style="width:70px;height:70px;display:flex;align-items:center;justify-content:center;">
+      <img src="${SPRITE_PATH}${def.sprite}" alt="${def.name}" style="width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 4px rgba(0,0,0,0.3));" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div style="display:none;width:100%;height:100%;background:${def.bg};border-radius:12px;align-items:center;justify-content:center;font-size:32px;font-weight:bold;color:#555;">${def.name.charAt(0)}</div>
+    </div>
+  `;
+}
+
+// ========== ПЛИТКА ==========
+function tileBg(r, c) {
+  const sh = (r + c) % 2 === 0 ? '#72c85a' : '#68ba50';
+  const lsh = '#50a038', rsh = '#427828';
+  
+  return `
+    <svg viewBox="0 0 72 64" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:72px;height:64px;pointer-events:none">
+      <polygon points="36,1 71,19 36,37 1,19" fill="${sh}" stroke="#58a840" stroke-width="0.8"/>
+      <polygon points="1,19 36,37 36,52 1,34" fill="${lsh}"/>
+      <polygon points="36,37 71,19 71,34 36,52" fill="${rsh}"/>
+    </svg>
+  `;
+}
+
+function makeTile(r, c) {
+  const key = `${r},${c}`;
+  const b = buildings[key];
+  const d = b ? DM[b.id] : null;
+  
+  const bldHTML = b ? getBldSpriteHTML(b.id, b.lv) : `
+    <div style="position:absolute;top:5px;left:12px;width:48px;height:26px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:rgba(255,255,255,.18);border:2px dashed rgba(255,255,255,.55);font-size:18px;color:rgba(255,255,255,.75);">+</div>
+  `;
+  
+  const bub = b ? `<div class="city-bubble" id="bub-${key}">🪙+${d.inc * b.lv}/ч</div>` : '';
+  const dot = b ? `<div class="city-dot" id="dot-${key}"></div>` : '';
+  
+  return tileBg(r, c) + bub + dot + bldHTML;
+}
+
+// ========== ОСНОВНЫЕ ФУНКЦИИ ==========
+function loadBuildings() {
+  const saved = localStorage.getItem('mtbank_city_buildings');
+  if (saved) {
+    Object.assign(buildings, JSON.parse(saved));
+  } else {
+    // Стартовые здания
+    [
+      {r:0,c:1,id:'cafe'},{r:0,c:3,id:'flower'},{r:1,c:2,id:'restaurant'},
+      {r:2,c:0,id:'bank'},{r:2,c:4,id:'cinema'},{r:3,c:2,id:'minimarket'},
+      {r:4,c:1,id:'itoffice'},{r:4,c:3,id:'mall'}
+    ].forEach(b => { buildings[`${b.r},${b.c}`] = {id:b.id, lv:1, acc:0, tick:Date.now()}; });
+  }
+  
+  const user = window.getCurrentUser?.();
+  if (user) { cityCoins = user.balanceMtBanks || 1500; updateCoins(); }
+}
+
+function saveBuildings() { localStorage.setItem('mtbank_city_buildings', JSON.stringify(buildings)); }
+
+function renderGrid() {
+  if (!isoContainer) return;
+  
+  const container = isoContainer.parentElement;
+  const containerWidth = container.clientWidth;
+  const scale = Math.min(1, containerWidth / 500);
+  const TW = 90 * scale, TH = 48 * scale;
+  
+  const CW = GRID * TW, CH = GRID * (TH / 2) + TH + 80 * scale;
+  isoContainer.style.width = CW + 'px';
+  isoContainer.style.height = CH + 'px';
+  isoContainer.innerHTML = '';
+  tileElements = {};
+  
+  for (let r = 0; r < GRID; r++) {
+    for (let c = 0; c < GRID; c++) {
+      const sx = (c - r) * (TW / 2) + CW / 2 - TW / 2;
+      const sy = (c + r) * (TH / 2) + 20 * scale;
+      const key = `${r},${c}`;
+      
+      const div = document.createElement('div');
+      div.className = 'city-tile';
+      div.style.cssText = `left:${sx}px;top:${sy}px;width:${72*scale}px;height:${64*scale}px;transform:scale(${scale});transform-origin:top left;`;
+      div.innerHTML = makeTile(r, c);
+      div.onclick = () => onTileClick(r, c);
+      
+      isoContainer.appendChild(div);
+      tileElements[key] = div;
+    }
+  }
+  
+  initBubbles(); updateDots();
+}
+
+function initBubbles() {
+  Object.keys(buildings).forEach(k => {
+    const el = document.getElementById('bub-' + k);
+    if (el) setTimeout(() => el.classList.add('visible'), 400 + Math.random() * 500);
+  });
+}
+
+function updateDots() {
+  Object.entries(buildings).forEach(([k, b]) => {
+    const d = document.getElementById('dot-' + k);
+    if (d) d.style.display = b.acc >= 1 ? 'block' : 'none';
+  });
+}
+
+function tickBuildings() {
+  const now = Date.now();
+  Object.entries(buildings).forEach(([k, b]) => {
+    const d = DM[b.id];
+    if (d) b.acc += d.inc * b.lv * ((now - b.tick) / 3600000);
+    b.tick = now;
+  });
+  saveBuildings();
+}
+
+function refreshTile(key) {
+  const [r, c] = key.split(',').map(Number);
+  if (tileElements[key]) tileElements[key].innerHTML = makeTile(r, c);
+  const el = document.getElementById('bub-' + key);
+  if (el) setTimeout(() => el.classList.add('visible'), 250);
+  updateDots();
+}
+
+function onTileClick(r, c) {
+  const key = `${r},${c}`;
+  buildings[key] ? openPopup(key) : (pendingTile = key, openBuildMenu());
+}
+
+function openPopup(key) {
+  selectedKey = key;
+  const b = buildings[key], d = DM[b.id];
+  
+  document.getElementById('popup-name').textContent = d.name + ' Lv' + b.lv;
+  document.getElementById('popup-type').textContent = d.cat;
+  document.getElementById('popup-income').textContent = (d.inc * b.lv) + ' MtB/ч';
+  document.getElementById('popup-acc').textContent = Math.floor(b.acc) + ' MtB';
+  document.getElementById('popup-level').textContent = b.lv;
+  document.getElementById('popup-upcost').textContent = b.lv >= d.maxLv ? 'МАКС' : d.uc * b.lv + ' MtB';
+  document.getElementById('popup-progress').style.width = (b.lv / d.maxLv * 100) + '%';
+  document.getElementById('popup-progress-text').textContent = `Уровень ${b.lv} / ${d.maxLv}`;
+  
+  const preview = document.getElementById('popup-preview');
+  preview.style.background = d.bg;
+  preview.innerHTML = getPreviewSpriteHTML(b.id);
+  
+  document.getElementById('popup-collect').disabled = b.acc < 1;
+  document.getElementById('popup-upgrade').disabled = b.lv >= d.maxLv || cityCoins < d.uc * b.lv;
+  
+  popupOverlay.classList.add('open');
+}
+
+function openBuildMenu() {
+  const grid = document.getElementById('build-grid');
+  const categoryTabs = document.getElementById('build-categories');
+  
+  const renderCategory = (cat) => {
+    currentCategory = cat;
+    grid.innerHTML = '';
+    
+    // Обновляем активный таб
+    document.querySelectorAll('.category-tab').forEach(tab => {
+      tab.classList.toggle('active', tab.dataset.cat === cat);
+    });
+    
+    const buildingsList = CATEGORIES[cat] || DEFS;
+    buildingsList.forEach(d => {
+      const div = document.createElement('div');
+      div.className = 'build-item';
+      div.innerHTML = `
+        <div style="width:58px;height:65px;position:relative;overflow:visible">${getPreviewSpriteHTML(d.id)}</div>
+        <div class="build-item-name">${d.name}</div>
+        <div class="build-item-cost">🪙${d.bc}</div>
+      `;
+      
+      div.onclick = () => {
+        if (!pendingTile) { notify('Нажми на пустую клетку'); closeBuildMenu(); return; }
+        if (buildings[pendingTile]) { notify('Клетка занята!'); return; }
+        if (cityCoins < d.bc) { notify('Недостаточно MtB!'); return; }
+        
+        cityCoins -= d.bc;
+        buildings[pendingTile] = {id: d.id, lv: 1, acc: 0, tick: Date.now()};
+        refreshTile(pendingTile); updateCoins(); saveBuildings(); syncBalance(); burst();
+        notify(`${d.name} построена! 🏗`);
+        pendingTile = null; closeBuildMenu(); updateCityLevel();
+      };
+      
+      grid.appendChild(div);
+    });
+  };
+  
+  // Создаём табы если их нет
+  if (!categoryTabs) {
+    const tabsDiv = document.createElement('div');
+    tabsDiv.id = 'build-categories';
+    tabsDiv.style.cssText = 'display:flex;gap:5px;margin-bottom:12px';
+    tabsDiv.innerHTML = `
+      <button class="category-tab active" data-cat="starter" style="flex:1;padding:8px;border:none;border-radius:20px;background:#7dbe9e;color:#1a3a2e;font-weight:bold;cursor:pointer;box-shadow:0 3px 0 #4a7a62;">⭐ Старт</button>
+      <button class="category-tab" data-cat="medium" style="flex:1;padding:8px;border:none;border-radius:20px;background:#b8a07c;color:#1a3a2e;font-weight:bold;cursor:pointer;box-shadow:0 3px 0 #8a7050;">🏢 Средние</button>
+      <button class="category-tab" data-cat="elite" style="flex:1;padding:8px;border:none;border-radius:20px;background:#d4af37;color:#1a3a2e;font-weight:bold;cursor:pointer;box-shadow:0 3px 0 #a08020;">🏦 Элит</button>
+    `;
+    const menuHeader = document.querySelector('.build-menu div');
+    menuHeader.parentNode.insertBefore(tabsDiv, grid);
+    
+    tabsDiv.querySelectorAll('.category-tab').forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        e.stopPropagation();
+        renderCategory(tab.dataset.cat);
+      });
+    });
+  }
+  
+  renderCategory('starter');
+  buildOverlay.classList.add('open');
+}
+
+function closeBuildMenu() { buildOverlay.classList.remove('open'); pendingTile = null; }
+function closePopup() { popupOverlay.classList.remove('open'); selectedKey = null; }
+
+function collectFromPopup() {
+  if (!selectedKey) return;
+  const b = buildings[selectedKey], amt = Math.floor(b.acc);
+  if (amt < 1) return;
+  
+  b.acc -= amt; cityCoins += amt; updateCoins(); syncBalance(); floatCoin(amt);
+  notify(`+${amt} MtB собрано! 💰`);
+  openPopup(selectedKey); updateCityLevel(); saveBuildings();
+}
+
+function upgradeFromPopup() {
+  if (!selectedKey) return;
+  const b = buildings[selectedKey], d = DM[b.id];
+  if (b.lv >= d.maxLv) return;
+  const cost = d.uc * b.lv;
+  if (cityCoins < cost) { notify('Недостаточно MtB!'); return; }
+  
+  cityCoins -= cost; b.lv++; updateCoins(); syncBalance(); refreshTile(selectedKey); burst();
+  notify(`${d.name} улучшен до Lv${b.lv}! ⬆`);
+  openPopup(selectedKey); saveBuildings();
+}
+
+function collectAll() {
+  let tot = 0;
+  Object.entries(buildings).forEach(([k, b]) => { const a = Math.floor(b.acc); if (a > 0) { b.acc -= a; tot += a; } });
+  if (tot > 0) { cityCoins += tot; updateCoins(); syncBalance(); floatCoin(tot); notify(`Собрано +${tot} MtB! 💰`); updateCityLevel(); saveBuildings(); }
+  else notify('Пока нечего собирать...');
+}
+
+function showStats() {
+  let inc = 0;
+  Object.values(buildings).forEach(b => { const d = DM[b.id]; if (d) inc += d.inc * b.lv; });
+  notify(`Доход: ${inc} MtB/ч | Зданий: ${Object.keys(buildings).length}`);
+}
+
+function updateCityLevel() {
+  const n = Math.max(1, Math.floor(Object.keys(buildings).length / 3) + 1);
+  if (n > cityLevel) { cityLevel = n; levelDisplay.textContent = cityLevel; notify('Город вырос! Lv' + cityLevel + ' 🌟'); burst(); }
+}
+
+function updateCoins() { if (coinDisplay) coinDisplay.textContent = cityCoins.toLocaleString(); }
+
+function syncBalance() {
+  const user = window.getCurrentUser?.();
+  if (user) { user.balanceMtBanks = cityCoins; const users = window.loadAllUsers?.(); if (users) { users[user.id] = user; window.saveAllUsers?.(users); } window.balanceMtBanks = cityCoins; window.syncBalancesToDom?.(); }
+}
+
+function notify(msg) {
+  if (!notifEl) return;
+  notifEl.textContent = msg; notifEl.classList.add('show');
+  clearTimeout(notifyTimeout); notifyTimeout = setTimeout(() => notifEl.classList.remove('show'), 2400);
+}
+
+function floatCoin(amt) {
+  const el = document.createElement('div'); el.className = 'city-float-coin'; el.textContent = '+' + amt + ' MtB';
+  el.style.cssText = `left:${window.innerWidth/2-30}px;top:${window.innerHeight*.44}px`;
+  document.body.appendChild(el); setTimeout(() => el.remove(), 960);
+}
+
+function burst() {
+  ['⭐','✨','🌟'].forEach((s, i) => {
+    const el = document.createElement('div'); el.className = 'city-sparkle'; el.textContent = s;
+    el.style.cssText = `left:${window.innerWidth/2-16+i*20}px;top:${window.innerHeight*.28}px`;
+    document.body.appendChild(el); setTimeout(() => el.remove(), 680);
+  });
+}
+
+function bindEvents() {
+  document.getElementById('city-stats-btn')?.addEventListener('click', showStats);
+  document.getElementById('city-build-btn')?.addEventListener('click', () => { pendingTile = null; openBuildMenu(); });
+  document.getElementById('city-collect-all-btn')?.addEventListener('click', collectAll);
+  document.getElementById('popup-close-btn')?.addEventListener('click', closePopup);
+  document.getElementById('popup-collect')?.addEventListener('click', collectFromPopup);
+  document.getElementById('popup-upgrade')?.addEventListener('click', upgradeFromPopup);
+  popupOverlay?.addEventListener('click', e => { if (e.target === popupOverlay) closePopup(); });
+  buildOverlay?.addEventListener('click', e => { if (e.target === buildOverlay) closeBuildMenu(); });
+}
+
+// ========== ИНИЦИАЛИЗАЦИЯ ==========
+window.initCity = function() {
+  console.log('🏗 initCity запущен');
+  const panel = document.getElementById('panel-game');
+  if (!panel) return;
+  
+  panel.innerHTML = `
+    <div class="city-game-wrap" style="height:100%;display:flex;flex-direction:column;">
+      <div class="city-bg"></div>
+      <div class="city-hud">
+        <div class="city-coins"><div class="coin-icon">M</div><span id="city-coin-display">1500</span></div>
+        <div class="city-title">🏙 MtBank City</div>
+        <div class="city-level">Lv.<span id="city-level-display">1</span></div>
+      </div>
+      <div class="city-game-area" style="flex:1;display:flex;align-items:center;justify-content:center;overflow:visible;min-height:0;">
+        <div id="city-iso" style="position:relative;"></div>
+      </div>
+      <div class="city-bar">
+        <button class="city-bar-btn" id="city-stats-btn"><span class="city-bar-icon">📊</span><span class="city-bar-label">Статы</span></button>
+        <button class="city-bar-btn primary" id="city-build-btn"><span class="city-bar-icon">🏗</span><span class="city-bar-label">Строить</span></button>
+        <button class="city-bar-btn" id="city-collect-all-btn"><span class="city-bar-icon">💰</span><span class="city-bar-label">Собрать</span></button>
+      </div>
+    </div>
+    <div class="city-popup-overlay" id="city-popup"><div class="city-popup"><div class="popup-header"><div><div class="popup-name" id="popup-name">Здание</div><div class="popup-type" id="popup-type">Тип</div></div><button class="popup-close" id="popup-close-btn">✕</button></div><div class="popup-preview" id="popup-preview"></div><div class="popup-progress-bar"><div class="popup-progress" id="popup-progress" style="width:20%"></div></div><div class="popup-progress-text" id="popup-progress-text">Уровень 1 / 5</div><div class="popup-stats"><div class="stat-card"><div class="stat-label">Доход/час</div><div class="stat-value gold" id="popup-income">5 MtB</div></div><div class="stat-card"><div class="stat-label">Накоплено</div><div class="stat-value gold" id="popup-acc">0 MtB</div></div><div class="stat-card"><div class="stat-label">Уровень</div><div class="stat-value" id="popup-level">1</div></div><div class="stat-card"><div class="stat-label">Апгрейд</div><div class="stat-value gold" id="popup-upcost">100 MtB</div></div></div><div class="popup-buttons"><button class="btn-collect" id="popup-collect">💰 Забрать</button><button class="btn-upgrade" id="popup-upgrade">⬆ Улучшить</button></div></div></div>
+    <div class="build-overlay" id="build-overlay"><div class="build-menu"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div style="font-family:'Nunito',sans-serif;font-size:17px;font-weight:900;color:#152a20">Выберите здание</div><button class="popup-close" id="build-close-btn">✕</button></div><div class="build-grid" id="build-grid"></div></div></div>
+    <div class="city-notif" id="city-notif"></div>
+  `;
+  
+  coinDisplay = document.getElementById('city-coin-display');
+  levelDisplay = document.getElementById('city-level-display');
+  isoContainer = document.getElementById('city-iso');
+  popupOverlay = document.getElementById('city-popup');
+  buildOverlay = document.getElementById('build-overlay');
+  notifEl = document.getElementById('city-notif');
+  
+  loadBuildings();
+  renderGrid();
+  bindEvents();
+  updateCoins();
+  
+  // Добавляем кнопку закрытия для меню постройки
+  document.getElementById('build-close-btn')?.addEventListener('click', closeBuildMenu);
+  
+  setInterval(() => { tickBuildings(); updateDots(); }, 3000);
+  setInterval(updateDots, 700);
+  
+  // Ресайз при изменении окна
+  window.addEventListener('resize', () => { if (isoContainer) renderGrid(); });
+  
+  console.log('✅ Город отрисован со всеми 15 зданиями');
+};
+
+// Запуск
+var waitInterval = setInterval(function() {
+  var panel = document.getElementById('panel-game');
+  if (panel) {
+    clearInterval(waitInterval);
+    console.log('🚀 Запускаем город');
+    window.initCity();
+  }
+}, 300);
+
+console.log('✅ city-game.js загружен (15 зданий, 3 категории)');
+========================================
+ФАЙЛ: styles.css
+========================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-page: #f2f2f2;
+  --bg-card: #ffffff;
+  --text-dark: #2a2a2a;
+  --text-muted: #8a8a8a;
+  --border-input: #d8d8d8;
+  --shadow-card: 0 8px 28px rgba(0, 0, 0, 0.06);
+  --nav-border: #e8e8e8;
+  --accent-active: #1a1a1a;
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* Жёстко скрываем: перекрывает display:flex у экранов и секций */
+[hidden],
+.is-hidden {
+  display: none !important;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: var(--font);
+  background: var(--bg-page);
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+.screen {
+  min-height: 100vh;
+}
+
+.screen--center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.screen--app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+}
+
+.card {
+  background: var(--bg-card);
+  border-radius: 10px;
+  box-shadow: var(--shadow-card);
+  width: 100%;
+  max-width: 420px;
+}
+
+.card--form {
+  padding: 48px 44px;
+}
+
+.card__title {
+  margin: 0 0 32px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dark);
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field__label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.field__input {
+  width: 100%;
+  padding: 14px 16px;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--text-dark);
+  background: #fff;
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.field__input:focus {
+  border-color: #9a9a9a;
+}
+
+.field__input::placeholder {
+  color: #bdbdbd;
+}
+
+.field__readonly {
+  margin: 0;
+  padding: 14px 16px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  background: #fafafa;
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+.field__readonly--muted {
+  font-weight: 400;
+  color: #555;
+}
+
+.field__hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #c62828;
+}
+
+.btn {
+  margin-top: 8px;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.btn--pill {
+  align-self: center;
+  padding: 14px 48px;
+  border-radius: 999px;
+  background: var(--accent-active);
+  color: #fff;
+  min-width: 200px;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.btn--pill:hover {
+  opacity: 0.92;
+}
+
+.btn--pill:active {
+  transform: scale(0.98);
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 24px 16px 16px;
+}
+
+.panel {
+  display: none;
+  width: 100%;
+  max-width: 480px;
+}
+
+.panel.is-active {
+  display: block;
+}
+
+.card--panel {
+  padding: 28px 24px 32px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.card--profile {
+  padding-bottom: 36px;
+}
+
+.panel__title {
+  margin: 0 0 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dark);
+}
+
+.panel__empty {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* Профиль: балансы отдельно от карточки с данными */
+.profile-page {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-balances {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+/* Блоки баланса — палитра MOBY (синий / маджента / фиолетовый), только эти карточки */
+.balance-card {
+  padding: 20px 14px 22px;
+  text-align: center;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  min-height: 112px;
+  box-shadow: 0 10px 28px rgba(75, 0, 130, 0.22);
+}
+
+.profile-balances .balance-card:nth-child(1) {
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  box-shadow:
+    0 10px 32px rgba(0, 123, 255, 0.28),
+    0 4px 16px rgba(225, 0, 152, 0.18);
+}
+
+.profile-balances .balance-card:nth-child(2) {
+  background: linear-gradient(168deg, #e10098 0%, #5c0099 42%, #300060 100%);
+  box-shadow:
+    0 10px 32px rgba(225, 0, 152, 0.22),
+    0 4px 18px rgba(48, 0, 96, 0.35);
+}
+
+.balance-card__label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.35;
+}
+
+.balance-card__value {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 0.28em;
+}
+
+.balance-card__digits {
+  line-height: 1;
+}
+
+.balance-card__glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  color: rgba(255, 255, 255, 0.96);
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
+}
+
+.balance-card__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Магазин: сетка 2×2, квадраты, ховер */
+.shop-page {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.shop-page__title {
+  margin-bottom: 16px;
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+  padding: 2px;
+}
+
+.shop-item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  outline: none;
+}
+
+a.shop-item {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.shop-item__inner {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.24s ease, box-shadow 0.24s ease;
+  will-change: transform;
+}
+
+.shop-item:hover .shop-item__inner,
+.shop-item:focus-within .shop-item__inner {
+  transform: scale(1.06);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.14);
+  z-index: 2;
+}
+
+.shop-item__visual {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14%;
+}
+
+.shop-item__visual--apple {
+  background: linear-gradient(160deg, #fff8e7 0%, #f5e6c8 100%);
+}
+
+.shop-item__visual--spa {
+  background: linear-gradient(160deg, #f7f2ed 0%, #e8ddd4 100%);
+}
+
+.shop-item__visual--cash {
+  background: linear-gradient(160deg, #e8fff0 0%, #c8eed8 100%);
+}
+
+.shop-item__visual--brain {
+  background: linear-gradient(160deg, #fdf2f8 0%, #e9d4e8 100%);
+}
+
+.shop-svg {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.shop-item__hover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 12px 12px 14px;
+  background: linear-gradient(to top, rgba(20, 20, 20, 0.88) 0%, rgba(20, 20, 20, 0.35) 52%, transparent 72%);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  pointer-events: none;
+}
+
+.shop-item:hover .shop-item__hover,
+.shop-item:focus-within .shop-item__hover {
+  opacity: 1;
+}
+
+.shop-item__name {
+  margin: 0 0 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  line-height: 1.25;
+}
+
+.shop-item__desc {
+  margin: 0;
+  font-size: 0.6875rem;
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.profile-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.profile-item--full {
+  grid-column: 1 / -1;
+}
+
+.profile-item__label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.profile-item__value {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  line-height: 1.4;
+}
+
+.profile-item__value--break {
+  word-break: break-all;
+}
+
+.link-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: #fafafa;
+  border: 1px solid var(--border-input);
+  border-radius: 8px;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.link-copy:hover {
+  background: #f3f3f3;
+  border-color: #c8c8c8;
+}
+
+.link-copy:active {
+  background: #ebebeb;
+}
+
+.link-copy__text {
+  margin: 0;
+  text-align: left;
+}
+
+.link-copy__hint {
+  margin-top: 8px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.copy-toast {
+  margin: 10px 0 0;
+  font-size: 0.8125rem;
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  gap: 4px;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  background: var(--bg-card);
+  border-top: 1px solid var(--nav-border);
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04);
+  z-index: 10;
+}
+
+.bottom-nav__tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: var(--text-muted);
+  border-radius: 8px;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.bottom-nav__tab:hover {
+  color: var(--text-dark);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.bottom-nav__tab[aria-current="page"] {
+  color: var(--accent-active);
+  font-weight: 600;
+}
+
+.bottom-nav__tab[aria-current="page"] .bottom-nav__text {
+  box-shadow: 0 2px 0 0 var(--accent-active);
+  padding-bottom: 2px;
+}
+
+.bottom-nav__icon {
+  font-size: 1.25rem;
+  line-height: 1;
+  opacity: 0.85;
+}
+
+.bottom-nav__tab[aria-current="page"] .bottom-nav__icon {
+  opacity: 1;
+}
+
+.bottom-nav__text {
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+
+@media (max-width: 380px) {
+  .card--form {
+    padding: 36px 24px;
+  }
+
+  .bottom-nav__text {
+    font-size: 0.625rem;
+  }
+}
+/* Стили для переключения между регистрацией и входом */
+.auth-switch {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.auth-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.auth-link:hover {
+  color: #0056b3;
+  text-decoration: underline;
+}
+
+/* Кнопка выхода */
+.btn--logout {
+  width: 100%;
+  margin-top: 16px;
+  background: linear-gradient(145deg, #dc3545 0%, #c82333 100%);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.btn--logout:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 6px 16px rgba(220, 53, 69, 0.4);
+}
+
+.btn--logout:active {
+  transform: scale(0.98);
+}
+/* Стили для игры-кликера */
+.game-container {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.game-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 8px 0;
+}
+
+.game-stats {
+  display: flex;
+  justify-content: space-around;
+  gap: 16px;
+  width: 100%;
+  flex-wrap: wrap;
+}
+
+.game-stat {
+  text-align: center;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 12px 20px;
+  border-radius: 16px;
+  min-width: 120px;
+}
+
+.game-stat__label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  opacity: 0.9;
+  margin-bottom: 6px;
+}
+
+.game-stat__value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.game-token {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.1s ease;
+  animation: float 3s ease-in-out infinite;
+}
+
+.game-token:active {
+  transform: scale(0.95);
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.game-token__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.game-token__hint {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  white-space: nowrap;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 4px 12px;
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+.game-info {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 16px;
+  border-radius: 12px;
+  margin-top: 8px;
+}
+
+.game-info__text {
+  margin: 8px 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.game-info__text strong {
+  color: #ffd700;
+}
+
+.game-animation-container {
+  position: fixed;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.click-animation {
+  position: absolute;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  animation: floatUp 1s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes floatUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0px) scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-50px) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100px) scale(1.5);
+  }
+}
+
+/* Адаптив для игры */
+@media (max-width: 480px) {
+  .game-token {
+    width: 140px;
+    height: 140px;
+  }
+  
+  .game-stat {
+    padding: 8px 16px;
+    min-width: 100px;
+  }
+  
+  .game-stat__value {
+    font-size: 1.25rem;
+  }
+}
+
+/* ===== СТИЛИ ДЛЯ ГОРОДА ===== */
+.city-wrapper {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 20px;
+  margin: 20px 0;
+}
+
+.city-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.city-header h3 {
+  margin: 0;
+  color: #fff;
+  font-size: 20px;
+}
+
+.city-stats {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  color: #ffe082;
+}
+
+.btn-collect {
+  background: linear-gradient(135deg, #ffca28, #f57f17);
+  border: none;
+  border-radius: 30px;
+  padding: 10px 20px;
+  color: #1a1a2e;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s;
+  font-size: 14px;
+}
+
+.btn-collect:hover {
+  transform: scale(1.05);
+}
+
+.city-buildings {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.city-building {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 15px;
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  transition: all 0.3s;
+  flex-wrap: wrap;
+}
+
+.city-building.built {
+  border-left: 4px solid #4caf50;
+}
+
+.city-building.available {
+  border-left: 4px solid #ffca28;
+  opacity: 0.9;
+}
+
+.building-icon {
+  font-size: 40px;
+  min-width: 50px;
+  text-align: center;
+}
+
+.building-info {
+  flex: 1;
+  min-width: 150px;
+}
+
+.building-name {
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 5px;
+}
+
+.building-desc {
+  font-size: 14px;
+  color: #aaa;
+  margin-bottom: 5px;
+}
+
+.building-level {
+  font-size: 14px;
+  color: #ffca28;
+}
+
+.building-income {
+  font-size: 14px;
+  color: #4caf50;
+}
+
+.btn-build, .btn-upgrade {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  border: none;
+  border-radius: 20px;
+  padding: 10px 15px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+
+.btn-build:hover, .btn-upgrade:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-build:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.max-level {
+  color: #4caf50;
+  font-weight: 500;
+  padding: 10px 15px;
+}
+
+.city-wrapper h4 {
+  color: #fff;
+  margin: 20px 0 10px 0;
+  font-size: 18px;
+}
+
+/* Адаптив для мобильных */
+@media (max-width: 600px) {
+  .city-building {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .btn-build, .btn-upgrade {
+    width: 100%;
+  }
+  
+  .city-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+/* ===== ИЗОМЕТРИЧЕСКИЙ ГОРОД ===== */
+.city-wrapper {
+  background: linear-gradient(145deg, #1a2a1f 0%, #0f1a0e 100%);
+  border-radius: 30px;
+  padding: 25px 20px;
+  margin: 20px 0;
+  box-shadow: inset 0 -5px 0 rgba(0,0,0,0.3), 0 10px 20px rgba(0,0,0,0.3);
+  border: 1px solid #3a5a3a;
+}
+
+.city-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px dashed #4a7a4a;
+}
+
+.city-header h3 {
+  margin: 0;
+  color: #e8f0e0;
+  font-size: 24px;
+  text-shadow: 2px 2px 0 #1a3a1a;
+  letter-spacing: 1px;
+}
+
+.city-stats {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  color: #ffd700;
+  font-weight: 600;
+  text-shadow: 1px 1px 0 #1a1a1a;
+}
+
+.btn-collect {
+  background: linear-gradient(145deg, #ffd700, #b8860b);
+  border: none;
+  border-radius: 40px;
+  padding: 12px 24px;
+  color: #1a1a1a;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 5px 0 #8b6914, 0 4px 8px rgba(0,0,0,0.3);
+  transition: all 0.1s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-collect:active {
+  transform: translateY(3px);
+  box-shadow: 0 2px 0 #8b6914, 0 4px 8px rgba(0,0,0,0.3);
+}
+
+/* Сетка города — вид сверху с изометрией */
+.city-buildings {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 20px;
+  perspective: 800px;
+}
+
+/* Карточка здания в стиле "тайла" */
+.city-building {
+  background: linear-gradient(145deg, #2d5a2d, #1a3a1a);
+  border-radius: 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.25s ease;
+  box-shadow: 
+    0 8px 0 #0f1a0f,
+    0 10px 20px rgba(0,0,0,0.4),
+    inset 0 -2px 0 rgba(255,255,255,0.1);
+  border: 2px solid #4a8a4a;
+  transform: rotateX(2deg) translateY(0);
+  overflow: hidden;
+  position: relative;
+}
+
+.city-building::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent);
+  pointer-events: none;
+}
+
+.city-building:hover {
+  transform: rotateX(0deg) translateY(-5px);
+  box-shadow: 
+    0 10px 0 #0f1a0f,
+    0 15px 25px rgba(0,0,0,0.5),
+    inset 0 -2px 0 rgba(255,255,255,0.2);
+  border-color: #ffd700;
+}
+
+.city-building.built {
+  border-left: none;
+  border-top: 4px solid #ffd700;
+}
+
+.city-building.available {
+  opacity: 0.9;
+  background: linear-gradient(145deg, #3a4a3a, #2a3a2a);
+  border-color: #6a8a6a;
+}
+
+.building-icon {
+  font-size: 56px;
+  padding: 20px 0 10px;
+  filter: drop-shadow(0 8px 4px rgba(0,0,0,0.4));
+  transform: scale(1);
+  transition: transform 0.2s;
+}
+
+.city-building:hover .building-icon {
+  transform: scale(1.05);
+}
+
+.building-info {
+  padding: 10px 15px 15px;
+  width: 100%;
+  background: rgba(0,0,0,0.2);
+}
+
+.building-name {
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 5px;
+  font-size: 16px;
+  text-shadow: 1px 1px 0 #1a1a1a;
+}
+
+.building-desc {
+  font-size: 12px;
+  color: #b8d8b8;
+  margin-bottom: 8px;
+  min-height: 32px;
+}
+
+.building-level {
+  font-size: 13px;
+  color: #ffd700;
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.building-income {
+  font-size: 15px;
+  color: #7fff7f;
+  font-weight: 700;
+  text-shadow: 0 2px 2px #1a3a1a;
+  margin-bottom: 12px;
+}
+
+.btn-build, .btn-upgrade {
+  background: linear-gradient(145deg, #5a8a5a, #2a5a2a);
+  border: none;
+  border-radius: 30px;
+  padding: 10px 15px;
+  color: white;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #1a3a1a, 0 2px 4px rgba(0,0,0,0.3);
+  transition: all 0.1s;
+  width: calc(100% - 30px);
+  margin: 0 15px 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-build {
+  background: linear-gradient(145deg, #7a9a7a, #4a7a4a);
+}
+
+.btn-upgrade {
+  background: linear-gradient(145deg, #daa520, #b8860b);
+  color: #1a1a1a;
+}
+
+.btn-build:active, .btn-upgrade:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #1a3a1a, 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.btn-build:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: 0 4px 0 #1a3a1a;
+  transform: none;
+}
+
+.max-level {
+  color: #7fff7f;
+  font-weight: 700;
+  padding: 10px 15px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.city-wrapper h4 {
+  color: #e8f0e0;
+  margin: 30px 0 20px;
+  font-size: 20px;
+  text-shadow: 2px 2px 0 #1a3a1a;
+  grid-column: 1 / -1;
+}
+
+/* Дороги между зданиями */
+.city-buildings {
+  background-image: 
+    linear-gradient(to right, #3a5a3a 1px, transparent 1px),
+    linear-gradient(to bottom, #3a5a3a 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: center;
+  border-radius: 20px;
+  padding: 20px;
+}
+
+/* Адаптив */
+@media (max-width: 600px) {
+  .city-buildings {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .city-header {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+}
+
+/* Анимация появления */
+@keyframes buildAppear {
+  from {
+    opacity: 0;
+    transform: rotateX(5deg) translateY(20px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: rotateX(2deg) translateY(0) scale(1);
+  }
+}
+
+.city-building {
+  animation: buildAppear 0.4s ease-out;
+}
+
+/* Эффект "земли" под городом */
+.city-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.city-wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background: linear-gradient(to top, #0a1a0a, transparent);
+  pointer-events: none;
+}
+
+/* ===== SVG ГОРОД (ЗАМЕНЯЕТ ВКЛАДКУ ИГРА) ===== */
+#panel-game {
+  padding: 0 !important;
+  background: #25b0a0 !important;
+  overflow: hidden !important;
+}
+
+.city-game-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #25b0a0;
+  position: relative;
+  overflow: hidden;
+}
+
+.city-bg {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #4ec9e8 0%, #8ee8f7 52%, #25b0a0 52%);
+  z-index: 0;
+}
+
+.city-bg::before {
+  content: '';
+  position: absolute;
+  top: 28px;
+  left: 18px;
+  width: 82px;
+  height: 30px;
+  background: rgba(255,255,255,.55);
+  border-radius: 40px;
+}
+
+.city-bg::after {
+  content: '';
+  position: absolute;
+  top: 16px;
+  right: 28px;
+  width: 62px;
+  height: 22px;
+  background: rgba(255,255,255,.45);
+  border-radius: 30px;
+}
+
+.city-hud {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 13px 7px;
+  background: rgba(0,0,0,.12);
+  backdrop-filter: blur(6px);
+  flex-shrink: 0;
+}
+
+.city-coins {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255,255,255,.95);
+  border-radius: 20px;
+  padding: 5px 12px 5px 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+
+.coin-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #ffdc1e, #f0a000);
+  border: 2px solid #c77a00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 900;
+  color: #7a4500;
+  font-family: 'Nunito', sans-serif;
+}
+
+.city-coins span {
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: #1a3520;
+}
+
+.city-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 16px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 1px 6px rgba(0,0,0,.35);
+}
+
+.city-level {
+  background: rgba(255,255,255,.22);
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.city-game-area {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+#city-iso {
+  position: relative;
+}
+
+.city-tile {
+  position: absolute;
+  cursor: pointer;
+}
+
+.city-tile:active {
+  filter: brightness(1.1);
+}
+
+.city-bubble {
+  position: absolute;
+  background: #fff;
+  border: 1.5px solid #e8b800;
+  border-radius: 9px;
+  padding: 2px 6px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px;
+  font-weight: 800;
+  color: #8a5800;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  pointer-events: none;
+  z-index: 50;
+  left: 50%;
+  transform: translateX(-50%) translateY(0px);
+  transition: opacity .4s, transform .4s;
+  opacity: 0;
+}
+
+.city-bubble.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-8px);
+}
+
+.city-dot {
+  position: absolute;
+  top: 1px;
+  right: 6px;
+  width: 9px;
+  height: 9px;
+  background: #22c55e;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  display: none;
+  z-index: 51;
+  animation: pulse-dot 1s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.5); }
+}
+
+.city-bar {
+  position: relative;
+  z-index: 10;
+  background: rgba(255,255,255,.96);
+  padding: 7px 13px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 7px;
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -3px 18px rgba(0,0,0,.1);
+  flex-shrink: 0;
+}
+
+.city-bar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: #f0f9f4;
+  border: none;
+  border-radius: 12px;
+  padding: 7px 10px;
+  cursor: pointer;
+  min-width: 55px;
+}
+
+.city-bar-btn:active {
+  background: #d4ecdd;
+}
+
+.city-bar-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.city-bar-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: #2d7a50;
+  letter-spacing: .3px;
+}
+
+.city-bar-btn.primary {
+  background: linear-gradient(135deg, #34d399, #059669);
+  flex: 1;
+}
+
+.city-bar-btn.primary .city-bar-label {
+  color: #022c1a;
+}
+
+/* Попап здания */
+.city-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+
+.city-popup-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.city-popup {
+  background: #fff;
+  border-radius: 24px 24px 0 0;
+  width: 100%;
+  max-width: 480px;
+  padding: 18px 18px 30px;
+  transform: translateY(100%);
+  transition: transform .28s cubic-bezier(.34,1.4,.64,1);
+}
+
+.city-popup-overlay.open .city-popup {
+  transform: translateY(0);
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.popup-name {
+  font-family: 'Nunito', sans-serif;
+  font-size: 19px;
+  font-weight: 900;
+  color: #152a20;
+}
+
+.popup-type {
+  font-size: 11px;
+  color: #888;
+  font-weight: 600;
+  margin-top: 1px;
+}
+
+.popup-close {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #f2f2f2;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-preview {
+  width: 100%;
+  height: 115px;
+  border-radius: 14px;
+  margin-bottom: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.popup-progress-bar {
+  background: #e6eeea;
+  border-radius: 6px;
+  height: 7px;
+  overflow: hidden;
+  margin-bottom: 3px;
+}
+
+.popup-progress {
+  height: 100%;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  transition: width .5s;
+}
+
+.popup-progress-text {
+  font-size: 11px;
+  color: #888;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.popup-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.stat-card {
+  background: #f7faf8;
+  border-radius: 11px;
+  padding: 9px 11px;
+}
+
+.stat-label {
+  font-size: 10px;
+  color: #9aa;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  margin-bottom: 2px;
+}
+
+.stat-value {
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 800;
+  color: #152a20;
+}
+
+.stat-value.gold {
+  color: #b87300;
+}
+
+.popup-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-collect {
+  flex: 1;
+  background: linear-gradient(135deg, #ffd830, #f0a000);
+  border: none;
+  border-radius: 13px;
+  padding: 13px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  color: #7a4500;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #c07a00;
+  transition: transform .1s, box-shadow .1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-collect:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #c07a00;
+}
+
+.btn-collect:disabled {
+  background: #ddd;
+  box-shadow: 0 4px 0 #bbb;
+  color: #aaa;
+}
+
+.btn-upgrade {
+  flex: 1;
+  background: linear-gradient(135deg, #34d399, #059669);
+  border: none;
+  border-radius: 13px;
+  padding: 13px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  color: #022c1a;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #047857;
+  transition: transform .1s, box-shadow .1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-upgrade:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #047857;
+}
+
+.btn-upgrade:disabled {
+  background: #ddd;
+  box-shadow: 0 4px 0 #bbb;
+  color: #aaa;
+}
+
+/* Меню постройки */
+.build-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,.5);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+
+.build-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.build-menu {
+  background: #fff;
+  border-radius: 24px 24px 0 0;
+  width: 100%;
+  max-width: 480px;
+  padding: 18px 14px 30px;
+  transform: translateY(100%);
+  transition: transform .28s;
+}
+
+.build-overlay.open .build-menu {
+  transform: translateY(0);
+}
+
+.build-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+}
+
+.build-item {
+  background: #f7faf8;
+  border-radius: 13px;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all .15s;
+}
+
+.build-item:active {
+  border-color: #22c55e;
+  background: #e8f7ef;
+}
+
+.build-item-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: #152a20;
+  text-align: center;
+}
+
+.build-item-cost {
+  font-size: 10px;
+  color: #b87300;
+  font-weight: 700;
+}
+
+/* Уведомление */
+.city-notif {
+  position: fixed;
+  top: 67px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-16px);
+  background: #152a20;
+  color: #fff;
+  font-family: 'Nunito', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 18px;
+  border-radius: 18px;
+  z-index: 2000;
+  opacity: 0;
+  transition: opacity .25s, transform .25s;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.city-notif.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Анимации */
+@keyframes float-up {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-50px); }
+}
+
+.city-float-coin {
+  position: fixed;
+  pointer-events: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  color: #d08000;
+  z-index: 1500;
+  animation: float-up .9s ease-out forwards;
+}
+
+@keyframes sparkle {
+  0% { opacity: 1; transform: scale(.4); }
+  60% { transform: scale(1.3); }
+  100% { opacity: 0; transform: scale(1); }
+}
+
+.city-sparkle {
+  position: fixed;
+  pointer-events: none;
+  font-size: 26px;
+  z-index: 1500;
+  animation: sparkle .6s ease-out forwards;
+}
+
+/* Исправления для игры */
+#screen-app {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.app-main {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 !important;
+}
+
+.panel {
+  width: 100% !important;
+  max-width: 100% !important;
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+}
+
+.panel.is-active {
+  display: flex !important;
+  flex-direction: column !important;
+  height: 100% !important;
+}
+
+#panel-game {
+  height: 100% !important;
+  min-height: 0 !important;
+}
+
+========================================
+ФАЙЛ: iso-styles.css
+========================================
+
+/* 🎮 УЛУЧШЕННЫЙ SVG-ГОРОД — БОЛЬШЕ, КРАСИВЕЕ, С ОТСТУПАМИ */
+.city-game-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #4ec9e8 0%, #8ee8f7 52%, #25b0a0 52%);
+  position: relative;
+  overflow: auto;
+}
+
+.city-bg {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+.city-hud {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(0,0,0,.15);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255,255,255,.2);
+}
+
+.city-coins {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,.95);
+  border-radius: 30px;
+  padding: 6px 16px 6px 10px;
+  box-shadow: 0 4px 0 #1a5a1a, 0 2px 8px rgba(0,0,0,.2);
+}
+
+.coin-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #ffdc1e, #f0a000);
+  border: 2px solid #c77a00;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 14px;
+  color: #7a4500;
+}
+
+.city-coins span {
+  font-family: 'Nunito', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1a3520;
+}
+
+.city-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 20px;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,.3);
+}
+
+.city-level {
+  background: rgba(255,255,255,.25);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  backdrop-filter: blur(4px);
+}
+
+.city-game-area {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 0;
+  min-height: 500px;
+}
+
+#city-iso {
+  position: relative;
+  transform: scale(1.3);
+  transform-origin: center center;
+}
+
+.city-tile {
+  position: absolute;
+  cursor: pointer;
+  transition: transform 0.15s, filter 0.15s;
+}
+
+.city-tile:hover {
+  transform: translateY(-4px);
+  filter: brightness(1.1);
+  z-index: 10;
+}
+
+/* Пустая клетка — больше и с отступом */
+.city-tile .empty-tile {
+  margin: 6px;
+  border-radius: 12px;
+}
+
+.city-bubble {
+  position: absolute;
+  background: #fff;
+  border: 2px solid #e8b800;
+  border-radius: 12px;
+  padding: 4px 10px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  color: #8a5800;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 50;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  transition: opacity .3s, transform .3s;
+  opacity: 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+}
+
+.city-bubble.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-12px);
+}
+
+.city-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  background: #22c55e;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  display: none;
+  z-index: 51;
+  animation: pulse-dot 1s infinite;
+  box-shadow: 0 2px 4px rgba(0,0,0,.2);
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+}
+
+/* Нижняя панель */
+.city-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  background: rgba(255,255,255,.98);
+  padding: 10px 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 10px;
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -4px 20px rgba(0,0,0,.1);
+  backdrop-filter: blur(8px);
+}
+
+.city-bar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: #f0f9f4;
+  border: none;
+  border-radius: 16px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+  min-width: 70px;
+  box-shadow: 0 3px 0 #c0dcc8;
+}
+
+.city-bar-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #c0dcc8;
+}
+
+.city-bar-icon {
+  font-size: 24px;
+}
+
+.city-bar-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #2d7a50;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+}
+
+.city-bar-btn.primary {
+  background: linear-gradient(135deg, #34d399, #059669);
+  box-shadow: 0 3px 0 #047857;
+  flex: 1;
+}
+
+.city-bar-btn.primary .city-bar-label {
+  color: #022c1a;
+}
+
+/* Попап */
+.city-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+
+.city-popup-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.city-popup {
+  background: #fff;
+  border-radius: 28px 28px 0 0;
+  width: 100%;
+  max-width: 450px;
+  padding: 24px 20px 30px;
+  transform: translateY(100%);
+  transition: transform .25s cubic-bezier(.34,1.4,.64,1);
+  box-shadow: 0 -4px 20px rgba(0,0,0,.2);
+}
+
+.city-popup-overlay.open .city-popup {
+  transform: translateY(0);
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.popup-name {
+  font-family: 'Nunito', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: #152a20;
+}
+
+.popup-type {
+  font-size: 13px;
+  color: #888;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.popup-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f2f2f2;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background .15s;
+}
+
+.popup-close:hover {
+  background: #e0e0e0;
+}
+
+.popup-preview {
+  width: 100%;
+  height: 140px;
+  border-radius: 18px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.popup-progress-bar {
+  background: #e6eeea;
+  border-radius: 10px;
+  height: 8px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.popup-progress {
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  transition: width .3s;
+}
+
+.popup-progress-text {
+  font-size: 12px;
+  color: #888;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.popup-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: #f7faf8;
+  border-radius: 14px;
+  padding: 12px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #9aa;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-family: 'Nunito', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: #152a20;
+}
+
+.stat-value.gold {
+  color: #b87300;
+}
+
+.popup-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-collect {
+  flex: 1;
+  background: linear-gradient(135deg, #ffd830, #f0a000);
+  border: none;
+  border-radius: 16px;
+  padding: 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 900;
+  color: #7a4500;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #c07a00;
+  transition: transform .1s, box-shadow .1s;
+}
+
+.btn-collect:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #c07a00;
+}
+
+.btn-upgrade {
+  flex: 1;
+  background: linear-gradient(135deg, #34d399, #059669);
+  border: none;
+  border-radius: 16px;
+  padding: 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 15px;
+  font-weight: 900;
+  color: #022c1a;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #047857;
+  transition: transform .1s, box-shadow .1s;
+}
+
+.btn-upgrade:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #047857;
+}
+
+.btn-collect:disabled,
+.btn-upgrade:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 4px 0 rgba(0,0,0,.2);
+}
+
+/* Меню постройки */
+.build-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,.5);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+
+.build-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.build-menu {
+  background: #fff;
+  border-radius: 28px 28px 0 0;
+  width: 100%;
+  max-width: 450px;
+  padding: 24px 20px 30px;
+  transform: translateY(100%);
+  transition: transform .25s;
+  box-shadow: 0 -4px 20px rgba(0,0,0,.2);
+}
+
+.build-overlay.open .build-menu {
+  transform: translateY(0);
+}
+
+.build-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.build-item {
+  background: #f7faf8;
+  border-radius: 18px;
+  padding: 14px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all .15s;
+  box-shadow: 0 2px 4px rgba(0,0,0,.05);
+}
+
+.build-item:active {
+  border-color: #22c55e;
+  background: #e8f7ef;
+  transform: scale(.98);
+}
+
+.build-item-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #152a20;
+  text-align: center;
+}
+
+.build-item-cost {
+  font-size: 11px;
+  color: #b87300;
+  font-weight: 700;
+}
+
+/* Уведомление */
+.city-notif {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: #152a20;
+  color: #fff;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 24px;
+  border-radius: 40px;
+  z-index: 2000;
+  opacity: 0;
+  transition: opacity .25s, transform .25s;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,.3);
+}
+
+.city-notif.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Анимации */
+.city-float-coin {
+  position: fixed;
+  pointer-events: none;
+  font-family: 'Nunito', sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: #d08000;
+  z-index: 1500;
+  animation: float-up .9s ease-out forwards;
+  text-shadow: 0 2px 4px rgba(0,0,0,.2);
+}
+
+@keyframes float-up {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-60px); }
+}
+
+.city-sparkle {
+  position: fixed;
+  pointer-events: none;
+  font-size: 32px;
+  z-index: 1500;
+  animation: sparkle .6s ease-out forwards;
+}
+
+@keyframes sparkle {
+  0% { opacity: 1; transform: scale(.4); }
+  60% { transform: scale(1.4); }
+  100% { opacity: 0; transform: scale(1); }
+}
+
+/* Адаптив */
+@media (max-width: 480px) {
+  #city-iso {
+    transform: scale(1.1);
+  }
+  
+  .city-hud {
+    padding: 10px 12px;
+  }
+  
+  .city-title {
+    font-size: 16px;
+  }
+}
+
+========================================
+ФАЙЛ: product.css
+========================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-page: #f2f2f2;
+  --text-dark: #2a2a2a;
+  --text-muted: #8a8a8a;
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: var(--font);
+  background: var(--bg-page);
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+.product-page {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding-bottom: 32px;
+}
+
+.product-back {
+  display: inline-block;
+  margin: 12px 16px 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.product-back:hover {
+  color: var(--text-dark);
+}
+
+.product-hero {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  max-height: 280px;
+  background: #e8e8e8;
+  overflow: hidden;
+}
+
+.product-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.product-main {
+  margin: -20px 16px 0;
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px 22px 28px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+}
+
+.product-title {
+  margin: 0 0 20px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+}
+
+.product-price-block {
+  margin-top: 4px;
+}
+
+.product-price-label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.product-price {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35em 0.5em;
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-dark);
+}
+
+.product-price__digits {
+  line-height: 1;
+}
+
+.product-price__glyph {
+  display: inline-flex;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+.product-price__glyph .balance-card__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.product-price__unit {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.btn-buy {
+  width: 100%;
+  margin-top: 28px;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #fff;
+  cursor: pointer;
+  touch-action: manipulation;
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  box-shadow:
+    0 10px 28px rgba(0, 123, 255, 0.28),
+    0 4px 12px rgba(225, 0, 152, 0.2);
+  transition: transform 0.12s ease, filter 0.15s ease, box-shadow 0.2s ease;
+}
+
+.btn-buy:hover {
+  filter: brightness(1.05);
+  box-shadow:
+    0 12px 32px rgba(0, 123, 255, 0.32),
+    0 4px 14px rgba(225, 0, 152, 0.25);
+}
+
+.btn-buy:active {
+  transform: scale(0.98);
+}
+
+.buy-toast {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  font-size: 0.875rem;
+  text-align: center;
+  color: #2e7d32;
+  background: #e8f5e9;
+  border-radius: 10px;
+  display: none;
+}
+
+.buy-toast.is-visible {
+  display: block;
+}
+
+========================================
+ФАЙЛ: product.html
+========================================
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Товар — Магазин</title>
+  <link rel="stylesheet" href="product.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="product-page">
+    <!-- Ссылка теперь ведёт на index.html, но авторизация сохранится -->
+    <a class="product-back" href="index.html">← В магазин</a>
+
+    <div class="product-hero">
+      <img id="product-image" src="" alt="" width="900" height="560" />
+    </div>
+
+    <main class="product-main">
+      <h1 class="product-title" id="product-title">Товар</h1>
+
+      <div class="product-price-block">
+        <div class="product-price-label">Цена в мтбанках</div>
+        <p class="product-price">
+          <span id="product-price-digits" class="product-price__digits">0</span>
+          <span class="product-price__glyph" aria-hidden="true">
+            <svg class="balance-card__svg" viewBox="0 0 24 24" focusable="false">
+              <circle cx="12" cy="12" r="9.5" fill="#ffe082" stroke="rgba(245, 127, 23, 0.45)" stroke-width="1.25" />
+              <circle cx="12" cy="12" r="6.5" fill="#ffca28" stroke="#f57f17" stroke-width="0.75" />
+              <ellipse cx="12" cy="9" rx="5" ry="2.2" fill="rgba(255, 255, 255, 0.4)" />
+            </svg>
+          </span>
+          <span class="product-price__unit">мтбанков</span>
+        </p>
+      </div>
+
+      <button type="button" class="btn-buy" id="btn-buy">Купить</button>
+      <p class="buy-toast" id="buy-toast" role="status"></p>
+    </main>
+  </div>
+
+  <script src="product.js" defer></script>
+</body>
+</html>
+========================================
+ФАЙЛ: product.js
+========================================
+
+(function () {
+  "use strict";
+
+  var CATALOG = {
+    apple: {
+      title: "Сертификат в золотое яблоко",
+      image:
+        "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=900&auto=format&fit=crop&q=80",
+      imageAlt: "Ноутбук и техника в магазине",
+    },
+    massage: {
+      title: "Сертификат в массажку",
+      image:
+        "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=900&auto=format&fit=crop&q=80",
+      imageAlt: "Релакс и массаж в спа",
+    },
+    cashback: {
+      title: "Кэшбек -5%",
+      image:
+        "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=900&auto=format&fit=crop&q=80",
+      imageAlt: "Финансы и карты",
+    },
+    brain: {
+      title: "Мозги",
+      image:
+        "https://images.unsplash.com/photo-1606324663549-80d987dfaa8b?w=900&auto=format&fit=crop&q=80",
+      imageAlt: "Головоломки и развитие мышления",
+    },
+  };
+
+  // Проверка авторизации
+  function checkAuth() {
+    var userRaw = localStorage.getItem("rr_current_user");
+    if (!userRaw) {
+      // Не авторизован - редирект на регистрацию
+      window.location.href = "index.html";
+      return false;
+    }
+    return true;
+  }
+
+  function randomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function formatMtbanks(n) {
+    return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "\u202f");
+  }
+
+  function init() {
+    // Проверяем авторизацию перед загрузкой страницы
+    if (!checkAuth()) return;
+
+    var key = new URLSearchParams(window.location.search).get("p");
+    var item = CATALOG[key];
+    if (!item) {
+      window.location.replace("index.html");
+      return;
+    }
+
+    var img = document.getElementById("product-image");
+    var titleEl = document.getElementById("product-title");
+    var priceDigits = document.getElementById("product-price-digits");
+    var buyBtn = document.getElementById("btn-buy");
+    var toast = document.getElementById("buy-toast");
+
+    if (img) {
+      img.src = item.image;
+      img.alt = item.imageAlt;
+    }
+    if (titleEl) titleEl.textContent = item.title;
+    document.title = item.title + " — Магазин";
+
+    var price = randomInt(1200, 48990);
+    if (priceDigits) priceDigits.textContent = formatMtbanks(price);
+
+    if (buyBtn && toast) {
+      buyBtn.addEventListener("click", function () {
+        toast.textContent = "Покупка скоро будет доступна.";
+        toast.classList.add("is-visible");
+        window.setTimeout(function () {
+          toast.classList.remove("is-visible");
+        }, 2800);
+      });
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
