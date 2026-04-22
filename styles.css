@@ -2193,3 +2193,586 @@ a.shop-item {
 .mode2-retry-btn:active {
   transform: scale(0.98);
 }
+
+/* Изометрические стили */
+.city-game-area {
+  background: #F0F4F8;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.city-tile {
+  position: absolute;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.city-tile:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.05);
+}
+
+.city-bar-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #FFFFFF;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: all 0.15s ease;
+}
+
+.city-bar-btn:active {
+  transform: translateY(2px);
+}
+
+.city-bar-btn.primary {
+  background: linear-gradient(145deg, #007bff, #6a00b8);
+  color: white;
+}
+/* Модальные окна для изометрической игры */
+.build-modal, .info-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.build-modal[hidden], .info-modal[hidden] {
+  display: none;
+}
+
+.build-modal__overlay, .info-modal__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.build-modal__content {
+  position: relative;
+  background: #2a2a2a;
+  border-radius: 20px;
+  padding: 20px;
+  width: 90%;
+  max-width: 340px;
+}
+
+.info-modal__content {
+  position: relative;
+  background: white;
+  border-radius: 24px;
+  padding: 24px 20px 28px;
+  width: 90%;
+  max-width: 340px;
+}
+
+.build-modal__title {
+  margin: 0 0 16px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  color: white;
+}
+
+.info-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #999;
+}
+
+.build-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.build-option {
+  background: #3a3a3a;
+  border: 2px solid #5a5a5a;
+  border-radius: 16px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.build-option:active {
+  transform: scale(0.96);
+}
+
+.build-option__icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.build-option__name {
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: white;
+}
+
+.build-option__cost {
+  font-size: 0.65rem;
+  color: #ffd700;
+}
+
+.build-category-header {
+  grid-column: span 2;
+  margin: 12px 0 8px 0;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.build-category-title {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.build-modal__close {
+  width: 100%;
+  padding: 10px;
+  background: #555;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+}
+
+.info-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.info-stat__label {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.info-stat__value {
+  font-weight: bold;
+  color: #333;
+}
+
+.info-modal__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.info-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.info-btn:active {
+  transform: scale(0.97);
+}
+
+.info-btn--collect {
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+}
+
+.info-btn--upgrade {
+  background: linear-gradient(135deg, #2196f3, #1976d2);
+  color: white;
+}
+
+.info-btn--sell {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+  color: white;
+}
+/* Стили для изометрической игры */
+.city-tile {
+  position: absolute;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.city-tile:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.05);
+}
+
+.city-control-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.1s ease;
+}
+
+.city-control-btn:active {
+  transform: scale(0.97);
+}
+
+.build-option--locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.build-option__locked {
+  font-size: 9px;
+  color: #ff9800;
+  margin-top: 4px;
+}
+
+.city-game-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+/* Стили для модальных окон */
+.build-modal, .info-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.build-modal[hidden], .info-modal[hidden] {
+  display: none;
+}
+
+.build-modal__overlay, .info-modal__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.build-modal__content {
+  position: relative;
+  background: #2a2a2a;
+  border-radius: 20px;
+  padding: 20px;
+  width: 90%;
+  max-width: 340px;
+}
+
+.info-modal__content {
+  position: relative;
+  background: white;
+  border-radius: 24px;
+  padding: 24px 20px 28px;
+  width: 90%;
+  max-width: 340px;
+}
+
+.build-modal__title {
+  margin: 0 0 16px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  color: white;
+}
+
+.info-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #999;
+}
+
+.build-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.build-option {
+  background: #3a3a3a;
+  border: 2px solid #5a5a5a;
+  border-radius: 16px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.build-option:active {
+  transform: scale(0.96);
+}
+
+.build-option__icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.build-option__name {
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: white;
+}
+
+.build-option__cost {
+  font-size: 0.65rem;
+  color: #ffd700;
+}
+
+.build-option--locked {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.build-option__locked {
+  font-size: 9px;
+  color: #ff9800;
+  margin-top: 4px;
+}
+
+.build-category-header {
+  grid-column: span 2;
+  margin: 12px 0 8px 0;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.build-category-title {
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #ffd700;
+}
+
+.build-modal__close {
+  width: 100%;
+  padding: 10px;
+  background: #555;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+}
+
+.info-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.info-stat__label {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.info-stat__value {
+  font-weight: bold;
+  color: #333;
+}
+
+.info-modal__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.info-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.info-btn:active {
+  transform: scale(0.97);
+}
+
+.info-btn--collect {
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+}
+
+.info-btn--upgrade {
+  background: linear-gradient(135deg, #2196f3, #1976d2);
+  color: white;
+}
+
+.info-btn--sell {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+  color: white;
+}
+
+.city-tile {
+  position: absolute;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.city-tile:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.05);
+}
+
+.city-control-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: transform 0.1s ease;
+}
+
+.city-control-btn:active {
+  transform: scale(0.97);
+}
+/* Модальное окно помощи */
+.help-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.help-modal[hidden] {
+  display: none;
+}
+
+.help-modal__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.help-modal__content {
+  position: relative;
+  background: white;
+  border-radius: 24px;
+  padding: 24px 20px 28px;
+  width: 90%;
+  max-width: 380px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.help-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #999;
+}
+
+.help-modal__title {
+  margin: 0 0 16px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+}
+
+.help-modal__body {
+  margin-bottom: 20px;
+}
+
+.help-section {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.help-section:last-child {
+  border-bottom: none;
+}
+
+.help-section h4 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  color: #007bff;
+}
+
+.help-section p {
+  margin: 0 0 6px;
+  font-size: 0.8rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+.help-section ul {
+  margin: 6px 0 0;
+  padding-left: 20px;
+}
+
+.help-section li {
+  font-size: 0.75rem;
+  color: #666;
+  margin: 4px 0;
+}
+
+.help-modal__ok {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.help-modal__ok:active {
+  transform: scale(0.98);
+}

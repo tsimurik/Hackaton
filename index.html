@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>MTBank Strategy</title>
   <link rel="stylesheet" href="styles.css" />
-<link rel="stylesheet" href="iso-styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -125,44 +124,35 @@
   </div>
 </section>
 
-      <section id="panel-game" class="panel" data-panel="game">
-  <div class="game-container" id="game-container">
-    <!-- Режим 1: Город МТ (сетка 5x5) -->
-    <div id="mode1-container" class="game-mode-container">
-      <div class="game-header">
-        <div class="game-title-section">
-          <h2 class="game-title">🏙️ Город МТ</h2>
-          <button class="game-help-btn" id="game-help-btn">❓ Как играть?</button>
-        </div>
-        
-        <button class="game-mode-toggle" id="game-mode-toggle">
-          <span class="mode-toggle__icon">🔄</span>
-          <span class="mode-toggle__text">Переключить режим</span>
-        </button>
-        
-        <div class="game-balance">
-          <span class="game-balance__label">MTBank Tokens</span>
-          <span class="game-balance__value" id="game-balance">0</span>
-        </div>
-        <div class="game-skill-balance">
-          <span class="game-skill-balance__label">⭐ Очки прокачки</span>
-          <span class="game-skill-balance__value" id="game-skill-balance">0</span>
-        </div>
-        <div class="game-total-income">
-          <span>💰 Доход/час: <span id="total-income">0</span></span>
-        </div>
+     <section id="panel-game" class="panel" data-panel="game">
+  <div class="game-container">
+    <div class="game-header">
+      <div class="game-title-section">
+        <h2 class="game-title">🏙️ Город МТ</h2>
+        <button class="game-help-btn" id="game-help-btn">❓ Как играть?</button>
       </div>
       
-      <div class="minecraft-grid" id="minecraft-grid"></div>
-      
-      <button class="collect-all-btn" id="collect-all-btn">
-        🧺 Собрать весь доход
-      </button>
+      <div class="game-balance">
+        <span class="game-balance__label">MTBank Tokens</span>
+        <span class="game-balance__value" id="game-balance">0</span>
+      </div>
+      <div class="game-skill-balance">
+        <span class="game-skill-balance__label">⭐ Очки прокачки</span>
+        <span class="game-skill-balance__value" id="game-skill-balance">0</span>
+      </div>
+      <div class="game-total-income">
+        <span>💰 Доход/час: <span id="total-income">0</span></span>
+      </div>
     </div>
     
-    <!-- Режим 2: Изометрический город (будет заполнен динамически) -->
-    <div id="mode2-container" class="game-mode-container" style="display: none;">
-      <!-- Сюда будет вставлен изометрический город из city-game.js -->
+    <!-- Изометрическое поле -->
+    <div class="city-game-area" style="width:100%;min-height:500px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+      <div id="city-iso" style="position:relative;"></div>
+    </div>
+    
+    <div class="city-bar" style="display:flex;gap:10px;margin-top:16px;justify-content:center;">
+      <button class="city-bar-btn" id="city-reset-camera"><span>🎯</span><span>Центр</span></button>
+      <button class="city-bar-btn primary" id="city-collect-all-btn"><span>💰</span><span>Собрать всё</span></button>
     </div>
   </div>
 </section>
@@ -176,6 +166,7 @@
       <button class="tasks-tab tasks-tab--active" data-tasks-tab="once">🎯 Разовые</button>
       <button class="tasks-tab" data-tasks-tab="monthly">📅 Ежемесячные</button>
       <button class="tasks-tab" data-tasks-tab="seasonal">🌸 Сезонные</button>
+      <button class="tasks-tab" data-tasks-tab="daily">⭐ Ежедневные</button>
     </div>
     
     <!-- Контент разовых заданий -->
@@ -190,11 +181,12 @@
     
     <!-- Контент сезонных заданий -->
     <div class="tasks-content" id="tasks-seasonal">
-      <div class="seasonal-placeholder">
-        <span class="seasonal-icon">🌸</span>
-        <p>Сезонные задания появятся при новом ивенте!</p>
-        <span class="seasonal-hint">Следите за обновлениями</span>
-      </div>
+      <div class="tasks-list" id="tasks-list-seasonal"></div>
+    </div>
+    
+    <!-- Контент ежедневных заданий -->
+    <div class="tasks-content" id="tasks-daily">
+      <div class="tasks-list" id="tasks-list-daily"></div>
     </div>
     
     <div class="calendar-section">
@@ -208,13 +200,6 @@
       </div>
       
       <div class="calendar-grid" id="calendar-grid"></div>
-      
-      <div class="calendar-reset" id="calendar-reset-container">
-        <button class="reset-streak-btn" id="reset-streak-btn">
-          💎 Восстановить прогресс (500 MTBank Tokens)
-        </button>
-        <p class="reset-hint">Если вы пропустили день, можете восстановить календарь за 500 токенов</p>
-      </div>
     </div>
   </div>
 </section>
@@ -615,7 +600,115 @@
       </div>
     </div>
   </div>
+  <!-- Модальное окно выбора здания -->
+<div class="build-modal" id="build-modal" hidden>
+  <div class="build-modal__overlay"></div>
+  <div class="build-modal__content">
+    <h3 class="build-modal__title">Выберите здание</h3>
+    <div class="build-options" id="build-options"></div>
+    <button class="build-modal__close" id="build-modal-close">Закрыть</button>
+  </div>
+</div>
+
+<!-- Модальное окно информации о здании -->
+<div class="info-modal" id="info-modal" hidden>
+  <div class="info-modal__overlay"></div>
+  <div class="info-modal__content">
+    <button class="info-modal__close" id="info-modal-close">✕</button>
+    <div class="info-modal__icon" id="info-icon"></div>
+    <h3 class="info-modal__title" id="info-title">Название</h3>
+    <div class="info-modal__stats">
+      <div class="info-stat"><span class="info-stat__label">📊 Тип:</span><span class="info-stat__value" id="info-type">—</span></div>
+      <div class="info-stat"><span class="info-stat__label">⭐ Уровень:</span><span class="info-stat__value" id="info-level">1</span></div>
+      <div class="info-stat"><span class="info-stat__label">💰 Доход/час:</span><span class="info-stat__value" id="info-income">0</span></div>
+      <div class="info-stat"><span class="info-stat__label">💎 Накоплено:</span><span class="info-stat__value" id="info-pending">0</span></div>
+      <div class="info-stat"><span class="info-stat__label">⬆️ Стоимость апгрейда:</span><span class="info-stat__value" id="info-upgrade-cost">0</span></div>
+      <div class="info-stat"><span class="info-stat__label">💰 Цена продажи:</span><span class="info-stat__value" id="info-sell-value">0</span></div>
+    </div>
+    <div class="info-modal__actions">
+      <button class="info-btn info-btn--collect" id="info-collect-btn">💰 Забрать доход</button>
+      <button class="info-btn info-btn--upgrade" id="info-upgrade-btn">⬆️ Улучшить</button>
+      <button class="info-btn info-btn--sell" id="info-sell-btn">💰 Продать (-50%)</button>
+    </div>
+  </div>
+</div>
+<!-- Модальное окно выбора здания -->
+<div class="build-modal" id="build-modal" hidden>
+  <div class="build-modal__overlay"></div>
+  <div class="build-modal__content">
+    <h3 class="build-modal__title">Выберите здание</h3>
+    <div class="build-options" id="build-options"></div>
+    <button class="build-modal__close" id="build-modal-close">Закрыть</button>
+  </div>
+</div>
+
+<!-- Модальное окно "Как играть?" -->
+<div class="help-modal" id="help-modal" hidden>
+  <div class="help-modal__overlay"></div>
+  <div class="help-modal__content">
+    <button class="help-modal__close" id="help-modal-close">✕</button>
+    <h3 class="help-modal__title">🎮 Как играть в Город МТ?</h3>
+    <div class="help-modal__body">
+      <div class="help-section">
+        <h4>🏗️ Строительство</h4>
+        <p>Нажимайте на свободные клетки поля и выбирайте бизнес для постройки. Каждый бизнес приносит пассивный доход в MTBank Tokens.</p>
+      </div>
+      <div class="help-section">
+        <h4>⭐ Очки прокачки</h4>
+        <p>Очки прокачки тратятся на покупку и улучшение бизнесов. Вы можете получить их:</p>
+        <ul>
+          <li>✅ За выполнение заданий (раздел "Задания")</li>
+          <li>✅ За регистрацию по реферальному коду (+1000 ⭐)</li>
+          <li>✅ За ежедневный календарь</li>
+        </ul>
+      </div>
+      <div class="help-section">
+        <h4>💰 MTBank Tokens</h4>
+        <p>Токены зарабатываются с ваших бизнесов. Их можно тратить на специальные предложения от МТБанка в разделе "Магазин".</p>
+      </div>
+      <div class="help-section">
+        <h4>⬆️ Улучшение бизнеса</h4>
+        <p>Нажмите на построенное здание → выберите "Улучшить". Доход бизнеса увеличится, но стоимость следующего улучшения растёт.</p>
+      </div>
+      <div class="help-section">
+        <h4>💰 Продажа бизнеса</h4>
+        <p>Нажмите на здание → "Продать (-50%)" - вы получите обратно 50% от потраченных очков прокачки.</p>
+      </div>
+      <div class="help-section">
+        <h4>📈 Цены на строительство</h4>
+        <p>Каждый новый бизнес дороже предыдущего на 10%. Планируйте свою стратегию развития!</p>
+      </div>
+      <div class="help-section">
+        <h4>🏦 МТБанк</h4>
+        <p>Центральное здание на поле. Повышайте его уровень, выполняя действия в игре, чтобы открывать доступ к элитным бизнесам.</p>
+      </div>
+    </div>
+    <button class="help-modal__ok" id="help-modal-ok">Понятно!</button>
+  </div>
+</div>
+
+<!-- Модальное окно информации о здании -->
+<div class="info-modal" id="info-modal" hidden>
+  <div class="info-modal__overlay"></div>
+  <div class="info-modal__content">
+    <button class="info-modal__close" id="info-modal-close">✕</button>
+    <div class="info-modal__icon" id="info-icon"></div>
+    <h3 class="info-modal__title" id="info-title">Название</h3>
+    <div class="info-modal__stats">
+      <div class="info-stat"><span class="info-stat__label">📊 Тип:</span><span class="info-stat__value" id="info-type">—</span></div>
+      <div class="info-stat"><span class="info-stat__label">⭐ Уровень:</span><span class="info-stat__value" id="info-level">1</span></div>
+      <div class="info-stat"><span class="info-stat__label">💰 Доход/час:</span><span class="info-stat__value" id="info-income">0</span></div>
+      <div class="info-stat"><span class="info-stat__label">💎 Накоплено:</span><span class="info-stat__value" id="info-pending">0</span></div>
+      <div class="info-stat"><span class="info-stat__label">⬆️ Стоимость апгрейда:</span><span class="info-stat__value" id="info-upgrade-cost">0</span></div>
+      <div class="info-stat"><span class="info-stat__label">💰 Цена продажи:</span><span class="info-stat__value" id="info-sell-value">0</span></div>
+    </div>
+    <div class="info-modal__actions">
+      <button class="info-btn info-btn--collect" id="info-collect-btn">💰 Забрать доход</button>
+      <button class="info-btn info-btn--upgrade" id="info-upgrade-btn">⬆️ Улучшить</button>
+      <button class="info-btn info-btn--sell" id="info-sell-btn">💰 Продать (-50%)</button>
+    </div>
+  </div>
+</div>
   <script src="app.js" defer></script>
-<script src="city-game.js" defer></script>
 </body>
 </html>

@@ -1,162 +1,137 @@
-// 🏙️ MtBank City — ИЗОМЕТРИЧЕСКАЯ ВЕРСИЯ (исправленная)
+// 🏙️ MtBank City — ИЗОМЕТРИЧЕСКАЯ ВЕРСИЯ (полная замена 2D игры)
 console.log('🚀 city-game.js загружается...');
 
-// ========== КОНФИГУРАЦИЯ ==========
-const DEFS = [
-  {id:'cafe', name:'Кофейня', cat:'⭐ Старт', inc:50, uc:100, maxLv:5, bc:100, bg:'#fff4e0', sprite:'cafe.png', unlockLevel:1},
-  {id:'flower', name:'Цветочный', cat:'⭐ Старт', inc:55, uc:110, maxLv:5, bc:110, bg:'#ffe0f0', sprite:'flower.png', unlockLevel:1},
-  {id:'minimarket', name:'Мини-маркет', cat:'⭐ Старт', inc:45, uc:90, maxLv:5, bc:90, bg:'#e0ffe0', sprite:'minimarket.png', unlockLevel:1},
-  {id:'foodtruck', name:'Фудтрак', cat:'⭐ Старт', inc:48, uc:95, maxLv:5, bc:95, bg:'#ffe8d0', sprite:'foodtruck.png', unlockLevel:1},
-  {id:'icecream', name:'Мороженое', cat:'⭐ Старт', inc:42, uc:85, maxLv:5, bc:85, bg:'#e0f0ff', sprite:'icecream.png', unlockLevel:1},
-  {id:'restaurant', name:'Ресторан', cat:'🏢 Средний', inc:100, uc:250, maxLv:5, bc:250, bg:'#f0e0e0', sprite:'restaurant.png', unlockLevel:2},
-  {id:'store', name:'Магазин', cat:'🏢 Средний', inc:110, uc:280, maxLv:5, bc:280, bg:'#e0e0ff', sprite:'store.png', unlockLevel:2},
-  {id:'autoservice', name:'Автосервис', cat:'🏢 Средний', inc:120, uc:300, maxLv:5, bc:300, bg:'#d0d0d0', sprite:'autoservice.png', unlockLevel:2},
-  {id:'itoffice', name:'ИТ-офис', cat:'🏢 Средний', inc:140, uc:350, maxLv:5, bc:350, bg:'#c0e0ff', sprite:'itoffice.png', unlockLevel:2},
-  {id:'gasstation', name:'Заправка', cat:'🏢 Средний', inc:115, uc:290, maxLv:5, bc:290, bg:'#ffe0c0', sprite:'gasstation.png', unlockLevel:2},
-  {id:'business', name:'Бизнес-центр', cat:'🏦 Элит', inc:500, uc:1200, maxLv:5, bc:1200, bg:'#e0eeff', sprite:'business-center.png', unlockLevel:3},
-  {id:'cinema', name:'Кинотеатр', cat:'🏦 Элит', inc:350, uc:800, maxLv:5, bc:800, bg:'#e0d0ff', sprite:'cinema.png', unlockLevel:3},
-  {id:'construction', name:'Стройка', cat:'🏦 Элит', inc:320, uc:750, maxLv:5, bc:750, bg:'#ffe8a0', sprite:'construction.png', unlockLevel:3},
-  {id:'warehouse', name:'Склад', cat:'🏦 Элит', inc:250, uc:600, maxLv:5, bc:600, bg:'#d0c0a0', sprite:'warehouse.png', unlockLevel:3},
-  {id:'mall', name:'ТЦ', cat:'🏦 Элит', inc:450, uc:1100, maxLv:5, bc:1100, bg:'#ffd0e0', sprite:'mall.png', unlockLevel:3}
-];
-
-const TOWNHALL_DEF = {id:'bank', name:'🏦 МТБанк', cat:'👑 Ратуша', inc:0, uc:0, maxLv:3, bc:0, bg:'#f5e6a0', sprite:'bank.png'};
-
-const DM = {};
-DEFS.forEach(d => DM[d.id] = d);
-DM['bank'] = TOWNHALL_DEF;
-
-const CATEGORIES = {
-  starter: DEFS.slice(0, 5),
-  medium: DEFS.slice(5, 10),
-  elite: DEFS.slice(10, 15)
+// ========== КОНФИГУРАЦИЯ ЗДАНИЙ (как в 2D версии) ==========
+const BUILDING_TYPES = {
+  coffee: { name: "Кофейня", icon: "☕", baseIncome: 50, upgradeMultiplier: 1.5, cost: 100, maxLevel: 5, bg: '#fff4e0', sprite: 'cafe.png' },
+  flowershop: { name: "Цветочный магазин", icon: "🌷", baseIncome: 55, upgradeMultiplier: 1.53, cost: 110, maxLevel: 5, bg: '#ffe0f0', sprite: 'flower.png' },
+  minimarket: { name: "Мини-магазин", icon: "🏪", baseIncome: 45, upgradeMultiplier: 1.52, cost: 90, maxLevel: 5, bg: '#e0ffe0', sprite: 'minimarket.png' },
+  foodtruck: { name: "Фудтрак", icon: "🚚", baseIncome: 48, upgradeMultiplier: 1.54, cost: 95, maxLevel: 5, bg: '#ffe8d0', sprite: 'foodtruck.png' },
+  icecream: { name: "Киоск мороженого", icon: "🍦", baseIncome: 42, upgradeMultiplier: 1.51, cost: 85, maxLevel: 5, bg: '#e0f0ff', sprite: 'icecream.png' },
+  restaurant: { name: "Ресторан", icon: "🍽️", baseIncome: 100, upgradeMultiplier: 1.6, cost: 250, maxLevel: 5, bg: '#f0e0e0', sprite: 'restaurant.png' },
+  shop: { name: "Магазин", icon: "🏪", baseIncome: 110, upgradeMultiplier: 1.62, cost: 280, maxLevel: 5, bg: '#e0e0ff', sprite: 'store.png' },
+  autoservice: { name: "Автосервис", icon: "🔧", baseIncome: 120, upgradeMultiplier: 1.63, cost: 300, maxLevel: 5, bg: '#d0d0d0', sprite: 'autoservice.png' },
+  itcompany: { name: "IT Компания", icon: "💻", baseIncome: 140, upgradeMultiplier: 1.65, cost: 350, maxLevel: 5, bg: '#c0e0ff', sprite: 'itoffice.png' },
+  gasstation: { name: "Заправка", icon: "⛽", baseIncome: 115, upgradeMultiplier: 1.61, cost: 290, maxLevel: 5, bg: '#ffe0c0', sprite: 'gasstation.png' },
+  businesspark: { name: "Бизнес-парк", icon: "🏢", baseIncome: 500, upgradeMultiplier: 1.85, cost: 1200, maxLevel: 5, bg: '#e0eeff', sprite: 'business-center.png' },
+  cinema: { name: "Кинотеатр", icon: "🎬", baseIncome: 350, upgradeMultiplier: 1.78, cost: 800, maxLevel: 5, bg: '#e0d0ff', sprite: 'cinema.png' },
+  construction: { name: "Стройкомпания", icon: "🏗️", baseIncome: 320, upgradeMultiplier: 1.75, cost: 750, maxLevel: 5, bg: '#ffe8a0', sprite: 'construction.png' },
+  warehouse: { name: "Склад", icon: "🏭", baseIncome: 250, upgradeMultiplier: 1.7, cost: 600, maxLevel: 5, bg: '#d0c0a0', sprite: 'warehouse.png' },
+  mall: { name: "Торговый центр", icon: "🏬", baseIncome: 450, upgradeMultiplier: 1.82, cost: 1100, maxLevel: 5, bg: '#ffd0e0', sprite: 'mall.png' }
 };
 
-const SPRITE_PATH = 'assets/sprites/buildings/';
-const GRID = 5;
+const BUILDING_KEYS = ["coffee", "flowershop", "minimarket", "foodtruck", "icecream", "restaurant", "shop", "autoservice", "itcompany", "gasstation", "businesspark", "cinema", "construction", "warehouse", "mall"];
 
-let cityCoins = 0, citySkillPoints = 0, cityBankLevel = 1, cityLevel = 1, selectedKey = null, pendingTile = null;
-const buildings = {};
-let isoContainer, coinDisplay, levelDisplay, skillDisplay, bankLevelDisplay, tileElements = {}, popupOverlay, buildOverlay, notifEl, notifyTimeout;
-let currentCategory = 'starter';
+const SPRITE_PATH = 'buildings/';
+const GRID_SIZE = 5;
+let buildingPriceMultiplier = 1.0;
+
+// ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
+let buildings = [];
+let currentSelectedBlock = null;
+let currentInfoIndex = null;
+let incomeInterval = null;
 let cameraZoom = 1.3;
 let cameraX = 0, cameraY = 0;
 let isDragging = false, hasMoved = false;
 let dragStartX = 0, dragStartY = 0;
 let dragCameraStartX = 0, dragCameraStartY = 0;
-let buildModeActive = false;
 
-// ========== ЗАГРУЗКА ДАННЫХ ИЗ ПРОФИЛЯ ==========
-function loadFromProfile() {
-  console.log("📂 Загрузка данных из профиля...");
-  
+// DOM элементы
+let isoContainer, coinDisplay, skillDisplay, totalIncomeDisplay;
+
+// ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+function getCurrentUser() {
   if (typeof window.getCurrentUser === 'function') {
-    var user = window.getCurrentUser();
-    if (user) {
-      cityCoins = user.balanceMtBanks || 0;
-      citySkillPoints = user.balanceSkillPoints || 0;
-      cityBankLevel = user.mtbankLevel || 1;
-      console.log("💰 Баланс из профиля:", cityCoins);
-      console.log("⭐ Очки прокачки:", citySkillPoints);
-      console.log("🏦 Уровень банка:", cityBankLevel);
-    } else {
-      console.log("⚠️ Пользователь не найден");
+    return window.getCurrentUser();
+  }
+  try {
+    var userId = localStorage.getItem("rr_current_user_id");
+    if (!userId) return null;
+    var usersRaw = localStorage.getItem("rr_registered_users");
+    if (!usersRaw) return null;
+    var users = JSON.parse(usersRaw);
+    return users[userId] || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function loadGameBuildings() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return null;
+  
+  var gameKey = "rr_game_" + currentUser.id;
+  try {
+    var raw = localStorage.getItem(gameKey);
+    if (!raw) {
+      var emptyGrid = [];
+      for (var i = 0; i < 25; i++) emptyGrid.push(null);
+      var defaultData = { buildings: emptyGrid, lastUpdate: Date.now() };
+      saveGameBuildings(defaultData);
+      return defaultData;
     }
-  } else {
-    console.log("❌ window.getCurrentUser не определён");
+    return JSON.parse(raw);
+  } catch (e) {
+    var emptyGrid = [];
+    for (var i = 0; i < 25; i++) emptyGrid.push(null);
+    return { buildings: emptyGrid, lastUpdate: Date.now() };
   }
-  
-  updateDisplays();
 }
 
-function updateDisplays() {
-  if (coinDisplay) coinDisplay.textContent = cityCoins.toLocaleString();
-  if (skillDisplay) skillDisplay.textContent = citySkillPoints.toLocaleString();
-  if (bankLevelDisplay) bankLevelDisplay.textContent = cityBankLevel;
+function saveGameBuildings(data) {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  var gameKey = "rr_game_" + currentUser.id;
+  localStorage.setItem(gameKey, JSON.stringify(data));
 }
 
-function syncToProfile() {
-  console.log("💾 Синхронизация с профилем...");
-  
-  if (typeof window.syncCityBalanceToApp === 'function') {
-    window.syncCityBalanceToApp(cityCoins);
-  } else if (typeof window.getCurrentUser === 'function') {
-    var user = window.getCurrentUser();
-    if (user) {
-      user.balanceMtBanks = cityCoins;
-      user.balanceSkillPoints = citySkillPoints;
-      user.mtbankLevel = cityBankLevel;
-      if (typeof window.saveAllUsers === 'function') {
-        var users = window.loadAllUsers ? window.loadAllUsers() : {};
-        users[user.id] = user;
-        window.saveAllUsers(users);
-      }
-      if (typeof window.syncBalancesToDom === 'function') {
-        window.balanceMtBanks = cityCoins;
-        window.balanceSkillPoints = citySkillPoints;
-        window.syncBalancesToDom();
-      }
-    }
+function getBuildingIncome(building) {
+  if (!building) return 0;
+  var typeData = BUILDING_TYPES[building.type];
+  if (!typeData) return 0;
+  return Math.floor(typeData.baseIncome * Math.pow(typeData.upgradeMultiplier, building.level - 1));
+}
+
+function getUpgradeCost(building) {
+  if (!building) return 0;
+  var typeData = BUILDING_TYPES[building.type];
+  if (!typeData) return 0;
+  return Math.floor(typeData.cost * Math.pow(1.3, building.level - 1));
+}
+
+function updateBuildingPriceMultiplier() {
+  var buildingCount = 0;
+  for (var i = 0; i < buildings.length; i++) {
+    if (buildings[i]) buildingCount++;
   }
-  
-  updateDisplays();
+  buildingPriceMultiplier = Math.pow(1.1, buildingCount);
 }
 
-function spendSkillPoints(amount) {
-  if (citySkillPoints >= amount) {
-    citySkillPoints -= amount;
-    syncToProfile();
-    if (skillDisplay) skillDisplay.textContent = citySkillPoints.toLocaleString();
-    return true;
+function syncBalanceToApp() {
+  var currentUser = getCurrentUser();
+  if (currentUser && typeof window.syncBalancesToDom === 'function') {
+    window.balanceMtBanks = currentUser.balanceMtBanks;
+    window.balanceSkillPoints = currentUser.balanceSkillPoints;
+    window.syncBalancesToDom();
   }
-  return false;
 }
 
-function addCoins(amount) {
-  cityCoins += amount;
-  syncToProfile();
-  if (coinDisplay) coinDisplay.textContent = cityCoins.toLocaleString();
-}
-
-// ========== ФУНКЦИИ ДЛЯ СПРАЙТОВ ==========
-function getBldSpriteHTML(id, level, size) {
-  const def = DM[id];
-  if (!def) return '';
-  const spriteSize = 55;
-  return `
-    <div style="position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:${spriteSize}px;height:${spriteSize}px;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;filter:drop-shadow(0 6px 4px rgba(0,0,0,0.25));z-index:10;">
-      <img src="${SPRITE_PATH}${def.sprite}" alt="${def.name}" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-      <div style="display:none;width:100%;height:100%;background:${def.bg};border-radius:8px;align-items:center;justify-content:center;font-size:24px;font-weight:bold;color:#333;border:2px dashed #999;">${def.name.charAt(0)}</div>
-    </div>
-  `;
-}
-
-function getPreviewSpriteHTML(id) {
-  const def = DM[id];
-  if (!def) return '';
-  return `
-    <div style="width:65px;height:65px;display:flex;align-items:center;justify-content:center;">
-      <img src="${SPRITE_PATH}${def.sprite}" alt="${def.name}" style="width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 4px rgba(0,0,0,0.3));" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-      <div style="display:none;width:100%;height:100%;background:${def.bg};border-radius:12px;align-items:center;justify-content:center;font-size:32px;font-weight:bold;color:#555;">${def.name.charAt(0)}</div>
-    </div>
-  `;
-}
-
-// ========== ПЛИТКА ==========
+// ========== ИЗОМЕТРИЧЕСКАЯ ПЛИТКА ==========
 function tileBg(r, c) {
-  const isTownhall = (r === 2 && c === 2);
-  const sh = isTownhall ? '#FFD700' : ((r + c) % 2 === 0 ? '#5BC0BE' : '#4AB0AE');
-  const lsh = isTownhall ? '#DAA520' : '#3AA8A0';
-  const rsh = isTownhall ? '#B8860B' : '#2A8A82';
-  const strokeColor = isTownhall ? '#FFD700' : 'rgba(255,255,255,0.4)';
+  const isCenter = (r === 2 && c === 2);
+  const sh = isCenter ? '#FFD700' : ((r + c) % 2 === 0 ? '#5BC0BE' : '#4AB0AE');
+  const lsh = isCenter ? '#DAA520' : '#3AA8A0';
+  const rsh = isCenter ? '#B8860B' : '#2A8A82';
+  const strokeColor = isCenter ? '#FFD700' : 'rgba(255,255,255,0.4)';
   
-  const key = `${r},${c}`;
-  const isEmpty = !buildings[key];
-  const emptyMarker = (isEmpty && !isTownhall) ? `<polygon points="36,12 52,20 36,28 20,20" fill="#4CAF50" opacity="0.7" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>` : '';
+  const index = r * GRID_SIZE + c;
+  const isEmpty = !buildings[index];
+  const emptyMarker = (isEmpty && !isCenter) ? `<polygon points="36,12 52,20 36,28 20,20" fill="#4CAF50" opacity="0.7" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>` : '';
   
   return `
     <svg viewBox="0 0 72 64" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;">
-      <polygon points="36,1 71,19 36,37 1,19" fill="${sh}" stroke="${strokeColor}" stroke-width="${isTownhall ? '2.5' : '1.5'}"/>
+      <polygon points="36,1 71,19 36,37 1,19" fill="${sh}" stroke="${strokeColor}" stroke-width="${isCenter ? '2.5' : '1.5'}"/>
       <polygon points="1,19 36,37 36,52 1,34" fill="${lsh}"/>
       <polygon points="36,37 71,19 71,34 36,52" fill="${rsh}"/>
       ${emptyMarker}
@@ -164,96 +139,413 @@ function tileBg(r, c) {
   `;
 }
 
+function getBuildingSpriteHTML(type, level) {
+  const def = BUILDING_TYPES[type];
+  if (!def) return '';
+  
+  return `
+    <div style="position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:55px;height:55px;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;filter:drop-shadow(0 6px 4px rgba(0,0,0,0.25));z-index:10;">
+      <img src="${SPRITE_PATH}${def.sprite}" alt="${def.name}" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div style="display:none;width:100%;height:100%;background:${def.bg};border-radius:8px;align-items:center;justify-content:center;font-size:28px;font-weight:bold;color:#333;">${def.icon}</div>
+    </div>
+  `;
+}
+
 function makeTile(r, c) {
-  const key = `${r},${c}`;
-  const b = buildings[key];
+  const index = r * GRID_SIZE + c;
+  const building = buildings[index];
   
-  const showPlus = !b && buildModeActive;
-  const bldHTML = b ? getBldSpriteHTML(b.id, b.lv) : '';
+  const buildingHTML = building ? getBuildingSpriteHTML(building.type, building.level) : '';
   
-  const labelHTML = b ? `
+  const levelHTML = building ? `
     <div style="position:absolute;bottom:17px;left:50%;transform:translateX(-50%);background:rgba(30,30,30,0.35);backdrop-filter:blur(6px);border-radius:18px;padding:2px 6px;z-index:15;white-space:nowrap;">
-      <span style="font-size:8px;font-weight:600;color:white;">Lv.${b.lv}</span>
+      <span style="font-size:8px;font-weight:600;color:white;">Lv.${building.level}</span>
     </div>
   ` : '';
   
-  const plusHTML = showPlus ? `
-    <div style="position:absolute;top:35%;left:50%;transform:translate(-50%, -50%);width:40px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(100,100,100,0.45);border:2px dashed rgba(220,220,220,0.8);font-size:20px;font-weight:bold;color:white;pointer-events:none;z-index:20;">+</div>
+  const pending = building?.pendingIncome || 0;
+  const incomeHTML = (pending > 0) ? `
+    <div style="position:absolute;top:5px;right:5px;background:#4CAF50;border-radius:12px;padding:2px 6px;z-index:15;">
+      <span style="font-size:7px;font-weight:bold;color:white;">+${Math.floor(pending)}</span>
+    </div>
   ` : '';
   
-  const dot = b && b.acc >= 1 ? `<div class="city-dot" id="dot-${key}"></div>` : '';
+  const emptyHTML = !building && !(r === 2 && c === 2) ? `
+    <div style="position:absolute;top:35%;left:50%;transform:translate(-50%, -50%);width:40px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(100,100,100,0.45);border:2px dashed rgba(220,220,220,0.8);font-size:20px;font-weight:bold;color:rgba(255,255,255,0.8);pointer-events:none;z-index:20;">+</div>
+  ` : '';
   
-  return tileBg(r, c) + dot + labelHTML + bldHTML + plusHTML;
-}
-
-// ========== ОСНОВНЫЕ ФУНКЦИИ ==========
-function loadBuildings() {
-  for (var key in buildings) delete buildings[key];
-  
-  const user = typeof window.getCurrentUser === 'function' ? window.getCurrentUser() : null;
-  const storageKey = user ? `mtbank_city_buildings_${user.id}` : 'mtbank_city_buildings_v7';
-  const saved = localStorage.getItem(storageKey);
-  
-  if (saved) {
-    try {
-      const loaded = JSON.parse(saved);
-      if (Object.keys(loaded).length === 0) {
-        buildings['2,2'] = {id:'bank', lv:1, acc:0, tick:Date.now()};
-      } else {
-        Object.assign(buildings, loaded);
-      }
-    } catch (e) {
-      buildings['2,2'] = {id:'bank', lv:1, acc:0, tick:Date.now()};
-    }
-  } else {
-    buildings['2,2'] = {id:'bank', lv:1, acc:0, tick:Date.now()};
-  }
-  
-  if (!buildings['2,2']) {
-    buildings['2,2'] = {id:'bank', lv:1, acc:0, tick:Date.now()};
-  }
-}
-
-function saveBuildings() { 
-  const user = typeof window.getCurrentUser === 'function' ? window.getCurrentUser() : null;
-  const storageKey = user ? `mtbank_city_buildings_${user.id}` : 'mtbank_city_buildings_v7';
-  localStorage.setItem(storageKey, JSON.stringify(buildings)); 
+  return tileBg(r, c) + levelHTML + incomeHTML + buildingHTML + emptyHTML;
 }
 
 function renderGrid() {
   if (!isoContainer) return;
   
   const TW = 90, TH = 48;
-  const CW = GRID * TW, CH = GRID * (TH / 2) + TH + 80;
+  const CW = GRID_SIZE * TW, CH = GRID_SIZE * (TH / 2) + TH + 80;
   
   isoContainer.style.width = CW + 'px';
   isoContainer.style.height = CH + 'px';
   isoContainer.style.transformOrigin = 'center center';
   isoContainer.innerHTML = '';
-  tileElements = {};
   
-  for (let r = 0; r < GRID; r++) {
-    for (let c = 0; c < GRID; c++) {
+  for (let r = 0; r < GRID_SIZE; r++) {
+    for (let c = 0; c < GRID_SIZE; c++) {
       const sx = (c - r) * (TW / 2) + CW / 2 - TW / 2;
       const sy = (c + r) * (TH / 2) + 15;
-      const key = `${r},${c}`;
+      const index = r * GRID_SIZE + c;
       
       const div = document.createElement('div');
       div.className = 'city-tile';
-      div.style.cssText = `left:${sx}px;top:${sy}px;width:72px;height:64px;`;
-      div.style.pointerEvents = 'auto';
+      div.style.cssText = `left:${sx}px;top:${sy}px;width:72px;height:64px;cursor:pointer;`;
       div.innerHTML = makeTile(r, c);
-      div.onclick = () => onTileClick(r, c);
+      div.onclick = (function(idx) { return function() { onTileClick(idx); }; })(index);
       
       isoContainer.appendChild(div);
-      tileElements[key] = div;
     }
   }
   
   updateCameraTransform();
-  updateDots();
 }
 
+function onTileClick(index) {
+  if (hasMoved) {
+    hasMoved = false;
+    return;
+  }
+  
+  const building = buildings[index];
+  
+  if (building) {
+    openInfoModal(index);
+  } else if (index !== 12) {
+    openBuildModal(index);
+  }
+}
+
+// ========== МОДАЛЬНЫЕ ОКНА ==========
+function openBuildModal(blockIndex) {
+  currentSelectedBlock = blockIndex;
+  var container = document.getElementById("build-options");
+  if (!container) return;
+  
+  container.innerHTML = "";
+  
+  // Группируем здания по категориям
+  var categories = {
+    starter: { name: "⭐ Стартовые", buildings: BUILDING_KEYS.slice(0, 5) },
+    medium: { name: "🏢 Средние", buildings: BUILDING_KEYS.slice(5, 10) },
+    elite: { name: "🏦 Элитные", buildings: BUILDING_KEYS.slice(10, 15) }
+  };
+  
+  for (var cat in categories) {
+    var header = document.createElement("div");
+    header.className = "build-category-header";
+    header.innerHTML = `<span class="build-category-title">${categories[cat].name}</span>`;
+    container.appendChild(header);
+    
+    for (var i = 0; i < categories[cat].buildings.length; i++) {
+      var key = categories[cat].buildings[i];
+      var type = BUILDING_TYPES[key];
+      var price = Math.floor(type.cost * buildingPriceMultiplier);
+      
+      var option = document.createElement("div");
+      option.className = "build-option";
+      option.innerHTML = `
+        <div class="build-option__icon">${type.icon}</div>
+        <div class="build-option__name">${type.name}</div>
+        <div class="build-option__cost">⭐ ${price}</div>
+      `;
+      option.onclick = (function(k, p) { return function() { buildBuilding(blockIndex, k, p); }; })(key, price);
+      container.appendChild(option);
+    }
+  }
+  
+  var modal = document.getElementById("build-modal");
+  if (modal) modal.removeAttribute("hidden");
+}
+
+function buildBuilding(index, type, cost) {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return false;
+  
+  updateBuildingPriceMultiplier();
+  
+  if ((currentUser.balanceSkillPoints || 0) < cost) {
+    showGameToast("❌ Недостаточно очков прокачки! Нужно " + cost + " ⭐");
+    return false;
+  }
+  
+  if (buildings[index]) {
+    showGameToast("❌ Здесь уже есть здание!");
+    return false;
+  }
+  
+  buildings[index] = {
+    type: type,
+    level: 1,
+    pendingIncome: 0,
+    purchasePrice: cost
+  };
+  
+  currentUser.balanceSkillPoints -= cost;
+  
+  var gameData = { buildings: buildings, lastUpdate: Date.now() };
+  saveGameBuildings(gameData);
+  
+  var users = window.loadAllUsers ? window.loadAllUsers() : {};
+  users[currentUser.id] = currentUser;
+  if (typeof window.saveAllUsers === 'function') window.saveAllUsers(users);
+  
+  syncBalanceToApp();
+  updateDisplays();
+  renderGrid();
+  
+  showGameToast("✅ Построено: " + BUILDING_TYPES[type].name + " за " + cost + " ⭐!");
+  closeBuildModal();
+  return true;
+}
+
+function closeBuildModal() {
+  var modal = document.getElementById("build-modal");
+  if (modal) modal.setAttribute("hidden", "");
+  currentSelectedBlock = null;
+}
+
+function openInfoModal(index) {
+  var building = buildings[index];
+  if (!building) return;
+  
+  currentInfoIndex = index;
+  var typeData = BUILDING_TYPES[building.type];
+  
+  var iconContainer = document.getElementById("info-icon");
+  if (iconContainer) {
+    iconContainer.innerHTML = `<div style="font-size:48px;">${typeData.icon}</div>`;
+  }
+  
+  var purchasePrice = building.purchasePrice || typeData.cost;
+  var sellPrice = Math.floor(purchasePrice / 2);
+  
+  document.getElementById("info-title").textContent = typeData.name;
+  document.getElementById("info-type").textContent = typeData.name;
+  document.getElementById("info-level").textContent = building.level;
+  document.getElementById("info-income").textContent = getBuildingIncome(building);
+  document.getElementById("info-pending").textContent = Math.floor(building.pendingIncome || 0);
+  document.getElementById("info-upgrade-cost").textContent = getUpgradeCost(building);
+  
+  var sellValueSpan = document.getElementById("info-sell-value");
+  if (sellValueSpan) sellValueSpan.textContent = sellPrice;
+  
+  var modal = document.getElementById("info-modal");
+  if (modal) modal.removeAttribute("hidden");
+}
+
+function closeInfoModal() {
+  var modal = document.getElementById("info-modal");
+  if (modal) modal.setAttribute("hidden", "");
+  currentInfoIndex = null;
+}
+
+function collectBuildingIncome(index) {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return false;
+  
+  var building = buildings[index];
+  if (!building) return false;
+  
+  var amount = Math.floor(building.pendingIncome || 0);
+  if (amount <= 0) {
+    showGameToast("💰 Нет накопленного дохода!");
+    return false;
+  }
+  
+  currentUser.balanceMtBanks = (currentUser.balanceMtBanks || 0) + amount;
+  building.pendingIncome = 0;
+  
+  var users = window.loadAllUsers ? window.loadAllUsers() : {};
+  users[currentUser.id] = currentUser;
+  if (typeof window.saveAllUsers === 'function') window.saveAllUsers(users);
+  
+  var gameData = { buildings: buildings, lastUpdate: Date.now() };
+  saveGameBuildings(gameData);
+  
+  syncBalanceToApp();
+  updateDisplays();
+  renderGrid();
+  
+  showGameToast("💰 Получено " + amount + " MTBank Tokens!");
+  closeInfoModal();
+  return true;
+}
+
+function upgradeBuilding(index) {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return false;
+  
+  var building = buildings[index];
+  if (!building) return false;
+  
+  var typeData = BUILDING_TYPES[building.type];
+  if (building.level >= typeData.maxLevel) {
+    showGameToast(`❌ ${typeData.name} достиг максимального уровня!`);
+    return false;
+  }
+  
+  var cost = getUpgradeCost(building);
+  
+  if ((currentUser.balanceSkillPoints || 0) < cost) {
+    showGameToast("❌ Недостаточно очков прокачки! Нужно " + cost + " ⭐");
+    return false;
+  }
+  
+  building.level++;
+  currentUser.balanceSkillPoints -= cost;
+  
+  var users = window.loadAllUsers ? window.loadAllUsers() : {};
+  users[currentUser.id] = currentUser;
+  if (typeof window.saveAllUsers === 'function') window.saveAllUsers(users);
+  
+  var gameData = { buildings: buildings, lastUpdate: Date.now() };
+  saveGameBuildings(gameData);
+  
+  syncBalanceToApp();
+  updateDisplays();
+  renderGrid();
+  
+  showGameToast("⬆️ " + typeData.name + " улучшен до " + building.level + " уровня!");
+  closeInfoModal();
+  return true;
+}
+
+function sellBuilding(index) {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return false;
+  
+  var building = buildings[index];
+  if (!building) return false;
+  
+  var purchasePrice = building.purchasePrice;
+  if (!purchasePrice) {
+    var typeData = BUILDING_TYPES[building.type];
+    purchasePrice = typeData.cost;
+  }
+  
+  var sellPrice = Math.floor(purchasePrice / 2);
+  
+  currentUser.balanceSkillPoints = (currentUser.balanceSkillPoints || 0) + sellPrice;
+  buildings[index] = null;
+  
+  var users = window.loadAllUsers ? window.loadAllUsers() : {};
+  users[currentUser.id] = currentUser;
+  if (typeof window.saveAllUsers === 'function') window.saveAllUsers(users);
+  
+  var gameData = { buildings: buildings, lastUpdate: Date.now() };
+  saveGameBuildings(gameData);
+  
+  syncBalanceToApp();
+  updateDisplays();
+  renderGrid();
+  
+  showGameToast("💰 Здание продано! Выручено " + sellPrice + " ⭐");
+  closeInfoModal();
+  return true;
+}
+
+function collectAllIncome() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  
+  var totalCollected = 0;
+  for (var i = 0; i < buildings.length; i++) {
+    var building = buildings[i];
+    if (building && building.pendingIncome && building.pendingIncome > 0) {
+      totalCollected += Math.floor(building.pendingIncome);
+      building.pendingIncome = 0;
+    }
+  }
+  
+  if (totalCollected > 0) {
+    currentUser.balanceMtBanks = (currentUser.balanceMtBanks || 0) + totalCollected;
+    
+    var users = window.loadAllUsers ? window.loadAllUsers() : {};
+    users[currentUser.id] = currentUser;
+    if (typeof window.saveAllUsers === 'function') window.saveAllUsers(users);
+    
+    var gameData = { buildings: buildings, lastUpdate: Date.now() };
+    saveGameBuildings(gameData);
+    
+    syncBalanceToApp();
+    updateDisplays();
+    renderGrid();
+    
+    showGameToast("🧺 Собрано " + totalCollected + " MTBank Tokens!");
+  } else {
+    showGameToast("😴 Нет дохода для сбора");
+  }
+}
+
+function updatePendingIncome() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  
+  var gameData = loadGameBuildings();
+  buildings = gameData.buildings;
+  
+  var now = Date.now();
+  var timeDiff = (now - (gameData.lastUpdate || now)) / (1000 * 60 * 60);
+  
+  if (timeDiff > 0 && timeDiff < 24) {
+    for (var i = 0; i < buildings.length; i++) {
+      var building = buildings[i];
+      if (building) {
+        if (!building.pendingIncome) building.pendingIncome = 0;
+        var hourlyIncome = getBuildingIncome(building);
+        var earned = Math.floor(hourlyIncome * timeDiff);
+        building.pendingIncome += earned;
+      }
+    }
+  }
+  
+  gameData.lastUpdate = now;
+  saveGameBuildings(gameData);
+  renderGrid();
+  updateDisplays();
+}
+
+function updateDisplays() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  
+  if (coinDisplay) coinDisplay.textContent = (currentUser.balanceMtBanks || 0).toLocaleString();
+  if (skillDisplay) skillDisplay.textContent = (currentUser.balanceSkillPoints || 0).toLocaleString();
+  
+  var totalHourly = 0;
+  for (var i = 0; i < buildings.length; i++) {
+    var b = buildings[i];
+    if (b) totalHourly += getBuildingIncome(b);
+  }
+  if (totalIncomeDisplay) totalIncomeDisplay.textContent = totalHourly;
+}
+
+function showGameToast(message) {
+  var toast = document.getElementById("buy-toast");
+  if (toast) {
+    toast.textContent = message;
+    toast.classList.add("is-visible");
+    setTimeout(function() {
+      toast.classList.remove("is-visible");
+    }, 2000);
+  }
+}
+
+function startIncomeTimer() {
+  if (incomeInterval) clearInterval(incomeInterval);
+  incomeInterval = setInterval(function() {
+    updatePendingIncome();
+  }, 60000);
+}
+
+// ========== УПРАВЛЕНИЕ КАМЕРОЙ ==========
 function updateCameraTransform() {
   if (isoContainer) {
     isoContainer.style.transform = `translate(${cameraX}px, ${cameraY}px) scale(${cameraZoom})`;
@@ -265,275 +557,6 @@ function resetCamera() {
   cameraY = 0;
   cameraZoom = 1.3;
   updateCameraTransform();
-}
-
-function updateDots() {
-  Object.entries(buildings).forEach(([k, b]) => {
-    const d = document.getElementById('dot-' + k);
-    if (d) d.style.display = b.acc >= 1 ? 'block' : 'none';
-  });
-}
-
-function tickBuildings() {
-  const now = Date.now();
-  Object.entries(buildings).forEach(([k, b]) => {
-    const d = DM[b.id];
-    if (d && d.inc > 0) {
-      const income = d.inc * b.lv;
-      b.acc += income * ((now - b.tick) / 3600000);
-    }
-    b.tick = now;
-  });
-  saveBuildings();
-  updateDots();
-}
-
-function refreshTile(key) {
-  const [r, c] = key.split(',').map(Number);
-  if (tileElements[key]) tileElements[key].innerHTML = makeTile(r, c);
-  updateDots();
-}
-
-function onTileClick(r, c) {
-  if (hasMoved) return;
-  const key = `${r},${c}`;
-  
-  if (buildings[key]) {
-    openPopup(key);
-  } else if (buildModeActive) {
-    pendingTile = key;
-    openBuildMenu();
-  }
-}
-
-function openPopup(key) {
-  selectedKey = key;
-  const b = buildings[key], d = DM[b.id];
-  const upgradeCost = b.lv >= d.maxLv ? 'МАКС' : (d.uc * b.lv) + ' ⭐';
-  
-  const nameEl = document.getElementById('popup-name');
-  const typeEl = document.getElementById('popup-type');
-  const incomeEl = document.getElementById('popup-income');
-  const accEl = document.getElementById('popup-acc');
-  const levelEl = document.getElementById('popup-level');
-  const upcostEl = document.getElementById('popup-upcost');
-  const progressEl = document.getElementById('popup-progress');
-  const progressTextEl = document.getElementById('popup-progress-text');
-  const previewEl = document.getElementById('popup-preview');
-  const collectBtn = document.getElementById('popup-collect');
-  const upgradeBtn = document.getElementById('popup-upgrade');
-  
-  if (nameEl) nameEl.textContent = d.name + ' Lv' + b.lv;
-  if (typeEl) typeEl.textContent = d.cat;
-  if (incomeEl) incomeEl.textContent = (d.inc * b.lv) + ' MtB/ч';
-  if (accEl) accEl.textContent = Math.floor(b.acc) + ' MtB';
-  if (levelEl) levelEl.textContent = b.lv;
-  if (upcostEl) upcostEl.textContent = upgradeCost;
-  if (progressEl) progressEl.style.width = (b.lv / d.maxLv * 100) + '%';
-  if (progressTextEl) progressTextEl.textContent = `Уровень ${b.lv} / ${d.maxLv}`;
-  
-  if (previewEl) {
-    previewEl.style.background = d.bg;
-    previewEl.innerHTML = getPreviewSpriteHTML(b.id);
-  }
-  
-  const canUpgrade = b.lv < d.maxLv && citySkillPoints >= (d.uc * b.lv);
-  if (collectBtn) collectBtn.disabled = b.acc < 1;
-  if (upgradeBtn) upgradeBtn.disabled = !canUpgrade;
-  
-  if (popupOverlay) popupOverlay.classList.add('open');
-}
-
-function openBuildMenu() {
-  const grid = document.getElementById('build-grid');
-  
-  const renderCategory = (cat) => {
-    currentCategory = cat;
-    if (grid) grid.innerHTML = '';
-    
-    const tabs = document.querySelectorAll('.category-tab');
-    tabs.forEach(tab => {
-      tab.classList.toggle('active', tab.dataset.cat === cat);
-    });
-    
-    const buildingsList = CATEGORIES[cat] || DEFS;
-    buildingsList.forEach(d => {
-      const isUnlocked = cityBankLevel >= (d.unlockLevel || 1);
-      const canAfford = citySkillPoints >= d.bc;
-      
-      const div = document.createElement('div');
-      div.className = 'build-item';
-      if (!isUnlocked) div.classList.add('build-item--locked');
-      
-      div.innerHTML = `
-        <div style="width:58px;height:65px;opacity:${isUnlocked ? 1 : 0.5};">${getPreviewSpriteHTML(d.id)}</div>
-        <div class="build-item-name">${d.name}</div>
-        <div class="build-item-cost">⭐ ${d.bc}</div>
-        ${!isUnlocked ? '<div class="build-item-locked">🔒 Ур. МТБанка ' + d.unlockLevel + '</div>' : ''}
-        ${isUnlocked && !canAfford ? '<div class="build-item-locked">💰 Недостаточно ⭐</div>' : ''}
-      `;
-      
-      if (isUnlocked && canAfford) {
-        div.onclick = () => {
-          if (!pendingTile) { 
-            notify('Нажми на пустую клетку'); 
-            closeBuildMenu(); 
-            return; 
-          }
-          if (buildings[pendingTile]) { 
-            notify('Клетка занята!'); 
-            return; 
-          }
-          
-          if (spendSkillPoints(d.bc)) {
-            buildings[pendingTile] = {id: d.id, lv: 1, acc: 0, tick: Date.now()};
-            refreshTile(pendingTile); 
-            saveBuildings(); 
-            burst();
-            notify(`${d.name} построена! 🏗`);
-            
-            pendingTile = null; 
-            closeBuildMenu(); 
-            updateCityLevel();
-            buildModeActive = false;
-            const btn = document.getElementById('city-build-btn');
-            if (btn) btn.style.background = '#34d399';
-            renderGrid();
-          } else {
-            notify('Недостаточно очков прокачки!');
-          }
-        };
-      }
-      
-      if (grid) grid.appendChild(div);
-    });
-  };
-  
-  if (!document.getElementById('build-categories')) {
-    const tabsDiv = document.createElement('div');
-    tabsDiv.id = 'build-categories';
-    tabsDiv.style.cssText = 'display:flex;gap:5px;margin-bottom:12px';
-    tabsDiv.innerHTML = `
-      <button class="category-tab active" data-cat="starter">⭐ Старт</button>
-      <button class="category-tab" data-cat="medium">🏢 Средние</button>
-      <button class="category-tab" data-cat="elite">🏦 Элит</button>
-    `;
-    const menuHeader = document.querySelector('.build-menu div:first-child');
-    if (menuHeader && menuHeader.parentNode) {
-      menuHeader.parentNode.insertBefore(tabsDiv, grid);
-    }
-    
-    tabsDiv.querySelectorAll('.category-tab').forEach(tab => {
-      tab.addEventListener('click', (e) => {
-        e.stopPropagation();
-        renderCategory(tab.dataset.cat);
-      });
-    });
-  }
-  
-  renderCategory('starter');
-  if (buildOverlay) buildOverlay.classList.add('open');
-}
-
-function closeBuildMenu() { 
-  if (buildOverlay) buildOverlay.classList.remove('open'); 
-  pendingTile = null; 
-}
-
-function closePopup() { 
-  if (popupOverlay) popupOverlay.classList.remove('open'); 
-  selectedKey = null; 
-}
-
-function collectFromPopup() {
-  if (!selectedKey) return;
-  const b = buildings[selectedKey], amt = Math.floor(b.acc);
-  if (amt < 1) return;
-  
-  b.acc -= amt; 
-  addCoins(amt);
-  floatCoin(amt);
-  notify(`+${amt} MtB собрано! 💰`);
-  updateCityLevel(); 
-  saveBuildings();
-  if (selectedKey) openPopup(selectedKey);
-}
-
-function upgradeFromPopup() {
-  if (!selectedKey) return;
-  const b = buildings[selectedKey], d = DM[b.id];
-  if (b.lv >= d.maxLv) return;
-  
-  const cost = d.uc * b.lv;
-  
-  if (spendSkillPoints(cost)) {
-    b.lv++; 
-    refreshTile(selectedKey); 
-    burst();
-    notify(`${d.name} улучшен до Lv${b.lv}! ⬆`);
-    saveBuildings();
-    if (selectedKey) openPopup(selectedKey);
-  } else {
-    notify('Недостаточно очков прокачки!');
-  }
-}
-
-function collectAll() {
-  let tot = 0;
-  Object.entries(buildings).forEach(([k, b]) => { 
-    const a = Math.floor(b.acc); 
-    if (a > 0) { 
-      b.acc -= a; 
-      tot += a; 
-    } 
-  });
-  if (tot > 0) { 
-    addCoins(tot);
-    floatCoin(tot); 
-    notify(`Собрано +${tot} MtB! 💰`); 
-    updateCityLevel(); 
-    saveBuildings();
-  } else {
-    notify('Пока нечего собирать...');
-  }
-}
-
-function updateCityLevel() {
-  const n = Math.max(1, Math.floor(Object.keys(buildings).length / 3) + 1);
-  if (n > cityLevel) { 
-    cityLevel = n; 
-    if (levelDisplay) levelDisplay.textContent = cityLevel; 
-    notify('Город вырос! Lv' + cityLevel + ' 🌟'); 
-    burst(); 
-  }
-}
-
-function notify(msg) {
-  if (!notifEl) return;
-  notifEl.textContent = msg; 
-  notifEl.classList.add('show');
-  clearTimeout(notifyTimeout); 
-  notifyTimeout = setTimeout(() => notifEl.classList.remove('show'), 2400);
-}
-
-function floatCoin(amt) {
-  const el = document.createElement('div'); 
-  el.className = 'city-float-coin'; 
-  el.textContent = '+' + amt + ' MtB';
-  el.style.cssText = `left:${window.innerWidth/2-30}px;top:${window.innerHeight*.44}px`;
-  document.body.appendChild(el); 
-  setTimeout(() => el.remove(), 960);
-}
-
-function burst() {
-  ['⭐','✨','🌟'].forEach((s, i) => {
-    const el = document.createElement('div'); 
-    el.className = 'city-sparkle'; 
-    el.textContent = s;
-    el.style.cssText = `left:${window.innerWidth/2-16+i*20}px;top:${window.innerHeight*.28}px`;
-    document.body.appendChild(el); 
-    setTimeout(() => el.remove(), 680);
-  });
 }
 
 function setupCameraControls() {
@@ -578,154 +601,61 @@ function setupCameraControls() {
   gameArea.style.cursor = 'grab';
 }
 
-function bindEvents() {
-  const resetCamBtn = document.getElementById('city-reset-camera');
-  if (resetCamBtn) resetCamBtn.addEventListener('click', resetCamera);
-  
-  const buildBtn = document.getElementById('city-build-btn');
-  if (buildBtn) {
-    buildBtn.addEventListener('click', () => {
-      buildModeActive = !buildModeActive;
-      if (buildModeActive) {
-        buildBtn.style.background = '#ff9800';
-        notify('🏗 Режим строительства включён. Нажмите на пустую клетку');
-        pendingTile = null;
-      } else {
-        buildBtn.style.background = '#34d399';
-        notify('👀 Режим осмотра');
-        closeBuildMenu();
-      }
-      renderGrid();
-    });
-  }
-  
-  const collectAllBtn = document.getElementById('city-collect-all-btn');
-  if (collectAllBtn) collectAllBtn.addEventListener('click', collectAll);
-  
-  const popupCloseBtn = document.getElementById('popup-close-btn');
-  if (popupCloseBtn) popupCloseBtn.addEventListener('click', closePopup);
-  
-  const popupCollectBtn = document.getElementById('popup-collect');
-  if (popupCollectBtn) popupCollectBtn.addEventListener('click', collectFromPopup);
-  
-  const popupUpgradeBtn = document.getElementById('popup-upgrade');
-  if (popupUpgradeBtn) popupUpgradeBtn.addEventListener('click', upgradeFromPopup);
-  
-  if (popupOverlay) {
-    popupOverlay.addEventListener('click', e => { if (e.target === popupOverlay) closePopup(); });
-  }
-  if (buildOverlay) {
-    buildOverlay.addEventListener('click', e => { if (e.target === buildOverlay) closeBuildMenu(); });
-  }
-}
-
-// ========== ВОЗВРАТ В РЕЖИМ 1 ==========
-function switchToMode1() {
-  console.log('⬅️ Возврат в режим 1');
-  
-  syncToProfile();
-  
-  // Используем глобальную функцию из app.js
-  if (typeof window.forceSwitchToMode1 === 'function') {
-    window.forceSwitchToMode1();
-  } else {
-    // Fallback
-    if (typeof window.currentGameMode !== 'undefined') {
-      window.currentGameMode = 1;
-    }
-    localStorage.setItem("rr_game_mode", "1");
-    
-    const mode2Container = document.getElementById('mode2-container');
-    const mode1Container = document.getElementById('mode1-container');
-    if (mode2Container) mode2Container.style.display = 'none';
-    if (mode1Container) mode1Container.style.display = 'block';
-    
-    if (typeof window.renderMinecraftGrid === 'function') window.renderMinecraftGrid();
-    if (typeof window.updateGameBalanceDisplay === 'function') window.updateGameBalanceDisplay();
-    if (typeof window.syncBalancesToDom === 'function') window.syncBalancesToDom();
-  }
-}
-
 // ========== ИНИЦИАЛИЗАЦИЯ ==========
-let cityInitialized = false;
-
-window.initCity = function() {
-  const panel = document.getElementById('panel-game');
-  if (!panel) {
-    console.error('❌ panel-game не найден');
-    return;
+function initGame() {
+  console.log("🏗 Инициализация изометрической игры...");
+  
+  var gameData = loadGameBuildings();
+  buildings = gameData.buildings;
+  
+  // Убеждаемся, что МТБанк в центре
+  if (!buildings[12]) {
+    buildings[12] = {
+      type: "mtbank",
+      level: 1,
+      pendingIncome: 0,
+      purchasePrice: 0
+    };
   }
   
-  if (cityInitialized) {
-    console.log('⚠️ Город уже инициализирован');
-    loadFromProfile();
-    renderGrid();
-    return;
-  }
-  
-  console.log('🏗 initCity запущен');
-  
-  panel.innerHTML = `
-    <div class="city-game-wrap" style="height:100%;display:flex;flex-direction:column;">
-      <div class="city-hud">
-        <div class="city-coins"><div class="coin-icon">💰</div><span id="city-coin-display">0</span><span style="font-size:10px;margin-left:4px;">MTB</span></div>
-        <div class="city-skill"><div class="skill-icon">⭐</div><span id="city-skill-display">0</span><span style="font-size:10px;margin-left:4px;">очки</span></div>
-        <div class="city-bank-level"><div class="bank-icon">🏦</div><span id="city-bank-level">1</span><span style="font-size:10px;margin-left:4px;">ур.</span></div>
-        <div class="city-title">🏙 MtBank City</div>
-        <div class="city-level">Lv.<span id="city-level-display">1</span></div>
-      </div>
-      <div class="city-game-area" style="flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;">
-        <div id="city-iso" style="position:relative;"></div>
-      </div>
-      <div class="city-bar">
-        <button class="city-bar-btn" id="city-reset-camera"><span>🎯</span><span>Центр</span></button>
-        <button class="city-bar-btn primary" id="city-build-btn"><span>🏗</span><span>Строить</span></button>
-        <button class="city-bar-btn" id="city-collect-all-btn"><span>💰</span><span>Собрать</span></button>
-        <button class="city-bar-btn back-btn" id="city-back-to-mode1"><span>⬅️</span><span>Выйти</span></button>
-      </div>
-    </div>
-    <div class="city-popup-overlay" id="city-popup"><div class="city-popup"><div class="popup-header"><div><div class="popup-name" id="popup-name"></div><div class="popup-type" id="popup-type"></div></div><button class="popup-close" id="popup-close-btn">✕</button></div><div class="popup-preview" id="popup-preview"></div><div class="popup-progress-bar"><div class="popup-progress" id="popup-progress"></div></div><div class="popup-progress-text" id="popup-progress-text"></div><div class="popup-stats"><div class="stat-card"><div class="stat-label">Доход/час</div><div class="stat-value gold" id="popup-income"></div></div><div class="stat-card"><div class="stat-label">Накоплено</div><div class="stat-value gold" id="popup-acc"></div></div><div class="stat-card"><div class="stat-label">Уровень</div><div class="stat-value" id="popup-level"></div></div><div class="stat-card"><div class="stat-label">Апгрейд</div><div class="stat-value gold" id="popup-upcost"></div></div></div><div class="popup-buttons"><button class="btn-collect" id="popup-collect">💰 Забрать</button><button class="btn-upgrade" id="popup-upgrade">⬆ Улучшить</button></div></div></div>
-    <div class="build-overlay" id="build-overlay"><div class="build-menu"><div style="display:flex;justify-content:space-between;margin-bottom:14px"><div>Выберите здание</div><button id="build-close-btn">✕</button></div><div class="build-grid" id="build-grid"></div></div></div>
-    <div class="city-notif" id="city-notif"></div>
-  `;
-  
-  coinDisplay = document.getElementById('city-coin-display');
-  skillDisplay = document.getElementById('city-skill-display');
-  bankLevelDisplay = document.getElementById('city-bank-level');
-  levelDisplay = document.getElementById('city-level-display');
-  isoContainer = document.getElementById('city-iso');
-  popupOverlay = document.getElementById('city-popup');
-  buildOverlay = document.getElementById('build-overlay');
-  notifEl = document.getElementById('city-notif');
-  
-  if (!isoContainer) {
-    console.error('❌ isoContainer не создан');
-    return;
-  }
-  
-  loadFromProfile();
-  loadBuildings();
+  updateBuildingPriceMultiplier();
+  updatePendingIncome();
   renderGrid();
-  bindEvents();
+  updateDisplays();
+  startIncomeTimer();
+  
+  // Кнопки
+  document.getElementById('city-reset-camera')?.addEventListener('click', resetCamera);
+  document.getElementById('city-collect-all-btn')?.addEventListener('click', collectAllIncome);
+  
+  // Модальные окна
+  document.getElementById('build-modal-close')?.addEventListener('click', closeBuildModal);
+  document.getElementById('info-modal-close')?.addEventListener('click', closeInfoModal);
+  document.getElementById('info-collect-btn')?.addEventListener('click', function() {
+    if (currentInfoIndex !== null) collectBuildingIncome(currentInfoIndex);
+  });
+  document.getElementById('info-upgrade-btn')?.addEventListener('click', function() {
+    if (currentInfoIndex !== null) upgradeBuilding(currentInfoIndex);
+  });
+  document.getElementById('info-sell-btn')?.addEventListener('click', function() {
+    if (currentInfoIndex !== null) sellBuilding(currentInfoIndex);
+  });
+  
+  // Клик по оверлею
+  document.querySelector('#build-modal .build-modal__overlay')?.addEventListener('click', closeBuildModal);
+  document.querySelector('#info-modal .info-modal__overlay')?.addEventListener('click', closeInfoModal);
+  
   setupCameraControls();
-  
-  const closeBuildBtn = document.getElementById('build-close-btn');
-  if (closeBuildBtn) closeBuildBtn.addEventListener('click', closeBuildMenu);
-  
-  // Кнопка возврата
-  const backBtn = document.getElementById('city-back-to-mode1');
-  if (backBtn) {
-    const newBackBtn = backBtn.cloneNode(true);
-    backBtn.parentNode.replaceChild(newBackBtn, backBtn);
-    newBackBtn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      switchToMode1();
-    });
+}
+
+// Запуск при загрузке
+setTimeout(function() {
+  const panel = document.getElementById('panel-game');
+  if (panel && panel.classList.contains('is-active')) {
+    initGame();
   }
-  
-  setInterval(() => { tickBuildings(); updateDots(); }, 3000);
-  
-  cityInitialized = true;
-  console.log('✅ Город отрисован!');
-};
+}, 300);
+
+// Делаем функции глобальными
+window.initCityGame = initGame;
+window.renderCityGrid = renderGrid;
