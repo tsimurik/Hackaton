@@ -535,15 +535,40 @@ function addMtbankExp(amount, source) {
   users[currentUser.id] = currentUser;
   saveAllUsers(users);
   
-  // Обновляем отображение
-  updateMtbankUI();
+  // Обновляем уровень в массиве buildings
+  if (typeof buildings !== 'undefined' && buildings[12] && buildings[12].type === "mtbank") {
+    buildings[12].level = currentUser.mtbankLevel;
+    if (typeof saveGameBuildings === 'function') {
+      var gameData = { buildings: buildings, lastUpdate: Date.now() };
+      saveGameBuildings(gameData);
+    }
+  }
   
-  if (leveledUp && typeof renderGrid === 'function') {
+  // 🔴 ПРИНУДИТЕЛЬНО обновляем элементы на странице
+  var levelSpan = document.getElementById("mtbank-level");
+  if (levelSpan) levelSpan.textContent = currentUser.mtbankLevel;
+  
+  var expSpan = document.getElementById("mtbank-exp");
+  if (expSpan) {
+    expSpan.textContent = currentUser.mtbankExp + " / " + currentUser.mtbankExpToNext + " опыта";
+  }
+  
+  var progressBar = document.getElementById("mtbank-progress");
+  if (progressBar) {
+    var percent = (currentUser.mtbankExp / currentUser.mtbankExpToNext) * 100;
+    progressBar.style.width = percent + "%";
+  }
+  
+  // Обновляем модальное окно если открыто
+  updateMtbankModalContent();
+  
+  // Перерисовываем поле для обновления уровня на ратуше
+  if (typeof renderGrid === 'function') {
     renderGrid();
   }
   
   if (source) {
-    console.log(`➕ Добавлено ${amount} опыта МТБанка от: ${source}, новый уровень: ${currentUser.mtbankLevel}`);
+    console.log(`➕ Добавлено ${amount} опыта МТБанка от: ${source}, новый уровень: ${currentUser.mtbankLevel}, опыт: ${currentUser.mtbankExp}/${currentUser.mtbankExpToNext}`);
   }
   
   return leveledUp;
@@ -558,7 +583,7 @@ function updateMtbankUI() {
   var expToNext = currentUser.mtbankExpToNext || 100;
   var percent = (exp / expToNext) * 100;
   
-  // Обновляем текстовые элементы в верхней панели
+  // Обновляем уровень в UI сверху
   var levelSpan = document.getElementById("mtbank-level");
   if (levelSpan) levelSpan.textContent = level;
   
@@ -568,15 +593,10 @@ function updateMtbankUI() {
   var progressBar = document.getElementById("mtbank-progress");
   if (progressBar) progressBar.style.width = percent + "%";
   
-  // Обновляем уровень в buildings массиве (для сохранения)
+  // 🔴 ВАЖНО: Обновляем уровень в массиве buildings
   if (typeof buildings !== 'undefined' && buildings[12] && buildings[12].type === "mtbank") {
     buildings[12].level = level;
-    if (typeof saveGameBuildings === 'function') {
-      saveGameBuildings({ buildings: buildings, lastUpdate: Date.now() });
-    }
   }
-  
-  console.log("🔄 Обновлён UI МТБанка: уровень", level);
 }
 
 function updateMtbankModalContent() {
@@ -1237,10 +1257,21 @@ function getBuildingDiscount() {
     updateDisplays();
     renderTasksList();
     
-    if (rewardExp) {
-      addMtbankExp(rewardExp, "task_reward");
-      updateMtbankUI();
-    }
+ if (rewardExp) {
+  addMtbankExp(rewardExp, "task_reward");
+  
+  // Принудительно обновить UI
+  setTimeout(function() {
+    var currentUser = getCurrentUser();
+    var levelSpan = document.getElementById("mtbank-level");
+    var expSpan = document.getElementById("mtbank-exp");
+    var progressBar = document.getElementById("mtbank-progress");
+    
+    if (levelSpan) levelSpan.textContent = currentUser.mtbankLevel;
+    if (expSpan) expSpan.textContent = currentUser.mtbankExp + " / " + currentUser.mtbankExpToNext + " опыта";
+    if (progressBar) progressBar.style.width = (currentUser.mtbankExp / currentUser.mtbankExpToNext * 100) + "%";
+  }, 100);
+}
     
     showGameToast(`🎉 Получена награда: ${rewardSkill} ⭐, ${rewardToken} 💰 и ${rewardExp} опыта!`);
     return true;
@@ -1556,6 +1587,16 @@ function getBuildingDiscount() {
     updateStreakDisplay();
     
     addMtbankExp(reward.exp, "calendar");
+    setTimeout(function() {
+  var levelSpan = document.getElementById("mtbank-level");
+  var expSpan = document.getElementById("mtbank-exp");
+  var progressBar = document.getElementById("mtbank-progress");
+  var currentUser = getCurrentUser();
+  
+  if (levelSpan) levelSpan.textContent = currentUser.mtbankLevel;
+  if (expSpan) expSpan.textContent = currentUser.mtbankExp + " / " + currentUser.mtbankExpToNext + " опыта";
+  if (progressBar) progressBar.style.width = (currentUser.mtbankExp / currentUser.mtbankExpToNext * 100) + "%";
+}, 100);
     updateMtbankUI();
     
     showGameToast(`🎉 Получено: ${reward.skill} ⭐, ${reward.token} 💰 и ${reward.exp} опыта!`);
@@ -1745,19 +1786,19 @@ function getMaxPendingIncome(building) {
     updateMtbankUI();
   }
 
-  function getBuildingSpriteHTML(type, level) {
-    const def = BUILDING_TYPES[type];
-    if (!def) return '';
-    
-    const isMainBank = (type === "mtbank");
-    
-    return `
-      <div style="position:absolute;bottom:${isMainBank ? '28px' : '22px'};left:50%;transform:translateX(-50%);width:${isMainBank ? '60px' : '50px'};height:${isMainBank ? '60px' : '50px'};display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;filter:drop-shadow(0 6px 4px rgba(0,0,0,0.25));z-index:10;">
-        <img src="${SPRITE_PATH}${def.sprite}" alt="${def.name}" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
-        <div style="display:none;width:100%;height:100%;background:${def.bg};border-radius:12px;align-items:center;justify-content:center;font-size:28px;font-weight:bold;color:#333;">${def.icon}</div>
-      </div>
-    `;
-  }
+function getBuildingSpriteHTML(type, level) {
+  const def = BUILDING_TYPES[type];
+  if (!def) return '';
+  
+  const isMainBank = (type === "mtbank");
+  
+  return `
+    <div style="position:absolute;bottom:${isMainBank ? '28px' : '30px'};left:50%;transform:translateX(-50%);width:${isMainBank ? '60px' : '50px'};height:${isMainBank ? '60px' : '50px'};display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;filter:drop-shadow(0 6px 4px rgba(0,0,0,0.25));z-index:10;">
+      <img src="${SPRITE_PATH}${def.sprite}" alt="${def.name}" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div style="display:none;width:100%;height:100%;background:${def.bg};border-radius:12px;align-items:center;justify-content:center;font-size:28px;font-weight:bold;color:#333;">${def.icon}</div>
+    </div>
+  `;
+}
 
   function tileBg(r, c) {
     const isCenter = (r === 2 && c === 2);
@@ -2537,6 +2578,11 @@ function initCityGame() {
   
   var gameData = loadGameBuildings();
   buildings = gameData.buildings;
+  // Синхронизируем уровень МТБанка из currentUser
+var currentUser = getCurrentUser();
+if (currentUser && buildings[12] && buildings[12].type === "mtbank") {
+  buildings[12].level = currentUser.mtbankLevel || 1;
+}
 
   normalizePendingIncomes();
   
