@@ -594,3 +594,143 @@
 #mode2-container .city-bar-btn.back-btn:active {
   transform: translateY(2px);
 }
+/* Дополнительные стили для изометрической версии */
+.city-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(12px);
+  flex-shrink: 0;
+  z-index: 10;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.city-coins, .city-skill, .city-bank-level {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 6px 14px 6px 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.coin-icon, .skill-icon, .bank-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.coin-icon { background: linear-gradient(145deg, #FFD54F, #FFB300); }
+.skill-icon { background: linear-gradient(145deg, #64B5F6, #2196F3); }
+.bank-icon { background: linear-gradient(145deg, #E10098, #C2185B); }
+
+.build-item--locked {
+  opacity: 0.6;
+  filter: grayscale(0.3);
+}
+
+.build-item-locked {
+  font-size: 9px;
+  color: #f44336;
+  margin-top: 4px;
+  text-align: center;
+}
+
+.city-bar-btn.back-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.city-bar-btn.back-btn:active {
+  transform: translateY(2px);
+}
+/* Стили для верхней панели с подписями */
+.city-hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(12px);
+  flex-shrink: 0;
+  z-index: 10;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.city-coins, .city-skill, .city-bank-level {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 6px 14px 6px 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  font-weight: bold;
+}
+
+.coin-icon, .skill-icon, .bank-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+}
+
+.coin-icon { background: linear-gradient(145deg, #FFD54F, #FFB300); }
+.skill-icon { background: linear-gradient(145deg, #64B5F6, #2196F3); }
+.bank-icon { background: linear-gradient(145deg, #E10098, #C2185B); }
+
+.city-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: #1E293B;
+  text-transform: uppercase;
+  flex: 1;
+  text-align: center;
+}
+
+.city-level {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 6px 16px;
+  font-weight: 800;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Кнопка возврата */
+.city-bar-btn.back-btn {
+  background: #ef4444;
+  color: white;
+}
+
+.city-bar-btn.back-btn:active {
+  transform: translateY(2px);
+}
+
+/* Заблокированные здания */
+.build-item--locked {
+  opacity: 0.6;
+  filter: grayscale(0.3);
+}
+
+.build-item-locked {
+  font-size: 9px;
+  color: #f44336;
+  margin-top: 4px;
+  text-align: center;
+}

@@ -2955,3 +2955,93 @@ function initGameModeToggle() {
     init();
   }
 })();
+// ========== МОСТ ДЛЯ ИЗОМЕТРИЧЕСКОЙ ИГРЫ ==========
+// Делаем глобальные функции доступными для city-game.js
+window.getCurrentUser = getCurrentUser;
+window.loadAllUsers = loadAllUsers;
+window.saveAllUsers = saveAllUsers;
+window.syncBalancesToDom = syncBalancesToDom;
+window.showGameToast = showGameToast;
+window.balanceMtBanks = balanceMtBanks;
+window.balanceSkillPoints = balanceSkillPoints;
+window.updateGameBalanceDisplay = updateGameBalanceDisplay;
+window.renderMinecraftGrid = renderMinecraftGrid;
+
+// Функция для синхронизации баланса из города
+window.syncCityBalanceToApp = function(amount) {
+  console.log("💰 Синхронизация из города в приложение:", amount);
+  var currentUser = getCurrentUser();
+  if (currentUser) {
+    currentUser.balanceMtBanks = amount;
+    var users = loadAllUsers();
+    if (users) {
+      users[currentUser.id] = currentUser;
+      saveAllUsers(users);
+    }
+    balanceMtBanks = amount;
+    syncBalancesToDom();
+    updateGameBalanceDisplay();
+  }
+};
+
+// Функция для синхронизации очков прокачки из города
+window.syncSkillPointsToApp = function(amount) {
+  console.log("⭐ Синхронизация очков из города в приложение:", amount);
+  var currentUser = getCurrentUser();
+  if (currentUser) {
+    currentUser.balanceSkillPoints = amount;
+    var users = loadAllUsers();
+    if (users) {
+      users[currentUser.id] = currentUser;
+      saveAllUsers(users);
+    }
+    balanceSkillPoints = amount;
+    syncBalancesToDom();
+    updateGameBalanceDisplay();
+  }
+};
+
+// Функция для синхронизации уровня МТБанка
+window.syncBankLevelToApp = function(level, exp, expToNext) {
+  console.log("🏦 Синхронизация уровня банка из города:", level);
+  var currentUser = getCurrentUser();
+  if (currentUser) {
+    currentUser.mtbankLevel = level;
+    currentUser.mtbankExp = exp || 0;
+    currentUser.mtbankExpToNext = expToNext || 100;
+    var users = loadAllUsers();
+    if (users) {
+      users[currentUser.id] = currentUser;
+      saveAllUsers(users);
+    }
+  }
+};
+
+// Функция для принудительного переключения на режим 1
+window.forceSwitchToMode1 = function() {
+  console.log("🔄 Принудительное переключение на режим 1");
+  
+  currentGameMode = 1;
+  localStorage.setItem("rr_game_mode", "1");
+  
+  var mode1Container = document.getElementById('mode1-container');
+  var mode2Container = document.getElementById('mode2-container');
+  
+  if (mode1Container && mode2Container) {
+    mode1Container.style.display = 'block';
+    mode2Container.style.display = 'none';
+  }
+  
+  if (typeof renderMinecraftGrid === 'function') {
+    renderMinecraftGrid();
+  }
+  if (typeof updateGameBalanceDisplay === 'function') {
+    updateGameBalanceDisplay();
+  }
+  if (typeof syncBalancesToDom === 'function') {
+    syncBalancesToDom();
+  }
+  
+  showGameToast('🏙️ Переключено на Город МТ');
+  console.log("✅ Принудительное переключение выполнено");
+};
