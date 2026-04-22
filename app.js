@@ -225,8 +225,8 @@
 
     if (tab === "profile") syncBalancesToDom();
     if (tab === "game") {
-      syncBalancesToDom();
-      renderMinecraftGrid();
+  syncBalancesToDom();
+  renderGameBoard();
     }
     if (tab === "tasks") {
       renderCalendarGrid();
@@ -1680,6 +1680,280 @@ function initTasks() {
   initTasksTabs();
   renderTasksList();
 }
+// ========== ПЕРЕКЛЮЧЕНИЕ РЕЖИМОВ ИГРЫ ==========
+
+var currentGameMode = 1;
+var isCityGameLoaded = false;
+
+function renderGameBoard() {
+  var mode1Container = document.getElementById("mode1-container");
+  var mode2Container = document.getElementById("mode2-container");
+  
+  if (!mode1Container || !mode2Container) return;
+  
+  if (currentGameMode === 1) {
+    mode1Container.style.display = "block";
+    mode2Container.style.display = "none";
+    renderMinecraftGrid();
+    updateGameBalanceDisplay();
+  } else if (currentGameMode === 2) {
+    mode1Container.style.display = "none";
+    mode2Container.style.display = "block";
+    
+    if (!isCityGameLoaded) {
+      loadCityGame();
+    } else {
+      updateCityGameBalance();
+      refreshCityGame();
+    }
+  }
+}
+
+function loadCityGame() {
+  console.log("🏗 Загрузка изометрического города...");
+  
+  var mode2Container = document.getElementById("mode2-container");
+  if (!mode2Container) return;
+  
+  // Очищаем контейнер
+  mode2Container.innerHTML = '';
+  
+  // Создаём контейнер для города
+  var cityContainer = document.createElement('div');
+  cityContainer.id = 'city-game-root';
+  cityContainer.style.height = '100%';
+  cityContainer.style.width = '100%';
+  mode2Container.appendChild(cityContainer);
+  
+  // Проверяем, загружен ли скрипт city-game.js
+  if (typeof window.initCity === 'undefined') {
+    var script = document.createElement('script');
+    script.src = 'city-game.js';
+    script.onload = function() {
+      console.log("✅ city-game.js загружен");
+      initCityWithSync();
+    };
+    script.onerror = function() {
+      console.error("❌ Ошибка загрузки city-game.js");
+      showMode2Placeholder();
+    };
+    document.head.appendChild(script);
+  } else {
+    initCityWithSync();
+  }
+}
+
+function initCityWithSync() {
+  console.log("🏙 Инициализация города с синхронизацией");
+  
+  // Передаём текущего пользователя в город
+  var currentUser = getCurrentUser();
+  if (currentUser) {
+    window._currentCityUser = currentUser;
+  }
+  
+  // Вызываем инициализацию города
+  if (typeof window.initCity === 'function') {
+    window.initCity();
+    isCityGameLoaded = true;
+    
+    // Ждём отрисовки и синхронизируем
+    setTimeout(function() {
+      syncFullCityGame();
+    }, 500);
+  } else {
+    showMode2Placeholder();
+  }
+}
+
+function syncFullCityGame() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  
+  console.log("🔄 Полная синхронизация города с аккаунтом:", currentUser.nickname);
+  
+  // Синхронизируем баланс
+  if (typeof window.syncBalanceFromApp === 'function') {
+    window.syncBalanceFromApp(currentUser.balanceMtBanks || 0);
+  }
+  
+  // Синхронизируем здания
+  var buildingsKey = 'mtbank_city_buildings_' + currentUser.id;
+  var savedBuildings = localStorage.getItem(buildingsKey);
+  
+  if (!savedBuildings) {
+    // Если нет сохранений для города, создаём из основной игры
+    syncBuildingsFromMainGame();
+  }
+  
+  // Обновляем отображение
+  if (typeof window.refreshCityUI === 'function') {
+    window.refreshCityUI();
+  }
+  
+  updateCityGameBalance();
+}
+
+function syncBuildingsFromMainGame() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  
+  // Загружаем здания из основной игры
+  var gameData = loadGameBuildings();
+  if (gameData && gameData.buildings) {
+    var cityBuildings = {};
+    
+    for (var i = 0; i < gameData.buildings.length; i++) {
+      var building = gameData.buildings[i];
+      if (building && building.type !== 'mtbank') {
+        // Конвертируем тип здания в ID для изометрической версии
+        var cityId = convertBuildingType(building.type);
+        if (cityId) {
+          var row = Math.floor(i / 5);
+          var col = i % 5;
+          var key = row + ',' + col;
+          cityBuildings[key] = {
+            id: cityId,
+            lv: building.level,
+            acc: building.pendingIncome || 0,
+            tick: Date.now()
+          };
+        }
+      }
+    }
+    
+    // Сохраняем в localStorage для города
+    var storageKey = 'mtbank_city_buildings_' + currentUser.id;
+    localStorage.setItem(storageKey, JSON.stringify(cityBuildings));
+    
+    console.log("🏢 Синхронизировано зданий для города:", Object.keys(cityBuildings).length);
+  }
+}
+
+function convertBuildingType(type) {
+  // Конвертация типов зданий из основной игры в ID для изометрической
+  var mapping = {
+    'coffee': 'cafe',
+    'flowershop': 'flower',
+    'minimarket': 'minimarket',
+    'foodtruck': 'foodtruck',
+    'icecream': 'icecream',
+    'restaurant': 'restaurant',
+    'shop': 'store',
+    'autoservice': 'autoservice',
+    'itcompany': 'itoffice',
+    'gasstation': 'gasstation',
+    'businesspark': 'business',
+    'cinema': 'cinema',
+    'construction': 'construction',
+    'warehouse': 'warehouse',
+    'mall': 'mall'
+  };
+  return mapping[type] || null;
+}
+
+function updateCityGameBalance() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  
+  // Обновляем отображение в городе
+  var coinDisplay = document.getElementById('city-coin-display');
+  if (coinDisplay) {
+    coinDisplay.textContent = (currentUser.balanceMtBanks || 0).toLocaleString();
+  }
+  
+  // Синхронизируем через функцию города
+  if (typeof window.syncBalanceFromApp === 'function') {
+    window.syncBalanceFromApp(currentUser.balanceMtBanks || 0);
+  }
+}
+
+function refreshCityGame() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  
+  updateCityGameBalance();
+  
+  if (typeof window.refreshCityUI === 'function') {
+    window.refreshCityUI();
+  }
+}
+
+function showMode2Placeholder() {
+  var mode2Container = document.getElementById("mode2-container");
+  if (!mode2Container) return;
+  
+  mode2Container.innerHTML = `
+    <div class="game-board-mode2">
+      <div class="game-board-mode2__icon">🏗️</div>
+      <div class="game-board-mode2__title">Изометрический город</div>
+      <div class="game-board-mode2__text">Не удалось загрузить город</div>
+      <div class="game-board-mode2__text">✨ Проверьте наличие файла city-game.js ✨</div>
+      <button class="mode2-retry-btn" onclick="location.reload()">🔄 Перезагрузить</button>
+    </div>
+  `;
+}
+
+function toggleGameMode() {
+  console.log("🔄 toggleGameMode вызван, текущий режим:", currentGameMode);
+  
+  if (currentGameMode === 1) {
+    currentGameMode = 2;
+    showGameToast("🔄 Переключено на Изометрический город");
+    console.log("🔄 Переключение на режим 2 (Изометрический город)");
+  } else {
+    currentGameMode = 1;
+    showGameToast("🔄 Переключено на Город МТ");
+    console.log("🔄 Переключение на режим 1 (Город МТ)");
+    syncFromCityToMainGame();
+  }
+  localStorage.setItem("rr_game_mode", currentGameMode);
+  renderGameBoard();
+}
+
+// ========== СИНХРОНИЗАЦИЯ ИЗ ГОРОДА В ОСНОВНУЮ ИГРУ ==========
+
+function syncBalanceToMain(amount) {
+  console.log("💰 Синхронизация баланса из города:", amount);
+  
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  
+  currentUser.balanceMtBanks = amount;
+  currentUser.balanceSkillPoints = currentUser.balanceSkillPoints || 0;
+  
+  var users = loadAllUsers();
+  users[currentUser.id] = currentUser;
+  saveAllUsers(users);
+  
+  balanceMtBanks = amount;
+  syncBalancesToDom();
+  updateGameBalanceDisplay();
+  
+  showGameToast(`💰 Баланс обновлён: ${amount} MTBank Tokens`);
+}
+
+// Сделаем функции глобальными для доступа из city-game.js
+window.syncBalanceToMain = syncBalanceToMain;
+window.toggleGameMode = toggleGameMode;
+window.renderGameBoard = renderGameBoard;
+window.currentGameMode = currentGameMode;
+
+function initGameModeToggle() {
+  var toggleBtn = document.getElementById("game-mode-toggle");
+  if (toggleBtn) {
+    var newToggleBtn = toggleBtn.cloneNode(true);
+    toggleBtn.parentNode.replaceChild(newToggleBtn, toggleBtn);
+    newToggleBtn.addEventListener("click", function() {
+      toggleGameMode();
+    });
+  }
+  
+  var savedMode = localStorage.getItem("rr_game_mode");
+  if (savedMode !== null) {
+    currentGameMode = parseInt(savedMode);
+  }
+}
   // ========== ИГРОВАЯ МЕХАНИКА ==========
   
   function loadGameBuildings() {
@@ -2292,219 +2566,259 @@ function initTasks() {
   }
   
   function initGame() {
-    var currentUser = getCurrentUser();
-    if (currentUser) {
-      var gameData = loadGameBuildings();
-      if (!gameData.buildings[12] || gameData.buildings[12].type !== "mtbank") {
-        gameData.buildings[12] = {
-          type: "mtbank",
-          level: 1,
-          isMainBank: true,
-          pendingIncome: 0
-        };
-        saveGameBuildings(gameData);
-        console.log("МТБанк создан в центре поля");
-      }
-    }
-    
-    migrateOldBuildings();
-    updateBuildingPriceMultiplier();
-    updatePendingIncome();
-    renderMinecraftGrid();
-    updateGameBalanceDisplay();
-    startIncomeTimer();
-    
-    
-    var collectAllBtn = document.getElementById("collect-all-btn");
-    if (collectAllBtn) {
-      collectAllBtn.addEventListener("click", function() {
-        collectAllIncome();
-      });
-    }
-    
-    var buildModalClose = document.getElementById("build-modal-close");
-    var buildModalOverlay = document.querySelector("#build-modal .build-modal__overlay");
-    if (buildModalClose) buildModalClose.addEventListener("click", closeBuildModal);
-    if (buildModalOverlay) buildModalOverlay.addEventListener("click", closeBuildModal);
-    
-    var infoModalClose = document.getElementById("info-modal-close");
-    var infoModalOverlay = document.querySelector("#info-modal .info-modal__overlay");
-    var infoCollectBtn = document.getElementById("info-collect-btn");
-    var infoUpgradeBtn = document.getElementById("info-upgrade-btn");
-    var infoSellBtn = document.getElementById("info-sell-btn");
-    
-    if (infoModalClose) infoModalClose.addEventListener("click", closeInfoModal);
-    if (infoModalOverlay) infoModalOverlay.addEventListener("click", closeInfoModal);
-    
-    if (infoCollectBtn) {
-      infoCollectBtn.addEventListener("click", function() {
-        if (currentInfoIndex !== null) {
-          collectBuildingIncome(currentInfoIndex);
-          closeInfoModal();
-        }
-      });
-    }
-    
-    if (infoUpgradeBtn) {
-      infoUpgradeBtn.addEventListener("click", function() {
-        if (currentInfoIndex !== null) {
-          upgradeBuilding(currentInfoIndex);
-          closeInfoModal();
-        }
-      });
-    }
-    
-    if (infoSellBtn) {
-      infoSellBtn.addEventListener("click", function() {
-        if (currentInfoIndex !== null) {
-          sellBuilding(currentInfoIndex);
-          closeInfoModal();
-        }
-      });
-    }
-    
-    var helpBtn = document.getElementById("game-help-btn");
-    var helpModal = document.getElementById("help-modal");
-    var helpModalClose = document.getElementById("help-modal-close");
-    var helpModalOk = document.getElementById("help-modal-ok");
-    var helpModalOverlay = document.querySelector("#help-modal .help-modal__overlay");
-    
-    if (helpBtn && helpModal) {
-      helpBtn.addEventListener("click", function() {
-        helpModal.removeAttribute("hidden");
-      });
-    }
-    
-    if (helpModalClose && helpModal) {
-      helpModalClose.addEventListener("click", function() {
-        helpModal.setAttribute("hidden", "");
-      });
-    }
-    
-    if (helpModalOk && helpModal) {
-      helpModalOk.addEventListener("click", function() {
-        helpModal.setAttribute("hidden", "");
-      });
-    }
-    
-    if (helpModalOverlay && helpModal) {
-      helpModalOverlay.addEventListener("click", function() {
-        helpModal.setAttribute("hidden", "");
-      });
-    }
-    
-    var addSkillBtn = document.getElementById("btn-add-skill");
-    if (addSkillBtn) {
-      addSkillBtn.addEventListener("click", function() {
-        var amountInput = document.getElementById("skill-add-amount");
-        var amount = parseInt(amountInput.value, 10);
-        if (isNaN(amount) || amount <= 0) {
-          amount = 100;
-        }
-        addSkillPoints(amount);
-      });
-    }
-    
-    var resetStreakBtn = document.getElementById("reset-streak-btn");
-    if (resetStreakBtn) {
-      resetStreakBtn.addEventListener("click", function() {
-        resetCalendarWithTokens();
-      });
-    }
-    
-    var gamePanel = document.getElementById("panel-game");
-    if (gamePanel) {
-      var observer = new MutationObserver(function(mutations) {
-        mutations.forEach(function(mutation) {
-          if (mutation.attributeName === "class" && gamePanel.classList.contains("is-active")) {
-            updateGameBalanceDisplay();
-            renderMinecraftGrid();
-          }
-        });
-      });
-      observer.observe(gamePanel, { attributes: true });
-    }
-       // МТБанк модальное окно - ПРАВИЛЬНЫЕ ОБРАБОТЧИКИ
-    var mtbankModal = document.getElementById("mtbank-modal");
-    var mtbankModalClose = document.getElementById("mtbank-modal-close");
-    var mtbankModalOverlay = document.querySelector("#mtbank-modal .mtbank-modal__overlay");
-    
-    // Кнопки должны быть найдены ПОСЛЕ того как модальное окно существует в DOM
-    var creditBtn = document.getElementById("credit-btn");
-    var depositBtn = document.getElementById("deposit-btn");
-    var repayCreditBtn = document.getElementById("repay-credit-btn");
-    
-    console.log("creditBtn found:", creditBtn);
-    console.log("depositBtn found:", depositBtn);
-    console.log("repayCreditBtn found:", repayCreditBtn);
-    
-    // Закрытие по кнопке ✕
-    if (mtbankModalClose) {
-      // Удаляем старые обработчики, чтобы не было дублей
-      var newCloseBtn = mtbankModalClose.cloneNode(true);
-      mtbankModalClose.parentNode.replaceChild(newCloseBtn, mtbankModalClose);
-      newCloseBtn.addEventListener("click", closeMtbankModal);
-    }
-    
-    // Закрытие по клику на фон (overlay)
-    if (mtbankModalOverlay) {
-      var newOverlay = mtbankModalOverlay.cloneNode(true);
-      mtbankModalOverlay.parentNode.replaceChild(newOverlay, mtbankModalOverlay);
-      newOverlay.addEventListener("click", closeMtbankModal);
-    }
-    
-    // Закрытие по клавише Escape
-    if (mtbankModal) {
-      document.removeEventListener("keydown", mtbankEscapeHandler);
-      var mtbankEscapeHandler = function(e) {
-        if (e.key === "Escape" && !mtbankModal.hasAttribute("hidden")) {
-          closeMtbankModal();
-        }
+  var currentUser = getCurrentUser();
+  if (currentUser) {
+    var gameData = loadGameBuildings();
+    if (!gameData.buildings[12] || gameData.buildings[12].type !== "mtbank") {
+      gameData.buildings[12] = {
+        type: "mtbank",
+        level: 1,
+        isMainBank: true,
+        pendingIncome: 0
       };
-      document.addEventListener("keydown", mtbankEscapeHandler);
+      saveGameBuildings(gameData);
+      console.log("МТБанк создан в центре поля");
     }
-    
-    // Кнопка кредита
-    if (creditBtn) {
-      var newCreditBtn = creditBtn.cloneNode(true);
-      creditBtn.parentNode.replaceChild(newCreditBtn, creditBtn);
-      newCreditBtn.addEventListener("click", function() {
-        console.log("Credit button clicked");
-        takeCredit();
-      });
-    }
-    
-    // Кнопка вклада
-    if (depositBtn) {
-      var newDepositBtn = depositBtn.cloneNode(true);
-      depositBtn.parentNode.replaceChild(newDepositBtn, depositBtn);
-      newDepositBtn.addEventListener("click", function() {
-        console.log("Deposit button clicked");
-        createDeposit();
-      });
-    }
-    
-    // Кнопка погашения кредита
-    if (repayCreditBtn) {
-      var newRepayBtn = repayCreditBtn.cloneNode(true);
-      repayCreditBtn.parentNode.replaceChild(newRepayBtn, repayCreditBtn);
-      newRepayBtn.addEventListener("click", function() {
-        console.log("Repay button clicked");
-        repayCredit();
-      });
-    }
-    
-    if (creditBtn) creditBtn.addEventListener("click", takeCredit);
-    if (depositBtn) depositBtn.addEventListener("click", createDeposit);
-    if (repayCreditBtn) repayCreditBtn.addEventListener("click", repayCredit);
-    
-    // Периодическая проверка вкладов (каждую минуту)
-    setInterval(function() {
-      checkDeposits();
-    }, 60000);
-    
-    checkDeposits();
   }
+  
+  migrateOldBuildings();
+  updateBuildingPriceMultiplier();
+  updatePendingIncome();
+  updateGameBalanceDisplay();
+  startIncomeTimer();
+  
+  // Кнопка сбора всего дохода
+  var collectAllBtn = document.getElementById("collect-all-btn");
+  if (collectAllBtn) {
+    var newCollectBtn = collectAllBtn.cloneNode(true);
+    collectAllBtn.parentNode.replaceChild(newCollectBtn, collectAllBtn);
+    newCollectBtn.addEventListener("click", function() {
+      collectAllIncome();
+    });
+  }
+  
+  // Закрытие модального окна строительства
+  var buildModalClose = document.getElementById("build-modal-close");
+  var buildModalOverlay = document.querySelector("#build-modal .build-modal__overlay");
+  if (buildModalClose) {
+    var newBuildClose = buildModalClose.cloneNode(true);
+    buildModalClose.parentNode.replaceChild(newBuildClose, buildModalClose);
+    newBuildClose.addEventListener("click", closeBuildModal);
+  }
+  if (buildModalOverlay) {
+    var newBuildOverlay = buildModalOverlay.cloneNode(true);
+    buildModalOverlay.parentNode.replaceChild(newBuildOverlay, buildModalOverlay);
+    newBuildOverlay.addEventListener("click", closeBuildModal);
+  }
+  
+  // Закрытие модального окна информации
+  var infoModalClose = document.getElementById("info-modal-close");
+  var infoModalOverlay = document.querySelector("#info-modal .info-modal__overlay");
+  var infoCollectBtn = document.getElementById("info-collect-btn");
+  var infoUpgradeBtn = document.getElementById("info-upgrade-btn");
+  var infoSellBtn = document.getElementById("info-sell-btn");
+  
+  if (infoModalClose) {
+    var newInfoClose = infoModalClose.cloneNode(true);
+    infoModalClose.parentNode.replaceChild(newInfoClose, infoModalClose);
+    newInfoClose.addEventListener("click", closeInfoModal);
+  }
+  if (infoModalOverlay) {
+    var newInfoOverlay = infoModalOverlay.cloneNode(true);
+    infoModalOverlay.parentNode.replaceChild(newInfoOverlay, infoModalOverlay);
+    newInfoOverlay.addEventListener("click", closeInfoModal);
+  }
+  
+  if (infoCollectBtn) {
+    var newCollect = infoCollectBtn.cloneNode(true);
+    infoCollectBtn.parentNode.replaceChild(newCollect, infoCollectBtn);
+    newCollect.addEventListener("click", function() {
+      if (currentInfoIndex !== null) {
+        collectBuildingIncome(currentInfoIndex);
+        closeInfoModal();
+      }
+    });
+  }
+  
+  if (infoUpgradeBtn) {
+    var newUpgrade = infoUpgradeBtn.cloneNode(true);
+    infoUpgradeBtn.parentNode.replaceChild(newUpgrade, infoUpgradeBtn);
+    newUpgrade.addEventListener("click", function() {
+      if (currentInfoIndex !== null) {
+        upgradeBuilding(currentInfoIndex);
+        closeInfoModal();
+      }
+    });
+  }
+  
+  if (infoSellBtn) {
+    var newSell = infoSellBtn.cloneNode(true);
+    infoSellBtn.parentNode.replaceChild(newSell, infoSellBtn);
+    newSell.addEventListener("click", function() {
+      if (currentInfoIndex !== null) {
+        sellBuilding(currentInfoIndex);
+        closeInfoModal();
+      }
+    });
+  }
+  
+  // Модальное окно помощи
+  var helpBtn = document.getElementById("game-help-btn");
+  var helpModal = document.getElementById("help-modal");
+  var helpModalClose = document.getElementById("help-modal-close");
+  var helpModalOk = document.getElementById("help-modal-ok");
+  var helpModalOverlay = document.querySelector("#help-modal .help-modal__overlay");
+  
+  if (helpBtn && helpModal) {
+    var newHelpBtn = helpBtn.cloneNode(true);
+    helpBtn.parentNode.replaceChild(newHelpBtn, helpBtn);
+    newHelpBtn.addEventListener("click", function() {
+      helpModal.removeAttribute("hidden");
+    });
+  }
+  
+  if (helpModalClose && helpModal) {
+    var newHelpClose = helpModalClose.cloneNode(true);
+    helpModalClose.parentNode.replaceChild(newHelpClose, helpModalClose);
+    newHelpClose.addEventListener("click", function() {
+      helpModal.setAttribute("hidden", "");
+    });
+  }
+  
+  if (helpModalOk && helpModal) {
+    var newHelpOk = helpModalOk.cloneNode(true);
+    helpModalOk.parentNode.replaceChild(newHelpOk, helpModalOk);
+    newHelpOk.addEventListener("click", function() {
+      helpModal.setAttribute("hidden", "");
+    });
+  }
+  
+  if (helpModalOverlay && helpModal) {
+    var newHelpOverlay = helpModalOverlay.cloneNode(true);
+    helpModalOverlay.parentNode.replaceChild(newHelpOverlay, helpModalOverlay);
+    newHelpOverlay.addEventListener("click", function() {
+      helpModal.setAttribute("hidden", "");
+    });
+  }
+  
+  // Кнопка добавления очков прокачки
+  var addSkillBtn = document.getElementById("btn-add-skill");
+  if (addSkillBtn) {
+    var newAddSkillBtn = addSkillBtn.cloneNode(true);
+    addSkillBtn.parentNode.replaceChild(newAddSkillBtn, addSkillBtn);
+    newAddSkillBtn.addEventListener("click", function() {
+      var amountInput = document.getElementById("skill-add-amount");
+      var amount = parseInt(amountInput.value, 10);
+      if (isNaN(amount) || amount <= 0) {
+        amount = 100;
+      }
+      addSkillPoints(amount);
+    });
+  }
+  
+  // Кнопка восстановления календаря
+  var resetStreakBtn = document.getElementById("reset-streak-btn");
+  if (resetStreakBtn) {
+    var newResetBtn = resetStreakBtn.cloneNode(true);
+    resetStreakBtn.parentNode.replaceChild(newResetBtn, resetStreakBtn);
+    newResetBtn.addEventListener("click", function() {
+      resetCalendarWithTokens();
+    });
+  }
+  
+  // Наблюдатель за переключением вкладок
+  var gamePanel = document.getElementById("panel-game");
+  if (gamePanel) {
+    var observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.attributeName === "class" && gamePanel.classList.contains("is-active")) {
+          updateGameBalanceDisplay();
+          renderGameBoard();
+        }
+      });
+    });
+    observer.observe(gamePanel, { attributes: true });
+  }
+  
+  // ========== МТБанк модальное окно ==========
+  var mtbankModal = document.getElementById("mtbank-modal");
+  var mtbankModalClose = document.getElementById("mtbank-modal-close");
+  var mtbankModalOverlay = document.querySelector("#mtbank-modal .mtbank-modal__overlay");
+  var creditBtn = document.getElementById("credit-btn");
+  var depositBtn = document.getElementById("deposit-btn");
+  var repayCreditBtn = document.getElementById("repay-credit-btn");
+  
+  // Закрытие по кнопке ✕
+  if (mtbankModalClose) {
+    var newMtbankClose = mtbankModalClose.cloneNode(true);
+    mtbankModalClose.parentNode.replaceChild(newMtbankClose, mtbankModalClose);
+    newMtbankClose.addEventListener("click", closeMtbankModal);
+  }
+  
+  // Закрытие по клику на фон
+  if (mtbankModalOverlay) {
+    var newMtbankOverlay = mtbankModalOverlay.cloneNode(true);
+    mtbankModalOverlay.parentNode.replaceChild(newMtbankOverlay, mtbankModalOverlay);
+    newMtbankOverlay.addEventListener("click", closeMtbankModal);
+  }
+  
+  // Закрытие по клавише Escape
+  if (mtbankModal) {
+    var mtbankEscapeHandler = function(e) {
+      if (e.key === "Escape" && !mtbankModal.hasAttribute("hidden")) {
+        closeMtbankModal();
+      }
+    };
+    document.removeEventListener("keydown", mtbankEscapeHandler);
+    document.addEventListener("keydown", mtbankEscapeHandler);
+  }
+  
+  // Кнопка кредита
+  if (creditBtn) {
+    var newCreditBtn = creditBtn.cloneNode(true);
+    creditBtn.parentNode.replaceChild(newCreditBtn, creditBtn);
+    newCreditBtn.addEventListener("click", function() {
+      takeCredit();
+    });
+  }
+  
+  // Кнопка вклада
+  if (depositBtn) {
+    var newDepositBtn = depositBtn.cloneNode(true);
+    depositBtn.parentNode.replaceChild(newDepositBtn, depositBtn);
+    newDepositBtn.addEventListener("click", function() {
+      createDeposit();
+    });
+  }
+  
+  // Кнопка погашения кредита
+  if (repayCreditBtn) {
+    var newRepayBtn = repayCreditBtn.cloneNode(true);
+    repayCreditBtn.parentNode.replaceChild(newRepayBtn, repayCreditBtn);
+    newRepayBtn.addEventListener("click", function() {
+      repayCredit();
+    });
+  }
+  
+  // Периодическая проверка вкладов (каждую минуту)
+  setInterval(function() {
+    checkDeposits();
+  }, 60000);
+  
+  checkDeposits();
+  
+  // ========== ПЕРЕКЛЮЧЕНИЕ РЕЖИМОВ ИГРЫ ==========
+  initGameModeToggle();
+  
+  // Загружаем сохранённый режим
+  var savedMode = localStorage.getItem("rr_game_mode");
+  if (savedMode !== null) {
+    currentGameMode = parseInt(savedMode);
+  }
+  
+  // Отображаем игровое поле в соответствии с выбранным режимом
+  renderGameBoard();
+}
 
   function init() {
     checkAuthAndRedirect();

@@ -2053,3 +2053,143 @@ a.shop-item {
   font-size: 0.7rem;
   opacity: 0.5;
 }
+/* Кнопка переключения режима */
+.game-mode-toggle {
+  background: linear-gradient(145deg, #ff9800, #f57c00);
+  border: none;
+  border-radius: 30px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+  font-weight: 600;
+  font-size: 0.8rem;
+  margin: 8px 0;
+}
+
+.game-mode-toggle:hover {
+  transform: scale(1.02);
+  background: linear-gradient(145deg, #ffb74d, #ff9800);
+}
+
+.game-mode-toggle:active {
+  transform: scale(0.98);
+}
+
+.mode-toggle__icon {
+  font-size: 1rem;
+}
+
+.mode-toggle__text {
+  font-size: 0.75rem;
+}
+
+/* Режим 2 - заглушка */
+.game-board-mode2 {
+  background: linear-gradient(145deg, #1a1a2e, #16213e);
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.game-board-mode2__icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  animation: pulse 2s ease infinite;
+}
+
+.game-board-mode2__title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ffd700;
+  margin-bottom: 12px;
+}
+
+.game-board-mode2__text {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
+}
+
+.game-board-mode2__hint {
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 20px;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+/* Контейнеры для режимов игры */
+.game-mode-container {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+}
+
+.game-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* Кнопка переключения режима */
+.game-mode-toggle {
+  background: linear-gradient(145deg, #ff9800, #f57c00);
+  border: none;
+  border-radius: 30px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+  font-weight: 600;
+  font-size: 0.8rem;
+  margin: 8px 0;
+}
+
+.game-mode-toggle:hover {
+  transform: scale(1.02);
+}
+
+.game-mode-toggle:active {
+  transform: scale(0.98);
+}
+
+.mode-toggle__icon {
+  font-size: 1rem;
+}
+
+.mode-toggle__text {
+  font-size: 0.75rem;
+}
+.mode2-retry-btn {
+  background: linear-gradient(145deg, #007bff, #6a00b8);
+  border: none;
+  border-radius: 30px;
+  padding: 10px 24px;
+  margin-top: 20px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode2-retry-btn:hover {
+  transform: scale(1.02);
+}
+
+.mode2-retry-btn:active {
+  transform: scale(0.98);
+}

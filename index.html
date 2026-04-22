@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
   <title>MTBank Strategy</title>
   <link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="iso-styles.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -125,32 +126,46 @@
 </section>
 
       <section id="panel-game" class="panel" data-panel="game">
-        <div class="game-container">
-          <div class="game-header">
-            <div class="game-title-section">
-              <h2 class="game-title">🏙️ Город МТ</h2>
-              <button class="game-help-btn" id="game-help-btn">❓ Как играть?</button>
-            </div>
-            <div class="game-balance">
-              <span class="game-balance__label">MTBank Tokens</span>
-              <span class="game-balance__value" id="game-balance">0</span>
-            </div>
-            <div class="game-skill-balance">
-              <span class="game-skill-balance__label">⭐ Очки прокачки</span>
-              <span class="game-skill-balance__value" id="game-skill-balance">0</span>
-            </div>
-            <div class="game-total-income">
-              <span>💰 Доход/час: <span id="total-income">0</span></span>
-            </div>
-          </div>
-          
-          <div class="minecraft-grid" id="minecraft-grid"></div>
-          
-          <button class="collect-all-btn" id="collect-all-btn">
-            🧺 Собрать весь доход
-          </button>
+  <div class="game-container" id="game-container">
+    <!-- Режим 1: Город МТ (сетка 5x5) -->
+    <div id="mode1-container" class="game-mode-container">
+      <div class="game-header">
+        <div class="game-title-section">
+          <h2 class="game-title">🏙️ Город МТ</h2>
+          <button class="game-help-btn" id="game-help-btn">❓ Как играть?</button>
         </div>
-      </section>
+        
+        <button class="game-mode-toggle" id="game-mode-toggle">
+          <span class="mode-toggle__icon">🔄</span>
+          <span class="mode-toggle__text">Переключить режим</span>
+        </button>
+        
+        <div class="game-balance">
+          <span class="game-balance__label">MTBank Tokens</span>
+          <span class="game-balance__value" id="game-balance">0</span>
+        </div>
+        <div class="game-skill-balance">
+          <span class="game-skill-balance__label">⭐ Очки прокачки</span>
+          <span class="game-skill-balance__value" id="game-skill-balance">0</span>
+        </div>
+        <div class="game-total-income">
+          <span>💰 Доход/час: <span id="total-income">0</span></span>
+        </div>
+      </div>
+      
+      <div class="minecraft-grid" id="minecraft-grid"></div>
+      
+      <button class="collect-all-btn" id="collect-all-btn">
+        🧺 Собрать весь доход
+      </button>
+    </div>
+    
+    <!-- Режим 2: Изометрический город (будет заполнен динамически) -->
+    <div id="mode2-container" class="game-mode-container" style="display: none;">
+      <!-- Сюда будет вставлен изометрический город из city-game.js -->
+    </div>
+  </div>
+</section>
       
       <section id="panel-tasks" class="panel" data-panel="tasks">
   <div class="card card--panel tasks-card">
@@ -601,5 +616,6 @@
     </div>
   </div>
   <script src="app.js" defer></script>
+<script src="city-game.js" defer></script>
 </body>
 </html>
