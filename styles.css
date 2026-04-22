@@ -2813,3 +2813,59 @@ a.shop-item {
     width: 100%;
   }
 }
+/* Улучшение кликабельности на телефоне */
+.city-tile {
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+  touch-action: manipulation;
+}
+
+.city-tile:active {
+  transform: scale(0.98);
+  transition: transform 0.05s ease;
+}
+
+/* Кнопки должны легко нажиматься */
+button, .city-bar-btn, .city-control-btn, .build-option, .info-btn, .task-btn {
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:active, .city-bar-btn:active, .city-control-btn:active, .build-option:active, .info-btn:active, .task-btn:active {
+  transform: scale(0.97);
+  transition: transform 0.05s ease;
+}
+
+/* Увеличенные области нажатия для мобильных */
+@media (max-width: 768px) {
+  .city-tile {
+    min-width: 55px;
+    min-height: 50px;
+  }
+  
+  .build-option {
+    padding: 15px 8px;
+  }
+  
+  .info-btn, .task-btn {
+    padding: 14px 12px;
+  }
+}
+.bank-level-display {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 12px;
+  padding: 2px 6px;
+  z-index: 15;
+  white-space: nowrap;
+}
+
+.bank-level-display span {
+  font-size: 8px;
+  font-weight: 700;
+  color: #FFD700;
+}

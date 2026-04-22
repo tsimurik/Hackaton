@@ -357,7 +357,7 @@
   }
 
   // ========== ПУТЬ К СПРАЙТАМ ==========
-  var SPRITE_PATH = "assets/sprites/buildings/";
+  var SPRITE_PATH = "buildings/";
 
   // ========== КОНФИГУРАЦИЯ ЗДАНИЙ ==========
   const BUILDING_TYPES = {
@@ -411,58 +411,100 @@
     return currentUser?.mtbankExpToNext || 100;
   }
 
-  function addMtbankExp(amount, source) {
-    var currentUser = getCurrentUser();
-    if (!currentUser) return false;
-    
-    if (!currentUser.mtbankLevel) currentUser.mtbankLevel = 1;
-    if (!currentUser.mtbankExp) currentUser.mtbankExp = 0;
-    if (!currentUser.mtbankExpToNext) currentUser.mtbankExpToNext = 100;
-    
-    var oldLevel = currentUser.mtbankLevel;
-    currentUser.mtbankExp += amount;
-    var leveledUp = false;
-    
-    while (currentUser.mtbankExp >= currentUser.mtbankExpToNext && currentUser.mtbankLevel < 3) {
-      currentUser.mtbankExp -= currentUser.mtbankExpToNext;
-      currentUser.mtbankLevel++;
-      currentUser.mtbankExpToNext = Math.floor(currentUser.mtbankExpToNext * 1.5);
-      leveledUp = true;
-      showGameToast(`🏆 МТБанк повышен до ${currentUser.mtbankLevel} уровня! Открыты новые бизнесы!`);
-    }
-    
-    var users = loadAllUsers();
-    users[currentUser.id] = currentUser;
-    saveAllUsers(users);
-    
-    updateMtbankUI();
-    
-    if (leveledUp) {
-      renderGrid();
-    }
-    
-    if (source) {
-      console.log(`➕ Добавлено ${amount} опыта МТБанка от: ${source}`);
-    }
-    
-    return leveledUp;
+ function addMtbankExp(amount, source) {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return false;
+  
+  if (!currentUser.mtbankLevel) currentUser.mtbankLevel = 1;
+  if (!currentUser.mtbankExp) currentUser.mtbankExp = 0;
+  if (!currentUser.mtbankExpToNext) currentUser.mtbankExpToNext = 100;
+  
+  var oldLevel = currentUser.mtbankLevel;
+  currentUser.mtbankExp += amount;
+  var leveledUp = false;
+  
+  while (currentUser.mtbankExp >= currentUser.mtbankExpToNext && currentUser.mtbankLevel < 3) {
+    currentUser.mtbankExp -= currentUser.mtbankExpToNext;
+    currentUser.mtbankLevel++;
+    currentUser.mtbankExpToNext = Math.floor(currentUser.mtbankExpToNext * 1.5);
+    leveledUp = true;
+    showGameToast(`🏆 МТБанк повышен до ${currentUser.mtbankLevel} уровня! Открыты новые бизнесы!`);
   }
+  
+  // Сохраняем изменения
+  var users = loadAllUsers();
+  users[currentUser.id] = currentUser;
+  saveAllUsers(users);
+  
+  // 🔴 ВАЖНО: Обновляем отображение в игре
+  updateMtbankUI();
+  
+  // 🔴 Также обновляем отображение в верхней панели (если она есть)
+  var levelSpan = document.getElementById("mtbank-level");
+  if (levelSpan) levelSpan.textContent = currentUser.mtbankLevel;
+  
+  var expSpan = document.getElementById("mtbank-exp");
+  if (expSpan) expSpan.textContent = `${currentUser.mtbankExp} / ${currentUser.mtbankExpToNext}`;
+  
+  var progressBar = document.getElementById("mtbank-progress");
+  if (progressBar) {
+    var percent = (currentUser.mtbankExp / currentUser.mtbankExpToNext) * 100;
+    progressBar.style.width = percent + "%";
+  }
+  
+  if (leveledUp) {
+    renderGrid(); // Перерисовываем для обновления доступных зданий
+  }
+  
+  if (source) {
+    console.log(`➕ Добавлено ${amount} опыта МТБанка от: ${source}, новый уровень: ${currentUser.mtbankLevel}`);
+  }
+  
+  return leveledUp;
+}
 
   function updateMtbankUI() {
-    var currentUser = getCurrentUser();
-    if (!currentUser) return;
-    
-    var levelSpan = document.getElementById("mtbank-level");
-    var expSpan = document.getElementById("mtbank-exp");
-    var progressBar = document.getElementById("mtbank-progress");
-    
-    if (levelSpan) levelSpan.textContent = currentUser.mtbankLevel || 1;
-    if (expSpan) expSpan.textContent = `${currentUser.mtbankExp || 0} / ${currentUser.mtbankExpToNext || 100}`;
-    if (progressBar) {
-      var percent = ((currentUser.mtbankExp || 0) / (currentUser.mtbankExpToNext || 100)) * 100;
-      progressBar.style.width = percent + "%";
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  
+  var level = currentUser.mtbankLevel || 1;
+  var exp = currentUser.mtbankExp || 0;
+  var expToNext = currentUser.mtbankExpToNext || 100;
+  var percent = (exp / expToNext) * 100;
+  
+  // Обновляем текстовые элементы в верхней панели
+  var levelSpan = document.getElementById("mtbank-level");
+  if (levelSpan) levelSpan.textContent = level;
+  
+  var expSpan = document.getElementById("mtbank-exp");
+  if (expSpan) expSpan.textContent = exp + " / " + expToNext + " опыта";
+  
+  var progressBar = document.getElementById("mtbank-progress");
+  if (progressBar) progressBar.style.width = percent + "%";
+  
+  // 🔴 ОБНОВЛЯЕМ УРОВЕНЬ НА КАРТЕ (на самом здании МТБанка)
+  var mtbankTile = document.querySelector('.city-tile');
+  if (mtbankTile) {
+    // Ищем все тайлы и находим тот, где есть банк
+    var tiles = document.querySelectorAll('.city-tile');
+    for (var i = 0; i < tiles.length; i++) {
+      var tile = tiles[i];
+      var levelDisplay = tile.querySelector('.bank-level-display span');
+      if (levelDisplay && levelDisplay.textContent.includes('🏦')) {
+        levelDisplay.textContent = '🏦 Lv.' + level;
+        break;
+      }
     }
   }
+  
+  // Также обновляем уровень в buildings массиве (для сохранения)
+  if (buildings[12] && buildings[12].type === "mtbank") {
+    buildings[12].level = level;
+    saveGameBuildings({ buildings: buildings, lastUpdate: Date.now() });
+  }
+  
+  console.log("🔄 Обновлён UI МТБанка: уровень", level);
+}
 
   // ========== ЗАДАНИЯ ==========
   var TASKS_KEY = "rr_tasks_";
@@ -1520,119 +1562,124 @@
   }
 
   // ========== УПРАВЛЕНИЕ КАМЕРОЙ (ПОДДЕРЖКА ТЕЛЕФОНА) ==========
-  function setupCameraControls() {
-    const gameArea = document.querySelector('.city-game-area');
-    if (!gameArea) return;
+ function setupCameraControls() {
+  const gameArea = document.querySelector('.city-game-area');
+  if (!gameArea) return;
+  
+  cameraZoom = 1.3;
+  
+  // Масштабирование колёсиком мыши
+  gameArea.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.05 : 0.05;
+    cameraZoom = Math.min(2.2, Math.max(0.9, cameraZoom + delta));
+    updateCameraTransform();
+  }, { passive: false });
+  
+  // ========== УПРАВЛЕНИЕ МЫШЬЮ ==========
+  gameArea.addEventListener('mousedown', (e) => {
+    // Если кликнули по плитке или кнопке - не перетаскиваем
+    if (e.target.closest('.city-tile') || e.target.closest('button')) return;
+    isDragging = true;
+    hasMoved = false;
+    dragStartX = e.clientX; 
+    dragStartY = e.clientY;
+    dragCameraStartX = cameraX; 
+    dragCameraStartY = cameraY;
+    gameArea.style.cursor = 'grabbing';
+    e.preventDefault();
+  });
+  
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const dx = e.clientX - dragStartX;
+    const dy = e.clientY - dragStartY;
+    if (Math.abs(dx) > 5 || Math.abs(dy) > 5) hasMoved = true;
+    cameraX = dragCameraStartX + dx;
+    cameraY = dragCameraStartY + dy;
+    updateCameraTransform();
+  });
+  
+  window.addEventListener('mouseup', () => { 
+    isDragging = false; 
+    if (gameArea) gameArea.style.cursor = 'grab';
+    setTimeout(() => { hasMoved = false; }, 50);
+  });
+  
+  // ========== УПРАВЛЕНИЕ ПАЛЬЦЕМ (ТЕЛЕФОН) ==========
+  let touchStartDistance = 0;
+  let touchStartZoom = 1.3;
+  let touchStartTime = 0;
+  
+  gameArea.addEventListener('touchstart', (e) => {
+    touchStartTime = Date.now();
     
-    cameraZoom = 1.3;
+    // Если нажали на плитку или кнопку - НЕ перетаскиваем, а даём кликнуть
+    if (e.target.closest('.city-tile') || e.target.closest('button')) {
+      isDragging = false;
+      return;
+    }
     
-    gameArea.addEventListener('wheel', (e) => {
-      e.preventDefault();
-      const delta = e.deltaY > 0 ? -0.05 : 0.05;
-      cameraZoom = Math.min(2.2, Math.max(0.9, cameraZoom + delta));
-      updateCameraTransform();
-    }, { passive: false });
-    
-    // Управление мышью
-    gameArea.addEventListener('mousedown', (e) => {
-      if (e.target.closest('.city-tile') || e.target.closest('button')) return;
+    if (e.touches.length === 1) {
       isDragging = true;
       hasMoved = false;
-      dragStartX = e.clientX; 
-      dragStartY = e.clientY;
-      dragCameraStartX = cameraX; 
+      dragStartX = e.touches[0].clientX;
+      dragStartY = e.touches[0].clientY;
+      dragCameraStartX = cameraX;
       dragCameraStartY = cameraY;
-      gameArea.style.cursor = 'grabbing';
+    } else if (e.touches.length === 2) {
+      isDragging = false;
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      touchStartDistance = Math.sqrt(dx * dx + dy * dy);
+      touchStartZoom = cameraZoom;
+    }
+  }, { passive: false });
+  
+  gameArea.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1 && isDragging) {
       e.preventDefault();
-    });
-    
-    window.addEventListener('mousemove', (e) => {
-      if (!isDragging) return;
-      const dx = e.clientX - dragStartX;
-      const dy = e.clientY - dragStartY;
-      if (Math.abs(dx) > 5 || Math.abs(dy) > 5) hasMoved = true;
+      const dx = e.touches[0].clientX - dragStartX;
+      const dy = e.touches[0].clientY - dragStartY;
+      
+      if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+        hasMoved = true;
+      }
+      
       cameraX = dragCameraStartX + dx;
       cameraY = dragCameraStartY + dy;
       updateCameraTransform();
-    });
-    
-    window.addEventListener('mouseup', () => { 
-      isDragging = false; 
-      if (gameArea) gameArea.style.cursor = 'grab';
-      setTimeout(() => { hasMoved = false; }, 50);
-    });
-    
-    // Управление пальцем (телефон)
-    let touchStartDistance = 0;
-    let touchStartZoom = 1.3;
-    
-    gameArea.addEventListener('touchstart', (e) => {
+    } else if (e.touches.length === 2) {
       e.preventDefault();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
       
-      if (e.target.closest('.city-tile') || e.target.closest('button')) {
-        isDragging = false;
-        return;
-      }
-      
-      if (e.touches.length === 1) {
-        isDragging = true;
-        hasMoved = false;
-        dragStartX = e.touches[0].clientX;
-        dragStartY = e.touches[0].clientY;
-        dragCameraStartX = cameraX;
-        dragCameraStartY = cameraY;
-      } else if (e.touches.length === 2) {
-        isDragging = false;
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        touchStartDistance = Math.sqrt(dx * dx + dy * dy);
-        touchStartZoom = cameraZoom;
-      }
-    }, { passive: false });
-    
-    gameArea.addEventListener('touchmove', (e) => {
-      e.preventDefault();
-      
-      if (e.touches.length === 1 && isDragging) {
-        const dx = e.touches[0].clientX - dragStartX;
-        const dy = e.touches[0].clientY - dragStartY;
-        
-        if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
-          hasMoved = true;
-        }
-        
-        cameraX = dragCameraStartX + dx;
-        cameraY = dragCameraStartY + dy;
+      if (touchStartDistance > 0) {
+        const scale = distance / touchStartDistance;
+        cameraZoom = Math.min(2.2, Math.max(0.9, touchStartZoom * scale));
         updateCameraTransform();
-      } else if (e.touches.length === 2) {
-        const dx = e.touches[0].clientX - e.touches[1].clientX;
-        const dy = e.touches[0].clientY - e.touches[1].clientY;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        if (touchStartDistance > 0) {
-          const scale = distance / touchStartDistance;
-          cameraZoom = Math.min(2.2, Math.max(0.9, touchStartZoom * scale));
-          updateCameraTransform();
-        }
       }
-    }, { passive: false });
-    
-    gameArea.addEventListener('touchend', (e) => {
-      setTimeout(() => {
-        isDragging = false;
-        hasMoved = false;
-      }, 50);
-      touchStartDistance = 0;
-    });
-    
-    gameArea.addEventListener('touchcancel', (e) => {
+    }
+  }, { passive: false });
+  
+  gameArea.addEventListener('touchend', (e) => {
+    // Сбрасываем состояние
+    setTimeout(() => {
       isDragging = false;
       hasMoved = false;
-      touchStartDistance = 0;
-    });
-    
-    gameArea.style.cursor = 'grab';
-  }
+    }, 50);
+    touchStartDistance = 0;
+  });
+  
+  gameArea.addEventListener('touchcancel', (e) => {
+    isDragging = false;
+    hasMoved = false;
+    touchStartDistance = 0;
+  });
+  
+  gameArea.style.cursor = 'grab';
+}
 
   function startIncomeTimer() {
     if (incomeInterval) clearInterval(incomeInterval);
