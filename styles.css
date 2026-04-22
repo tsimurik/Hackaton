@@ -194,7 +194,17 @@ body {
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--text-dark);
+  color:rgb(255, 255, 255) ;
+}
+
+.panel__titleb {
+  margin: 0 0 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color:rgb(0, 0, 0) ;
+  
 }
 
 .panel__empty {
@@ -3023,4 +3033,497 @@ button:active, .city-bar-btn:active, .city-control-btn:active, .build-option:act
 .mtbank-modal__icon img {
   display: block;
   margin: 0 auto;
+}
+/* Блок Ваучеры */
+.vouchers-section {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid #e8e8e8;
+}
+
+.vouchers-title {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-dark);
+  margin: 0 0 16px 0;
+}
+
+.vouchers-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  width: 100%;
+}
+
+.voucher-item {
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  box-shadow: 0 10px 28px rgba(75, 0, 130, 0.22);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.voucher-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(75, 0, 130, 0.3);
+}
+
+.voucher-item__visual {
+  width: 70px;
+  height: 70px;
+  flex-shrink: 0;
+}
+
+.voucher-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.voucher-item__info {
+  flex: 1;
+  min-width: 150px;
+}
+
+.voucher-item__name {
+  margin: 0 0 4px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.voucher-item__desc {
+  margin: 0 0 4px;
+  font-size: 0.7rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.voucher-item__price {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #FFD700;
+}
+
+.voucher-item__btn {
+  background: #ffffff;
+  border: none;
+  border-radius: 30px;
+  padding: 10px 24px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #6a00b8;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.voucher-item__btn:hover {
+  transform: scale(1.02);
+  background: #f0f0f0;
+}
+
+.voucher-item__btn:active {
+  transform: scale(0.98);
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 480px) {
+  .voucher-item {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .voucher-item__visual {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .voucher-item__btn {
+    width: 100%;
+    margin-top: 8px;
+  }
+}
+/* Заголовок магазина */
+.shop-header {
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+
+.shop-page__title {
+  margin: 0 !important;
+  color: white !important;
+  text-align: center;
+}
+
+/* Блок Ваучеры */
+.vouchers-section {
+  margin-top: 24px;
+}
+
+.vouchers-header {
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  border-radius: 16px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+}
+
+.vouchers-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: white;
+  text-align: center;
+}
+
+.vouchers-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  width: 100%;
+}
+
+/* Серый прозрачный фон для ваучера */
+.voucher-item {
+  background: rgba(200, 200, 200, 0.15);
+  backdrop-filter: blur(5px);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  border: 1px solid rgba(150, 150, 150, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.voucher-item:hover {
+  transform: translateY(-2px);
+  background: rgba(200, 200, 200, 0.25);
+}
+
+.voucher-item__visual {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.voucher-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.voucher-item__info {
+  flex: 1;
+  min-width: 150px;
+}
+
+.voucher-item__name {
+  margin: 0 0 4px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #333;
+  text-transform: uppercase;
+}
+
+.voucher-item__desc {
+  margin: 0 0 4px;
+  font-size: 0.7rem;
+  color: #666;
+}
+
+.voucher-item__price {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #e10098;
+}
+
+.voucher-item__btn {
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  border: none;
+  border-radius: 30px;
+  padding: 10px 24px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.voucher-item__btn:hover {
+  transform: scale(1.02);
+  opacity: 0.95;
+}
+
+.voucher-item__btn:active {
+  transform: scale(0.98);
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 480px) {
+  .voucher-item {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .voucher-item__visual {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .voucher-item__btn {
+    width: 100%;
+    margin-top: 8px;
+  }
+}
+/* Стили для магазина */
+.shop-page {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Заголовок магазина */
+.shop-header {
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+}
+
+.shop-page__title {
+  margin: 0 !important;
+  color: white !important;
+  text-align: center;
+}
+
+/* Сетка товаров (2 в строке) */
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.shop-item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  outline: none;
+  text-decoration: none;
+  color: inherit;
+}
+
+.shop-item__inner {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.24s ease, box-shadow 0.24s ease;
+}
+
+.shop-item:hover .shop-item__inner {
+  transform: scale(1.06);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.14);
+}
+
+.shop-item__visual {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14%;
+}
+
+.shop-item__visual--green { background: linear-gradient(160deg, #e8f5e9 0%, #c8e6c9 100%); }
+.shop-item__visual--ozby { background: linear-gradient(160deg, #fff3e0 0%, #ffe0b2 100%); }
+.shop-item__visual--cactus { background: linear-gradient(160deg, #e8f5e9 0%, #dcedc8 100%); }
+.shop-item__visual--apple { background: linear-gradient(160deg, #fff8e1 0%, #ffecb3 100%); }
+
+.shop-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.shop-item__hover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 12px;
+  background: linear-gradient(to top, rgba(20, 20, 20, 0.88) 0%, rgba(20, 20, 20, 0.35) 52%, transparent 72%);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  pointer-events: none;
+}
+
+.shop-item:hover .shop-item__hover {
+  opacity: 1;
+}
+
+.shop-item__name {
+  margin: 0 0 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.shop-item__desc {
+  margin: 0;
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+/* Блок Ваучеры */
+.vouchers-section {
+  margin-top: 8px;
+}
+
+.vouchers-header {
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  border-radius: 16px;
+  padding: 10px 16px;
+  margin-bottom: 16px;
+}
+
+.vouchers-title {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: white;
+  text-align: center;
+}
+
+.vouchers-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  width: 100%;
+}
+
+.voucher-item {
+  background: rgba(200, 200, 200, 0.15);
+  backdrop-filter: blur(5px);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  border: 1px solid rgba(150, 150, 150, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.voucher-item:hover {
+  transform: translateY(-2px);
+  background: rgba(200, 200, 200, 0.25);
+}
+
+.voucher-item__visual {
+  width: 60px;
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.voucher-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.voucher-item__info {
+  flex: 1;
+  min-width: 150px;
+}
+
+.voucher-item__name {
+  margin: 0 0 4px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #333;
+  text-transform: uppercase;
+}
+
+.voucher-item__desc {
+  margin: 0 0 4px;
+  font-size: 0.7rem;
+  color: #666;
+}
+
+.voucher-item__price {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #e10098;
+}
+
+.voucher-item__btn {
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  border: none;
+  border-radius: 30px;
+  padding: 10px 24px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.voucher-item__btn:hover {
+  transform: scale(1.02);
+  opacity: 0.95;
+}
+
+.voucher-item__btn:active {
+  transform: scale(0.98);
+}
+
+/* Адаптация для мобильных */
+@media (max-width: 480px) {
+  .shop-grid {
+    gap: 10px;
+  }
+  
+  .shop-item__name {
+    font-size: 0.65rem;
+  }
+  
+  .shop-item__desc {
+    font-size: 0.6rem;
+  }
+  
+  .voucher-item {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .voucher-item__visual {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .voucher-item__btn {
+    width: 100%;
+    margin-top: 8px;
+  }
 }

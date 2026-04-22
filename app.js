@@ -981,6 +981,60 @@ function bindMtbankModalEvents() {
   }
 }
 
+// ========== ВАУЧЕРЫ ==========
+
+function buyVoucher() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  
+  var voucherPrice = 500;
+  var currentBalance = currentUser.balanceMtBanks || 0;
+  
+  if (currentBalance < voucherPrice) {
+    showGameToast("❌ Недостаточно MTBank Tokens! Нужно 500 💰");
+    return;
+  }
+  
+  // Проверяем, есть ли уже активный ваучер
+  if (currentUser.activeVoucher) {
+    var voucherDate = new Date(currentUser.voucherExpiry);
+    if (voucherDate > new Date()) {
+      showGameToast("❌ У вас уже есть активный ваучер! Дождитесь его окончания.");
+      return;
+    }
+  }
+  
+  // Списываем деньги
+  currentUser.balanceMtBanks = currentBalance - voucherPrice;
+  
+  // Активируем ваучер на 24 часа
+  currentUser.activeVoucher = true;
+  currentUser.voucherExpiry = Date.now() + (24 * 60 * 60 * 1000);
+  currentUser.voucherDiscount = 5; // 5% скидка
+  
+  // Сохраняем
+  var users = loadAllUsers();
+  users[currentUser.id] = currentUser;
+  saveAllUsers(users);
+  
+  // Обновляем отображение
+  balanceMtBanks = currentUser.balanceMtBanks;
+  syncBalancesToDom();
+  if (typeof updateGameBalanceDisplay === 'function') updateGameBalanceDisplay();
+  
+  showGameToast("🎫 Ваучер на скидку 5% активирован! Действует 24 часа.");
+}
+
+// Функция для получения скидки при постройке
+function getBuildingDiscount() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return 0;
+  
+  if (currentUser.activeVoucher && currentUser.voucherExpiry > Date.now()) {
+    return currentUser.voucherDiscount || 5;
+  }
+  return 0;
+}
   // ========== ЗАДАНИЯ ==========
   var TASKS_KEY = "rr_tasks_";
 
@@ -1824,21 +1878,73 @@ const incomeHTML = (pending > 0 && building?.type !== "mtbank") ? `
     if (modal) modal.removeAttribute("hidden");
   }
 
+  // ========== ВАУЧЕРЫ ==========
+
+function buyVoucher() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  
+  var voucherPrice = 500;
+  var currentBalance = currentUser.balanceMtBanks || 0;
+  
+  if (currentBalance < voucherPrice) {
+    showGameToast("❌ Недостаточно MTBank Tokens! Нужно 500 💰");
+    return;
+  }
+  
+  // Проверяем, есть ли уже активный ваучер
+  if (currentUser.activeVoucher) {
+    var voucherDate = new Date(currentUser.voucherExpiry);
+    if (voucherDate > new Date()) {
+      showGameToast("❌ У вас уже есть активный ваучер! Дождитесь его окончания.");
+      return;
+    }
+  }
+  
+  // Списываем деньги
+  currentUser.balanceMtBanks = currentBalance - voucherPrice;
+  
+  // Активируем ваучер на 24 часа
+  currentUser.activeVoucher = true;
+  currentUser.voucherExpiry = Date.now() + (24 * 60 * 60 * 1000);
+  currentUser.voucherDiscount = 5;
+  
+  // Сохраняем
+  var users = loadAllUsers();
+  users[currentUser.id] = currentUser;
+  saveAllUsers(users);
+  
+  // Обновляем отображение
+  balanceMtBanks = currentUser.balanceMtBanks;
+  syncBalancesToDom();
+  if (typeof updateGameBalanceDisplay === 'function') updateGameBalanceDisplay();
+  
+  showGameToast("🎫 Ваучер на скидку 5% активирован! Действует 24 часа.");
+}
+
   function buildBuilding(index, type, cost) {
-    if (!buildMode) {
-      showGameToast("👁️ Режим просмотра: строительство отключено");
-      return false;
-    }
-    
-    var currentUser = getCurrentUser();
-    if (!currentUser) return false;
-    
-    updateBuildingPriceMultiplier();
-    
-    if ((currentUser.balanceSkillPoints || 0) < cost) {
-      showGameToast("❌ Недостаточно очков прокачки! Нужно " + cost + " ⭐");
-      return false;
-    }
+  if (!buildMode) {
+    showGameToast("👁️ Режим просмотра: строительство отключено");
+    return false;
+  }
+  
+  var currentUser = getCurrentUser();
+  if (!currentUser) return false;
+  
+  updateBuildingPriceMultiplier();
+  
+  // Рассчитываем цену со скидкой
+  var discount = getBuildingDiscount();
+  var finalCost = cost;
+  if (discount > 0) {
+    finalCost = Math.floor(cost * (100 - discount) / 100);
+    showGameToast(`🎫 Применена скидка ${discount}%! Цена: ${finalCost} ⭐ (было ${cost})`);
+  }
+  
+  if ((currentUser.balanceSkillPoints || 0) < finalCost) {
+    showGameToast("❌ Недостаточно очков прокачки! Нужно " + finalCost + " ⭐");
+    return false;
+  }
     
     if (buildings[index]) {
       showGameToast("❌ Здесь уже есть здание!");
@@ -1872,6 +1978,14 @@ const incomeHTML = (pending > 0 && building?.type !== "mtbank") ? `
     checkAllTasksCompletion();
     
     showGameToast("✅ Построено: " + BUILDING_TYPES[type].name + " за " + cost + " ⭐! +5 опыта МТБанка");
+     if (discount > 0 && currentUser.activeVoucher) {
+    currentUser.activeVoucher = false;
+    currentUser.voucherExpiry = null;
+    var users = loadAllUsers();
+    users[currentUser.id] = currentUser;
+    saveAllUsers(users);
+    showGameToast("✅ Ваучер использован! Скидка применена.");
+  }
     closeBuildModal();
     return true;
   }
@@ -2562,6 +2676,10 @@ const incomeHTML = (pending > 0 && building?.type !== "mtbank") ? `
   } else {
     init();
   }
+  var buyVoucherBtn = document.getElementById("buy-voucher-btn");
+if (buyVoucherBtn) {
+  buyVoucherBtn.addEventListener("click", buyVoucher);
+}
   // Периодическая проверка вкладов (каждую минуту)
   setInterval(function() {
     checkDeposits();
