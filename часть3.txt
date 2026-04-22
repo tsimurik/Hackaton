@@ -1,0 +1,372 @@
+=== ЧАСТЬ 3 — PRODUCT ФАЙЛЫ ===
+
+
+========================================
+=== product.html ===
+========================================
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Товар — Магазин</title>
+  <link rel="stylesheet" href="product.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="product-page">
+    <a class="product-back" href="index.html">← В магазин</a>
+
+    <div class="product-hero">
+      <img id="product-image" src="" alt="" width="900" height="560" />
+    </div>
+
+    <main class="product-main">
+      <h1 class="product-title" id="product-title">Товар</h1>
+      <p class="product-subtitle" id="product-subtitle"></p>
+
+      <div class="product-price-block">
+        <div class="product-price-label">Цена в мтбанках</div>
+        <p class="product-price">
+          <span id="product-price-digits" class="product-price__digits">0</span>
+          <span class="product-price__glyph" aria-hidden="true">
+            <svg class="balance-card__svg" viewBox="0 0 24 24" focusable="false">
+              <circle cx="12" cy="12" r="9.5" fill="#ffe082" stroke="rgba(245, 127, 23, 0.45)" stroke-width="1.25" />
+              <circle cx="12" cy="12" r="6.5" fill="#ffca28" stroke="#f57f17" stroke-width="0.75" />
+              <ellipse cx="12" cy="9" rx="5" ry="2.2" fill="rgba(255, 255, 255, 0.4)" />
+            </svg>
+          </span>
+          <span class="product-price__unit">мтбанков</span>
+        </p>
+      </div>
+
+      <div class="product-description-block">
+        <p class="product-description" id="product-description"></p>
+      </div>
+
+      <button type="button" class="btn-buy" id="btn-buy">Купить</button>
+      <p class="buy-toast" id="buy-toast" role="status"></p>
+    </main>
+  </div>
+
+  <script src="product.js" defer></script>
+</body>
+</html>
+========================================
+=== product.css ===
+========================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-page: #f2f2f2;
+  --text-dark: #2a2a2a;
+  --text-muted: #8a8a8a;
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: var(--font);
+  background: var(--bg-page);
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+.product-page {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding-bottom: 32px;
+}
+
+.product-back {
+  display: inline-block;
+  margin: 12px 16px 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.product-back:hover {
+  color: var(--text-dark);
+}
+
+.product-hero {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  max-height: 280px;
+  background: #e8e8e8;
+  overflow: hidden;
+}
+
+.product-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.product-main {
+  margin: -20px 16px 0;
+  position: relative;
+  z-index: 1;
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px 22px 28px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+}
+
+.product-title {
+  margin: 0 0 20px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+}
+
+.product-price-block {
+  margin-top: 4px;
+}
+
+.product-price-label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.product-price {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35em 0.5em;
+  font-size: 1.5rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-dark);
+}
+
+.product-price__digits {
+  line-height: 1;
+}
+
+.product-price__glyph {
+  display: inline-flex;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}
+
+.product-price__glyph .balance-card__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.product-price__unit {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.btn-buy {
+  width: 100%;
+  margin-top: 28px;
+  padding: 16px 24px;
+  border: none;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 600;
+  font-size: 1rem;
+  color: #fff;
+  cursor: pointer;
+  touch-action: manipulation;
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  box-shadow:
+    0 10px 28px rgba(0, 123, 255, 0.28),
+    0 4px 12px rgba(225, 0, 152, 0.2);
+  transition: transform 0.12s ease, filter 0.15s ease, box-shadow 0.2s ease;
+}
+
+.btn-buy:hover {
+  filter: brightness(1.05);
+  box-shadow:
+    0 12px 32px rgba(0, 123, 255, 0.32),
+    0 4px 14px rgba(225, 0, 152, 0.25);
+}
+
+.btn-buy:active {
+  transform: scale(0.98);
+}
+
+.buy-toast {
+  margin: 14px 0 0;
+  padding: 10px 12px;
+  font-size: 0.875rem;
+  text-align: center;
+  color: #2e7d32;
+  background: #e8f5e9;
+  border-radius: 10px;
+  display: none;
+}
+
+.buy-toast.is-visible {
+  display: block;
+}
+.product-subtitle {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: -8px 0 20px 0;
+}
+
+.product-description-block {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.product-description {
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: #555;
+  margin: 0;
+}
+========================================
+=== product.js ===
+========================================
+
+(function () {
+  "use strict";
+
+  var CATALOG = {
+    green: {
+      title: "Купон в Green",
+      subtitle: "Продуктовый магазин",
+      image: "images/1400x1400-1226222-1644526919957.jpg",
+      imageAlt: "Продуктовый магазин Green",
+      price: 1500,
+      description: "Скидочный купон на 50 рублей в сети продуктовых магазинов Green."
+    },
+    ozby: {
+      title: "Сертификат OZ.by",
+      subtitle: "Книги и канцелярия",
+      image: "images/101085345_3.jpg",
+      imageAlt: "Книжный магазин",
+      price: 750,
+      description: "Сертификат на 25 рублей в интернет-магазине OZ.by на книги, канцелярию и другие товары."
+    },
+    cactus: {
+      title: "Опция Кактус",
+      subtitle: "Дополнительная опция по карте",
+      image: "images/mtbank_kartuspleaser_1200x900_s13.jpg",
+      imageAlt: "Банковская карта с опциями",
+      price: 3000,
+      description: "Подключение опции 'Кактус' по вашей карте на 1 месяц. Узнайте подробности в приложении МТБанка."
+    },
+    apple: {
+      title: "Сертификат в Золотое Яблоко",
+      subtitle: "Техника и аксессуары",
+      image: "images/yMmI2oRm6qH0xQxjU7J8FHPazdxgxOgOJkVJxl34.png",
+      imageAlt: "Ноутбук и техника в магазине",
+      price: 5000,
+      description: "Подарочная карта на покупки в сети косметики 'Золотое Яблоко'."
+    }
+  };
+
+  function checkAuth() {
+    var userRaw = localStorage.getItem("rr_current_user_id");
+    if (!userRaw) {
+      window.location.href = "index.html";
+      return false;
+    }
+    return true;
+  }
+
+  function formatMtbanks(n) {
+    return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, "\u202f");
+  }
+
+  function init() {
+    if (!checkAuth()) return;
+
+    var key = new URLSearchParams(window.location.search).get("p");
+    var item = CATALOG[key];
+    if (!item) {
+      window.location.replace("index.html");
+      return;
+    }
+
+    var img = document.getElementById("product-image");
+    var titleEl = document.getElementById("product-title");
+    var subtitleEl = document.getElementById("product-subtitle");
+    var priceDigits = document.getElementById("product-price-digits");
+    var descEl = document.getElementById("product-description");
+    var buyBtn = document.getElementById("btn-buy");
+    var toast = document.getElementById("buy-toast");
+
+    if (img) {
+      img.src = item.image;
+      img.alt = item.imageAlt;
+    }
+    if (titleEl) titleEl.textContent = item.title;
+    if (subtitleEl) subtitleEl.textContent = item.subtitle;
+    if (descEl) descEl.textContent = item.description;
+    document.title = item.title + " — Магазин";
+
+    if (priceDigits) priceDigits.textContent = formatMtbanks(item.price);
+
+    if (buyBtn && toast) {
+      buyBtn.addEventListener("click", function () {
+        toast.textContent = "Покупка скоро будет доступна. Цена: " + formatMtbanks(item.price) + " MTBank Tokens";
+        toast.classList.add("is-visible");
+        window.setTimeout(function () {
+          toast.classList.remove("is-visible");
+        }, 2800);
+      });
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+=== СПРАЙТЫ ===
+total 20256
+drwxr-xr-x@ 19 leyden  staff     608 Apr 22 14:53 .
+drwxr-xr-x@ 18 leyden  staff     576 Apr 22 22:55 ..
+-rw-r--r--@  1 leyden  staff  371023 Apr 22 14:53 IMG_8292.PNG
+-rw-r--r--@  1 leyden  staff  614869 Apr 22 14:53 autoservice.png
+-rw-r--r--@  1 leyden  staff  852910 Apr 22 14:53 bank.png
+-rw-r--r--@  1 leyden  staff  831776 Apr 22 14:53 business-center.PNG
+-rw-r--r--@  1 leyden  staff  470554 Apr 22 14:53 cafe.png
+-rw-r--r--@  1 leyden  staff  785855 Apr 22 14:53 cinema.png
+-rw-r--r--@  1 leyden  staff  784047 Apr 22 14:53 construction.png
+-rw-r--r--@  1 leyden  staff  467541 Apr 22 14:53 flower.png
+-rw-r--r--@  1 leyden  staff  315931 Apr 22 14:53 foodtruck.png
+-rw-r--r--@  1 leyden  staff  541443 Apr 22 14:53 gasstation.png
+-rw-r--r--@  1 leyden  staff  373606 Apr 22 14:53 icecream.png
+-rw-r--r--@  1 leyden  staff  595849 Apr 22 14:53 itoffice.png
+-rw-r--r--@  1 leyden  staff  824929 Apr 22 14:53 mall.png
+-rw-r--r--@  1 leyden  staff  386776 Apr 22 14:53 minimarket.png
+-rw-r--r--@  1 leyden  staff  687071 Apr 22 14:53 restaurant.png
+-rw-r--r--@  1 leyden  staff  727502 Apr 22 14:53 store.png
+-rw-r--r--@  1 leyden  staff  698076 Apr 22 14:53 warehouse.png

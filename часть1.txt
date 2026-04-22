@@ -1,0 +1,4201 @@
+=== ЧАСТЬ 1 — ПЕРВЫЕ ПОЛОВИНЫ ФАЙЛОВ ===
+
+
+========================================
+=== index.html (первые 50%) ===
+========================================
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>MTBank Strategy</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <!-- Экран регистрации -->
+  <div id="screen-register" class="screen screen--center">
+    <div class="card card--form">
+      <h1 class="card__title">Создать аккаунт</h1>
+      <form id="form-register" class="form" novalidate>
+        <div class="field">
+          <span class="field__label">Ваш id</span>
+          <p class="field__readonly" id="register-preview-id" aria-live="polite">—</p>
+        </div>
+        <div class="field">
+          <label class="field__label" for="inviter-referral">Реферальный код пригласившего (необязательно)</label>
+          <input
+            class="field__input"
+            id="inviter-referral"
+            name="inviterReferral"
+            type="text"
+            autocomplete="off"
+            maxlength="64"
+            placeholder="Код другого пользователя"
+          />
+        </div>
+        <div class="field">
+          <label class="field__label" for="nickname">Никнейм</label>
+          <input
+            class="field__input"
+            id="nickname"
+            name="nickname"
+            type="text"
+            autocomplete="username"
+            required
+            minlength="2"
+            maxlength="32"
+            placeholder="Уникальное имя"
+          />
+          <p class="field__hint" id="nickname-error" hidden></p>
+        </div>
+        <button type="submit" class="btn btn--pill">Зарегистрироваться</button>
+      </form>
+      <p class="auth-switch">
+        Уже есть аккаунт? <a href="#" id="show-login" class="auth-link">Войти</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Экран входа -->
+  <div id="screen-login" class="screen screen--center" hidden>
+    <div class="card card--form">
+      <h1 class="card__title">Вход в аккаунт</h1>
+      <form id="form-login" class="form" novalidate>
+        <div class="field">
+          <label class="field__label" for="login-id">Ваш ID</label>
+          <input
+            class="field__input"
+            id="login-id"
+            name="loginId"
+            type="text"
+            autocomplete="off"
+            required
+            placeholder="Введите ваш ID"
+          />
+        </div>
+        <div class="field">
+          <label class="field__label" for="login-nickname">Никнейм</label>
+          <input
+            class="field__input"
+            id="login-nickname"
+            name="loginNickname"
+            type="text"
+            autocomplete="username"
+            required
+            placeholder="Введите ваш никнейм"
+          />
+          <p class="field__hint" id="login-error" hidden></p>
+        </div>
+        <button type="submit" class="btn btn--pill">Войти</button>
+      </form>
+      <p class="auth-switch">
+        Нет аккаунта? <a href="#" id="show-register" class="auth-link">Зарегистрироваться</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Основное приложение -->
+  <div id="screen-app" class="screen screen--app is-hidden" hidden>
+    <main class="app-main">
+      <section id="panel-leaderboard" class="panel" data-panel="leaderboard">
+  <div class="card card--panel leaderboard-card">
+    <h2 class="panel__title">🏆 Лидерборд</h2>
+    <p class="leaderboard-subtitle">Рейтинг игроков Город МТ</p>
+    
+    <div class="leaderboard-table">
+      <div class="leaderboard-header">
+        <div class="leaderboard-rank">#</div>
+        <div class="leaderboard-player">Игрок</div>
+        <div class="leaderboard-level">Уровень</div>
+        <div class="leaderboard-score">⭐ Очки</div>
+      </div>
+      
+      <div class="leaderboard-body" id="leaderboard-body">
+        <!-- Здесь будут строки с игроками -->
+        <div class="leaderboard-empty">
+          <span class="leaderboard-empty-icon">📊</span>
+          <p>Таблица лидеров скоро пополнится</p>
+          <span class="leaderboard-empty-hint">Станьте первым в рейтинге!</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="leaderboard-footer">
+      <p class="leaderboard-note">✨ Рейтинг обновляется ежедневно</p>
+    </div>
+  </div>
+</section>
+
+     <section id="panel-game" class="panel" data-panel="game">
+  <div class="game-container">
+    <div class="game-header">
+      <div class="game-title-section">
+        <h2 class="game-title">🏙️ Город МТ</h2>
+        <button class="game-help-btn" id="game-help-btn">❓ Как играть?</button>
+      </div>
+      
+      <div class="game-balance">
+        <span class="game-balance__label">MTBank Tokens</span>
+        <span class="game-balance__value" id="game-balance">0</span>
+      </div>
+      <div class="game-skill-balance">
+        <span class="game-skill-balance__label">⭐ Очки прокачки</span>
+        <span class="game-skill-balance__value" id="game-skill-balance">0</span>
+      </div>
+      <div class="game-total-income">
+        <span>💰 Доход/час: <span id="total-income">0</span></span>
+      </div>
+    </div>
+    
+    <!-- Изометрическое поле -->
+    <div class="city-game-area" style="width:100%;min-height:500px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+      <div id="city-iso" style="position:relative;"></div>
+    </div>
+    
+    <div class="city-bar" style="display:flex;gap:10px;margin-top:16px;justify-content:center;">
+      <button class="city-bar-btn" id="city-reset-camera"><span>🎯</span><span>Центр</span></button>
+      <button class="city-bar-btn primary" id="city-collect-all-btn"><span>💰</span><span>Собрать всё</span></button>
+    </div>
+  </div>
+</section>
+      
+      <section id="panel-tasks" class="panel" data-panel="tasks">
+  <div class="card card--panel tasks-card">
+    <h2 class="panel__title">📋 Задания</h2>
+    
+    <!-- Вкладки -->
+    <div class="tasks-tabs">
+      <button class="tasks-tab tasks-tab--active" data-tasks-tab="once">🎯 Разовые</button>
+      <button class="tasks-tab" data-tasks-tab="monthly">📅 Ежемесячные</button>
+      <button class="tasks-tab" data-tasks-tab="seasonal">🌸 Сезонные</button>
+    </div>
+    
+    <!-- Контент разовых заданий -->
+    <div class="tasks-content tasks-content--active" id="tasks-once">
+      <div class="tasks-list" id="tasks-list-once"></div>
+    </div>
+    
+    <!-- Контент ежемесячных заданий -->
+    <div class="tasks-content" id="tasks-monthly">
+      <div class="tasks-list" id="tasks-list-monthly"></div>
+    </div>
+    
+    <!-- Контент сезонных заданий -->
+    <div class="tasks-content" id="tasks-seasonal">
+      <div class="tasks-list" id="tasks-list-seasonal"></div>
+    </div>
+    
+   
+    
+    
+    <div class="calendar-section">
+      <div class="calendar-header">
+        <h3 class="calendar-title">📅 Ежедневный календарь</h3>
+        <div class="calendar-streak">
+          <div class="streak-flame">🔥</div>
+          <div class="streak-count" id="streak-count">0</div>
+          <div class="streak-label">дней подряд</div>
+        </div>
+      </div>
+      
+      <div class="calendar-grid" id="calendar-grid"></div>
+    </div>
+  </div>
+</section>
+      
+     <section id="panel-shop" class="panel" data-panel="shop">
+  <div class="shop-page">
+    <!-- Заголовок Магазин с цветным фоном -->
+    <div class="shop-header">
+      <h2 class="panel__title shop-page__title">🛒 Магазин</h2>
+    </div>
+    
+    <!-- Товары (2 в строке) -->
+    <div class="shop-grid" role="list">
+      <!-- Купон в Green (50 рублей) -->
+      <a class="shop-item" role="listitem" href="product.html?p=green">
+        <div class="shop-item__inner">
+          <div class="shop-item__visual shop-item__visual--green" aria-hidden="true">
+            <svg class="shop-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="greenGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#4CAF50" />
+                  <stop offset="100%" stop-color="#2E7D32" />
+                </linearGradient>
+              </defs>
+              <rect x="15" y="25" width="90" height="70" rx="8" fill="url(#greenGrad)" />
+              <rect x="15" y="25" width="90" height="18" rx="8" fill="#1B5E20" />
+              <text x="60" y="38" font-size="9" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">GREEN</text>
+              <rect x="30" y="50" width="60" height="30" rx="4" fill="#FFF" opacity="0.9" />
+              <text x="60" y="70" font-size="10" fill="#2E7D32" font-family="sans-serif" text-anchor="middle" font-weight="bold">50 ₽</text>
+              <path d="M28 85 L35 75 L42 82 L50 72 L58 80 L66 70 L74 78 L82 68 L90 76 L92 85 Z" fill="#FFC107" opacity="0.8" />
+            </svg>
+          </div>
+          <div class="shop-item__hover">
+            <p class="shop-item__name">Купон в Green</p>
+            <p class="shop-item__desc">Скидочный купон на 50 рублей в продуктовом магазине Green</p>
+          </div>
+        </div>
+      </a>
+      
+      <!-- Сертификат в OZ.by (25 рублей) -->
+      <a class="shop-item" role="listitem" href="product.html?p=ozby">
+        <div class="shop-item__inner">
+          <div class="shop-item__visual shop-item__visual--ozby" aria-hidden="true">
+            <svg class="shop-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="ozbyGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#FF6F00" />
+                  <stop offset="100%" stop-color="#E65100" />
+                </linearGradient>
+              </defs>
+              <rect x="10" y="20" width="100" height="80" rx="6" fill="#FFF4E0" stroke="#FF6F00" stroke-width="2" />
+              <rect x="10" y="20" width="100" height="22" rx="6" fill="url(#ozbyGrad)" />
+              <text x="60" y="36" font-size="11" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">OZ.by</text>
+              <rect x="25" y="50" width="70" height="25" rx="4" fill="#FF6F00" opacity="0.15" />
+              <text x="60" y="67" font-size="10" fill="#E65100" font-family="sans-serif" text-anchor="middle" font-weight="bold">25 ₽</text>
+              <path d="M35 85 L50 80 L60 88 L70 80 L85 85" stroke="#FF6F00" stroke-width="2" fill="none" />
+              <circle cx="60" cy="82" r="3" fill="#FF6F00" />
+              <text x="60" y="100" font-size="6" fill="#FF6F00" text-anchor="middle" font-weight="bold">КНИГИ · КАНЦЕЛЯРИЯ</text>
+            </svg>
+          </div>
+          <div class="shop-item__hover">
+            <p class="shop-item__name">Сертификат OZ.by</p>
+            <p class="shop-item__desc">Сертификат на 25 рублей в магазине книг и канцелярии</p>
+          </div>
+        </div>
+      </a>
+      
+      <!-- Опция "Кактус" на 1 месяц -->
+      <a class="shop-item" role="listitem" href="product.html?p=cactus">
+        <div class="shop-item__inner">
+          <div class="shop-item__visual shop-item__visual--cactus" aria-hidden="true">
+            <svg class="shop-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="cactusGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#8BC34A" />
+                  <stop offset="100%" stop-color="#558B2F" />
+                </linearGradient>
+              </defs>
+              <rect x="10" y="15" width="100" height="90" rx="12" fill="#E8F5E9" stroke="#558B2F" stroke-width="2" />
+              <rect x="10" y="15" width="100" height="22" rx="12" fill="url(#cactusGrad)" />
+              <text x="60" y="32" font-size="9" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">🌵 КАКТУС</text>
+              <ellipse cx="60" cy="95" rx="18" ry="6" fill="#A1887F" />
+              <rect x="56" y="65" width="8" height="30" rx="3" fill="#43A047" />
+              <ellipse cx="60" cy="65" rx="12" ry="14" fill="#66BB6A" />
+              <ellipse cx="52" cy="58" rx="8" ry="10" fill="#81C784" />
+              <ellipse cx="68" cy="58" rx="8" ry="10" fill="#81C784" />
+              <circle cx="55" cy="55" r="2" fill="#FFC107" />
+              <circle cx="65" cy="55" r="2" fill="#FFC107" />
+              <text x="60" y="78" font-size="6" fill="#2E7D32" text-anchor="middle" font-weight="bold">1 МЕСЯЦ</text>
+              <text x="60" y="110" font-size="5" fill="#558B2F" text-anchor="middle">ОПЦИЯ КАРТЫ</text>
+            </svg>
+          </div>
+          <div class="shop-item__hover">
+            <p class="shop-item__name">Опция "Кактус"</p>
+            <p class="shop-item__desc">Дополнительная опция по карте на 1 месяц</p>
+          </div>
+        </div>
+      </a>
+      
+      <!-- Сертификат в Золотое Яблоко -->
+      <a class="shop-item" role="listitem" href="product.html?p=apple">
+        <div class="shop-item__inner">
+          <div class="shop-item__visual shop-item__visual--apple" aria-hidden="true">
+            <svg class="shop-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="appleGrad" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#FDD835" />
+                  <stop offset="45%" stop-color="#F9A825" />
+                  <stop offset="100%" stop-color="#F57F17" />
+                </linearGradient>
+              </defs>
+              <rect x="10" y="15" width="100" height="90" rx="12" fill="#FFF8E1" stroke="#F57F17" stroke-width="2" />
+              <rect x="10" y="15" width="100" height="22" rx="12" fill="url(#appleGrad)" />
+              <text x="60" y="32" font-size="8" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">🍎 ЗОЛОТОЕ ЯБЛОКО</text>
+              <path d="M60 45 C50 35 38 38 38 48 C38 55 45 62 52 62 C55 62 58 60 60 58 C62 60 65 62 68 62 C75 62 82 55 82 48 C82 38 70 35 60 45Z" fill="url(#appleGrad)" />
+              <path d="M60 58 L60 78" stroke="#F57F17" stroke-width="2" />
+              <ellipse cx="60" cy="80" rx="6" ry="3" fill="#F57F17" />
+              <text x="60" y="100" font-size="6" fill="#F57F17" text-anchor="middle" font-weight="bold">СЕРТИФИКАТ</text>
+            </svg>
+          </div>
+          <div class="shop-item__hover">
+            <p class="shop-item__name">Сертификат в Золотое Яблоко</p>
+            <p class="shop-item__desc">Подарочная карта на покупки в сети техники и аксессуаров</p>
+          </div>
+        </div>
+      </a>
+    </div>
+    
+    <!-- Блок Ваучеры -->
+    <div class="vouchers-section">
+      <div class="vouchers-header">
+        <h3 class="vouchers-title">🎫 Ваучеры</h3>
+      </div>
+      <div class="vouchers-grid">
+        <div class="voucher-item" id="voucher-discount">
+          <div class="voucher-item__visual">
+            <svg class="voucher-svg" viewBox="0 0 120 120" fill="none">
+              <rect x="20" y="30" width="80" height="60" rx="8" fill="#e0e0e0" stroke="#bdbdbd" stroke-width="1.5" />
+              <rect x="20" y="30" width="80" height="18" rx="8" fill="#9e9e9e" />
+              <text x="60" y="43" font-size="9" fill="#FFF" font-family="sans-serif" text-anchor="middle" font-weight="bold">СКИДКА</text>
+              <text x="60" y="65" font-size="16" fill="#757575" font-family="sans-serif" text-anchor="middle" font-weight="bold">-5%</text>
+              <text x="60" y="80" font-size="6" fill="#9e9e9e" font-family="sans-serif" text-anchor="middle">на постройку</text>
+            </svg>
+          </div>
+          <div class="voucher-item__info">
+            <p class="voucher-item__name">Ваучер на скидку 5%</p>
+            <p class="voucher-item__desc">Скидка 5% на постройку любого здания</p>
+            <p class="voucher-item__price">💰 500 MTBank Tokens</p>
+          </div>
+          <button class="voucher-item__btn" id="buy-voucher-btn">Купить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+      <section id="panel-profile" class="panel" data-panel="profile">
+        <div class="profile-page">
+          <div class="profile-balances">
+            <div class="card balance-card">
+              <span class="balance-card__label">Баланс очков прокачки</span>
+              <p class="balance-card__value">
+                <span id="profile-balance-skill" class="balance-card__digits">00000000</span>
+                <span class="balance-card__glyph" aria-hidden="true">
+                  <svg class="balance-card__svg" viewBox="0 0 24 24" focusable="false">
+                    <path
+                      fill="currentColor"
+                      fill-rule="evenodd"
+                      d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"
+                    />
+                  </svg>
+
+========================================
+=== app.js (первые 50%) ===
+========================================
+
+(function () {
+  "use strict";
+
+  var BASE_REF_URL = "https://myapp.com/ref";
+
+  var balanceSkillPoints = 0;
+  var balanceMtBanks = 0;
+  var buildingPriceMultiplier = 1.0;
+  // Максимальное количество часов накопления дохода (24 часа)
+var MAX_ACCUMULATION_HOURS = 24;
+
+  function randomAlphanumeric(len) {
+    var chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    var out = "";
+    for (var i = 0; i < len; i += 1) {
+      out += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return out;
+  }
+
+  var STORAGE_KEY = "rr_registered_users";
+  var USER_KEY = "rr_current_user_id";
+
+  function loadAllUsers() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return {};
+      return JSON.parse(raw);
+    } catch (e) {
+      return {};
+    }
+  }
+
+  function saveAllUsers(users) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+  }
+
+  function getCurrentUser() {
+    try {
+      var userId = localStorage.getItem(USER_KEY);
+      if (!userId) return null;
+      var users = loadAllUsers();
+      return users[userId] || null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function setCurrentUser(userId) {
+    localStorage.setItem(USER_KEY, userId);
+  }
+
+  function logout() {
+    localStorage.removeItem(USER_KEY);
+    showRegisterScreen();
+    var loginIdInput = document.getElementById("login-id");
+    var loginNicknameInput = document.getElementById("login-nickname");
+    if (loginIdInput) loginIdInput.value = "";
+    if (loginNicknameInput) loginNicknameInput.value = "";
+  }
+
+  function normalizeNickname(n) {
+    return String(n).trim().toLowerCase();
+  }
+
+  function refreshRegistrationPreview() {
+    var preUserId = randomAlphanumeric(16);
+    var preReferralCode = randomAlphanumeric(10);
+    var preReferralLink = BASE_REF_URL + "?id=" + encodeURIComponent(preReferralCode);
+
+    var elId = document.getElementById("register-preview-id");
+    if (elId) elId.textContent = preUserId;
+    
+    window._tempRegistration = {
+      id: preUserId,
+      referralCode: preReferralCode,
+      referralLink: preReferralLink
+    };
+  }
+
+  function syncBalancesToDom() {
+    var elS = document.getElementById("profile-balance-skill");
+    var elM = document.getElementById("profile-balance-mtb");
+    if (elS) elS.textContent = String(balanceSkillPoints).padStart(8, '0');
+    if (elM) elM.textContent = String(balanceMtBanks).padStart(8, '0');
+    
+    var gameSkillSpan = document.getElementById("game-skill-balance");
+    if (gameSkillSpan) gameSkillSpan.textContent = balanceSkillPoints;
+    var gameBalanceSpan = document.getElementById("game-balance");
+    if (gameBalanceSpan) gameBalanceSpan.textContent = balanceMtBanks;
+  }
+
+  function refreshProfileFromUser() {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return;
+    
+    balanceSkillPoints = currentUser.balanceSkillPoints || 0;
+    balanceMtBanks = currentUser.balanceMtBanks || 0;
+    syncBalancesToDom();
+    if (typeof updateDisplays === 'function') updateDisplays();
+  }
+
+  function hideRegisterShowApp() {
+    var reg = document.getElementById("screen-register");
+    var login = document.getElementById("screen-login");
+    var app = document.getElementById("screen-app");
+    
+    if (reg) {
+      reg.setAttribute("hidden", "");
+      reg.classList.add("is-hidden");
+    }
+    if (login) {
+      login.setAttribute("hidden", "");
+      login.classList.add("is-hidden");
+    }
+    if (app) {
+      app.removeAttribute("hidden");
+      app.classList.remove("is-hidden");
+    }
+  }
+
+  function showRegisterScreen() {
+    var reg = document.getElementById("screen-register");
+    var login = document.getElementById("screen-login");
+    var app = document.getElementById("screen-app");
+    
+    if (reg) {
+      reg.removeAttribute("hidden");
+      reg.classList.remove("is-hidden");
+      refreshRegistrationPreview();
+    }
+    if (login) {
+      login.setAttribute("hidden", "");
+      login.classList.add("is-hidden");
+    }
+    if (app) {
+      app.setAttribute("hidden", "");
+      app.classList.add("is-hidden");
+    }
+  }
+
+  function showLoginScreen() {
+    var reg = document.getElementById("screen-register");
+    var login = document.getElementById("screen-login");
+    var app = document.getElementById("screen-app");
+    
+    if (reg) {
+      reg.setAttribute("hidden", "");
+      reg.classList.add("is-hidden");
+    }
+    if (login) {
+      login.removeAttribute("hidden");
+      login.classList.remove("is-hidden");
+    }
+    if (app) {
+      app.setAttribute("hidden", "");
+      app.classList.add("is-hidden");
+    }
+  }
+
+  function copyTextToClipboard(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text);
+    }
+    return new Promise(function (resolve, reject) {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.setAttribute("readonly", "");
+      ta.style.position = "fixed";
+      ta.style.left = "-9999px";
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        if (document.execCommand("copy")) resolve();
+        else reject(new Error("copy failed"));
+      } catch (err) {
+        reject(err);
+      }
+      document.body.removeChild(ta);
+    });
+  }
+
+  function showCopyToast() {
+    var toast = document.getElementById("copy-toast");
+    if (!toast) return;
+    toast.hidden = false;
+    window.setTimeout(function () {
+      toast.hidden = true;
+    }, 1800);
+  }
+
+  function updateProfileUI(user) {
+    var pid = document.getElementById("profile-id");
+    var pn = document.getElementById("profile-nickname");
+    var pc = document.getElementById("profile-referral-code");
+    var pl = document.getElementById("profile-referral-link");
+    var pi = document.getElementById("profile-inviter-code");
+    
+    if (pid) pid.textContent = user.id;
+    if (pn) pn.textContent = user.nickname;
+    if (pc) pc.textContent = user.referralCode;
+    if (pl) pl.textContent = user.referralLink;
+    if (pi) pi.textContent = user.inviterReferral || "—";
+    
+    balanceSkillPoints = user.balanceSkillPoints || 0;
+    balanceMtBanks = user.balanceMtBanks || 0;
+    syncBalancesToDom();
+  }
+
+  function showApp(user) {
+    hideRegisterShowApp();
+    updateProfileUI(user);
+    switchTab("profile");
+  }
+
+  function switchTab(tab) {
+    var panels = document.querySelectorAll(".panel");
+    for (var i = 0; i < panels.length; i += 1) {
+      var p = panels[i];
+      if (p.getAttribute("data-panel") === tab) {
+        p.classList.add("is-active");
+      } else {
+        p.classList.remove("is-active");
+      }
+    }
+
+    var tabs = document.querySelectorAll(".bottom-nav__tab");
+    for (var j = 0; j < tabs.length; j += 1) {
+      var btn = tabs[j];
+      if (btn.getAttribute("data-tab") === tab) {
+        btn.setAttribute("aria-current", "page");
+      } else {
+        btn.removeAttribute("aria-current");
+      }
+    }
+
+    if (tab === "profile") syncBalancesToDom();
+    if (tab === "game") {
+      syncBalancesToDom();
+      setTimeout(function() {
+        if (typeof window.initCityGame === 'function') {
+          window.initCityGame();
+        } else {
+          initCityGame();
+        }
+      }, 50);
+    }
+    if (tab === "tasks") {
+      renderCalendarGrid();
+      updateStreakDisplay();
+      renderTasksList();
+    }
+  }
+
+  function registerUser(nicknameRaw, inviterCode) {
+    var nickname = nicknameRaw.trim();
+    var normalizedNickname = normalizeNickname(nickname);
+    
+    var users = loadAllUsers();
+    
+    for (var userId in users) {
+      if (users[userId].nicknameLower === normalizedNickname) {
+        return { success: false, error: "Этот ник уже занят. Выберите другой." };
+      }
+    }
+    
+    if (nickname.length < 2) {
+      return { success: false, error: "Никнейм слишком короткий." };
+    }
+    
+    var newUser = {
+      id: window._tempRegistration.id,
+      nickname: nickname,
+      nicknameLower: normalizedNickname,
+      referralCode: window._tempRegistration.referralCode,
+      referralLink: window._tempRegistration.referralLink,
+      inviterReferral: inviterCode || "",
+      balanceSkillPoints: 0,
+      balanceMtBanks: 2000,
+      mtbankLevel: 1,
+      mtbankExp: 0,
+      mtbankExpToNext: 100,
+      createdAt: Date.now()
+    };
+    
+    if (inviterCode && inviterCode.trim() !== "") {
+      var inviterFound = false;
+      for (var uid in users) {
+        if (users[uid].referralCode === inviterCode) {
+          inviterFound = true;
+          newUser.balanceSkillPoints = 1000;
+          newUser.balanceMtBanks = 3000;
+          break;
+        }
+      }
+      if (!inviterFound) {
+        return { success: false, error: "Неверный реферальный код." };
+      }
+    }
+    
+    users[newUser.id] = newUser;
+    saveAllUsers(users);
+    setCurrentUser(newUser.id);
+    
+    return { success: true, user: newUser };
+  }
+  
+  function loginUser(id, nickname) {
+    var users = loadAllUsers();
+    var normalizedNickname = normalizeNickname(nickname);
+    
+    for (var userId in users) {
+      var user = users[userId];
+      if (user.id === id && user.nicknameLower === normalizedNickname) {
+        if (!user.mtbankLevel) user.mtbankLevel = 1;
+        if (!user.mtbankExp) user.mtbankExp = 0;
+        if (!user.mtbankExpToNext) user.mtbankExpToNext = 100;
+        setCurrentUser(userId);
+        return { success: true, user: user };
+      }
+    }
+    
+    return { success: false, error: "Неверный ID или никнейм." };
+  }
+
+  function checkAuthAndRedirect() {
+    var currentUser = getCurrentUser();
+    if (currentUser) {
+      showApp(currentUser);
+    } else {
+      showRegisterScreen();
+    }
+  }
+
+  // ========== ФУНКЦИЯ ДОБАВЛЕНИЯ ОЧКОВ ПРОКАЧКИ ==========
+  function addSkillPoints(amount) {
+    var currentUser = getCurrentUser();
+    if (!currentUser) {
+      showGameToast("❌ Пользователь не найден!");
+      return false;
+    }
+    
+    if (isNaN(amount) || amount <= 0) {
+      amount = 100;
+    }
+    
+    currentUser.balanceSkillPoints = (currentUser.balanceSkillPoints || 0) + amount;
+    
+    var users = loadAllUsers();
+    users[currentUser.id] = currentUser;
+    saveAllUsers(users);
+    
+    balanceSkillPoints = currentUser.balanceSkillPoints;
+    syncBalancesToDom();
+    if (typeof updateDisplays === 'function') updateDisplays();
+    
+    showGameToast("✨ Добавлено " + amount + " очков прокачки!");
+    return true;
+  }
+
+  // ========== ПУТЬ К СПРАЙТАМ ==========
+  var SPRITE_PATH = "buildings/";
+
+  // ========== КОНФИГУРАЦИЯ ЗДАНИЙ ==========
+  const BUILDING_TYPES = {
+    mtbank: { name: "МТБанк", icon: "🏦", sprite: "bank.png", baseIncome: 0, upgradeMultiplier: 1, cost: 0, maxLevel: 3, category: 0, bg: '#f5e6a0', isMain: true, unlockLevel: 1 },
+    coffee: { name: "Кофейня", icon: "☕", sprite: "cafe.png", baseIncome: 50, upgradeMultiplier: 1.5, cost: 100, maxLevel: 5, category: 1, bg: '#fff4e0', unlockLevel: 1 },
+    flowershop: { name: "Цветочный магазин", icon: "🌷", sprite: "flower.png", baseIncome: 55, upgradeMultiplier: 1.53, cost: 110, maxLevel: 5, category: 1, bg: '#ffe0f0', unlockLevel: 1 },
+    minimarket: { name: "Мини-магазин", icon: "🏪", sprite: "minimarket.png", baseIncome: 45, upgradeMultiplier: 1.52, cost: 90, maxLevel: 5, category: 1, bg: '#e0ffe0', unlockLevel: 1 },
+    foodtruck: { name: "Фудтрак", icon: "🚚", sprite: "foodtruck.png", baseIncome: 48, upgradeMultiplier: 1.54, cost: 95, maxLevel: 5, category: 1, bg: '#ffe8d0', unlockLevel: 1 },
+    icecream: { name: "Киоск мороженого", icon: "🍦", sprite: "icecream.png", baseIncome: 42, upgradeMultiplier: 1.51, cost: 85, maxLevel: 5, category: 1, bg: '#e0f0ff', unlockLevel: 1 },
+    restaurant: { name: "Ресторан", icon: "🍽️", sprite: "restaurant.png", baseIncome: 100, upgradeMultiplier: 1.6, cost: 250, maxLevel: 5, category: 2, bg: '#f0e0e0', unlockLevel: 2 },
+    shop: { name: "Магазин", icon: "🏪", sprite: "store.png", baseIncome: 110, upgradeMultiplier: 1.62, cost: 280, maxLevel: 5, category: 2, bg: '#e0e0ff', unlockLevel: 2 },
+    autoservice: { name: "Автосервис", icon: "🔧", sprite: "autoservice.png", baseIncome: 120, upgradeMultiplier: 1.63, cost: 300, maxLevel: 5, category: 2, bg: '#d0d0d0', unlockLevel: 2 },
+    itcompany: { name: "IT Компания", icon: "💻", sprite: "itoffice.png", baseIncome: 140, upgradeMultiplier: 1.65, cost: 350, maxLevel: 5, category: 2, bg: '#c0e0ff', unlockLevel: 2 },
+    gasstation: { name: "Заправка", icon: "⛽", sprite: "gasstation.png", baseIncome: 115, upgradeMultiplier: 1.61, cost: 290, maxLevel: 5, category: 2, bg: '#ffe0c0', unlockLevel: 2 },
+    businesspark: { name: "Бизнес-парк", icon: "🏢", sprite: "business-center.png", baseIncome: 500, upgradeMultiplier: 1.85, cost: 1200, maxLevel: 5, category: 3, bg: '#e0eeff', unlockLevel: 3 },
+    cinema: { name: "Кинотеатр", icon: "🎬", sprite: "cinema.png", baseIncome: 350, upgradeMultiplier: 1.78, cost: 800, maxLevel: 5, category: 3, bg: '#e0d0ff', unlockLevel: 3 },
+    construction: { name: "Стройкомпания", icon: "🏗️", sprite: "construction.png", baseIncome: 320, upgradeMultiplier: 1.75, cost: 750, maxLevel: 5, category: 3, bg: '#ffe8a0', unlockLevel: 3 },
+    warehouse: { name: "Склад", icon: "🏭", sprite: "warehouse.png", baseIncome: 250, upgradeMultiplier: 1.7, cost: 600, maxLevel: 5, category: 3, bg: '#d0c0a0', unlockLevel: 3 },
+    mall: { name: "Торговый центр", icon: "🏬", sprite: "mall.png", baseIncome: 450, upgradeMultiplier: 1.82, cost: 1100, maxLevel: 5, category: 3, bg: '#ffd0e0', unlockLevel: 3 }
+  };
+
+  const BUILDING_KEYS = ["coffee", "flowershop", "minimarket", "foodtruck", "icecream", "restaurant", "shop", "autoservice", "itcompany", "gasstation", "businesspark", "cinema", "construction", "warehouse", "mall"];
+  const GRID_SIZE = 5;
+  
+  let buildings = [];
+  let currentSelectedBlock = null;
+  let currentInfoIndex = null;
+  let incomeInterval = null;
+  let cameraZoom = 1.3;
+  let cameraX = 0, cameraY = 0;
+  let isDragging = false, hasMoved = false;
+  let dragStartX = 0, dragStartY = 0;
+  let dragCameraStartX = 0, dragCameraStartY = 0;
+  let isoContainer = null;
+  let buildMode = true;
+
+  // ========== МТБАНК (ЦЕНТРАЛЬНОЕ ЗДАНИЕ) ==========
+
+var MTBANK_KEY = "rr_mtbank_";
+
+function getMtbankData() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return null;
+  
+  var key = MTBANK_KEY + currentUser.id;
+  try {
+    var raw = localStorage.getItem(key);
+    if (!raw) {
+      return {
+        deposits: [],
+        creditDebt: 0
+      };
+    }
+    return JSON.parse(raw);
+  } catch (e) {
+    return {
+      deposits: [],
+      creditDebt: 0
+    };
+  }
+}
+
+function saveMtbankData(data) {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  var key = MTBANK_KEY + currentUser.id;
+  localStorage.setItem(key, JSON.stringify(data));
+}
+
+// ========== ФУНКЦИИ ОПЫТА МТБАНКА ==========
+
+function getMtbankLevel() {
+  var currentUser = getCurrentUser();
+  return currentUser?.mtbankLevel || 1;
+}
+
+function getMtbankExp() {
+  var currentUser = getCurrentUser();
+  return currentUser?.mtbankExp || 0;
+}
+
+function getMtbankExpToNext() {
+  var currentUser = getCurrentUser();
+  return currentUser?.mtbankExpToNext || 100;
+}
+
+function addMtbankExp(amount, source) {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return false;
+  
+  if (!currentUser.mtbankLevel) currentUser.mtbankLevel = 1;
+  if (!currentUser.mtbankExp) currentUser.mtbankExp = 0;
+  if (!currentUser.mtbankExpToNext) currentUser.mtbankExpToNext = 100;
+  
+  currentUser.mtbankExp += amount;
+  var leveledUp = false;
+  
+  while (currentUser.mtbankExp >= currentUser.mtbankExpToNext && currentUser.mtbankLevel < 3) {
+    currentUser.mtbankExp -= currentUser.mtbankExpToNext;
+    currentUser.mtbankLevel++;
+    currentUser.mtbankExpToNext = Math.floor(currentUser.mtbankExpToNext * 1.5);
+    leveledUp = true;
+    showGameToast(`🏆 МТБанк повышен до ${currentUser.mtbankLevel} уровня! Открыты новые бизнесы!`);
+  }
+  
+  // Сохраняем изменения
+  var users = loadAllUsers();
+  users[currentUser.id] = currentUser;
+  saveAllUsers(users);
+  
+  // Обновляем отображение
+  updateMtbankUI();
+  
+  if (leveledUp && typeof renderGrid === 'function') {
+    renderGrid();
+  }
+  
+  if (source) {
+    console.log(`➕ Добавлено ${amount} опыта МТБанка от: ${source}, новый уровень: ${currentUser.mtbankLevel}`);
+  }
+  
+  return leveledUp;
+}
+
+function updateMtbankUI() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  
+  var level = currentUser.mtbankLevel || 1;
+  var exp = currentUser.mtbankExp || 0;
+  var expToNext = currentUser.mtbankExpToNext || 100;
+  var percent = (exp / expToNext) * 100;
+  
+  // Обновляем текстовые элементы в верхней панели
+  var levelSpan = document.getElementById("mtbank-level");
+  if (levelSpan) levelSpan.textContent = level;
+  
+  var expSpan = document.getElementById("mtbank-exp");
+  if (expSpan) expSpan.textContent = exp + " / " + expToNext + " опыта";
+  
+  var progressBar = document.getElementById("mtbank-progress");
+  if (progressBar) progressBar.style.width = percent + "%";
+  
+  // Обновляем уровень в buildings массиве (для сохранения)
+  if (typeof buildings !== 'undefined' && buildings[12] && buildings[12].type === "mtbank") {
+    buildings[12].level = level;
+    if (typeof saveGameBuildings === 'function') {
+      saveGameBuildings({ buildings: buildings, lastUpdate: Date.now() });
+    }
+  }
+  
+  console.log("🔄 Обновлён UI МТБанка: уровень", level);
+}
+
+function updateMtbankModalContent() {
+  var currentUser = getCurrentUser();
+  var mtData = getMtbankData();
+  if (!currentUser || !mtData) return;
+  
+  var bankLevel = currentUser.mtbankLevel || 1;
+  var creditDebt = mtData.creditDebt || 0;
+  var maxCredit = 250 * bankLevel;
+  var repayAmount = Math.floor(creditDebt * 1.7);
+  var currentBalance = currentUser.balanceMtBanks || 0;
+  
+  // Обновляем информацию о кредите
+  var creditDebtSpan = document.getElementById("mtbank-credit-debt");
+  if (creditDebtSpan) creditDebtSpan.textContent = creditDebt;
+  
+  var repayAmountSpan = document.getElementById("mtbank-repay-amount");
+  if (repayAmountSpan) repayAmountSpan.textContent = repayAmount;
+  
+  var maxCreditSpan = document.getElementById("mtbank-max-credit");
+  if (maxCreditSpan) maxCreditSpan.textContent = maxCredit;
+  
+  // Показываем текущий баланс в модальном окне
+  var balanceSpan = document.getElementById("mtbank-current-balance");
+  if (balanceSpan) {
+    balanceSpan.textContent = currentBalance;
+  }
+  
+  // Обновляем кнопки
+  var creditBtn = document.getElementById("credit-btn");
+  var repayBtn = document.getElementById("repay-credit-btn");
+  var depositBtn = document.getElementById("deposit-btn");
+  
+  if (creditBtn) {
+    creditBtn.disabled = creditDebt > 0;
+  }
+  
+  if (repayBtn) {
+    repayBtn.disabled = creditDebt <= 0 || (currentUser.balanceSkillPoints || 0) < repayAmount;
+  }
+  
+  if (depositBtn) {
+    depositBtn.disabled = currentBalance <= 0;
+  }
+  
+  // Обновляем список вкладов
+  updateDepositsList();
+}
+
+function updateDepositsList() {
+  var mtData = getMtbankData();
+  if (!mtData) return;
+  
+  var depositsList = document.getElementById("deposits-list");
+  if (!depositsList) return;
+  
+  if (mtData.deposits.length === 0) {
+    depositsList.innerHTML = '<p style="text-align:center; color:#999; font-size:0.75rem; padding:10px;">Нет активных вкладов</p>';
+    return;
+  }
+  
+  depositsList.innerHTML = "";
+  for (var i = 0; i < mtData.deposits.length; i++) {
+    var d = mtData.deposits[i];
+    var remainingMs = d.endDate - Date.now();
+    var remainingDays = Math.ceil(remainingMs / (24 * 60 * 60 * 1000));
+    
+    var div = document.createElement("div");
+    div.className = "deposit-item";
+    div.innerHTML = `
+      <div class="deposit-item__info">
+        <div><span class="deposit-item__amount">${d.amount} 💰</span> на ${d.days} дн. под ${d.interestRate}%</div>
+        <div class="deposit-item__end">Осталось: ${remainingDays} дн.</div>
+      </div>
+    `;
+    depositsList.appendChild(div);
+  }
+}
+
+function checkDeposits() {
+  var currentUser = getCurrentUser();
+  var mtData = getMtbankData();
+  if (!currentUser || !mtData) return;
+  
+  var now = Date.now();
+  var needSave = false;
+  var totalReturned = 0;
+  
+  for (var i = mtData.deposits.length - 1; i >= 0; i--) {
+    var deposit = mtData.deposits[i];
+    if (now >= deposit.endDate) {
+      var profit = Math.floor(deposit.amount * deposit.interestRate / 100);
+      var totalReturn = deposit.amount + profit;
+      totalReturned += totalReturn;
+      
+      // 🔴 ВОЗВРАЩАЕМ ДЕНЬГИ НА БАЛАНС
+      currentUser.balanceMtBanks = (currentUser.balanceMtBanks || 0) + totalReturn;
+      mtData.deposits.splice(i, 1);
+      needSave = true;
+      
+      showGameToast(`📊 Вклад закрыт! Получено ${totalReturn} 💰 (${profit} 💰 прибыль)`);
+    }
+  }
+  
+  if (needSave) {
+    // Обновляем глобальные переменные
+    balanceMtBanks = currentUser.balanceMtBanks;
+    
+    var users = loadAllUsers();
+    users[currentUser.id] = currentUser;
+    saveAllUsers(users);
+    saveMtbankData(mtData);
+    
+    // Обновляем все отображения
+    syncBalancesToDom();
+    if (typeof updateGameBalanceDisplay === 'function') {
+      updateGameBalanceDisplay();
+    }
+    if (typeof updateDisplays === 'function') {
+      updateDisplays();
+    }
+    updateMtbankUI();
+    updateMtbankModalContent();
+    
+    if (totalReturned > 0) {
+      console.log(`💰 Возвращено по вкладам: ${totalReturned} MTBank Tokens`);
+    }
+  }
+}
+
+function updateGameBalanceDisplay() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  
+  var gameBalanceSpan = document.getElementById("game-balance");
+  if (gameBalanceSpan) {
+    gameBalanceSpan.textContent = currentUser.balanceMtBanks || 0;
+  }
+  
+  var gameSkillSpan = document.getElementById("game-skill-balance");
+  if (gameSkillSpan) {
+    gameSkillSpan.textContent = currentUser.balanceSkillPoints || 0;
+  }
+  
+  var totalIncomeSpan = document.getElementById("total-income");
+  if (totalIncomeSpan && typeof getTotalHourlyIncome === 'function') {
+    totalIncomeSpan.textContent = getTotalHourlyIncome();
+  }
+}
+
+function takeCredit() {
+  console.log("💰 takeCredit function called");
+  var currentUser = getCurrentUser();
+  var mtData = getMtbankData();
+  if (!currentUser || !mtData) {
+    showGameToast("❌ Ошибка: пользователь не найден!");
+    return;
+  }
+  
+  var amountInput = document.getElementById("credit-amount");
+  if (!amountInput) {
+    showGameToast("❌ Ошибка: поле ввода не найдено!");
+    return;
+  }
+  
+  var amount = parseInt(amountInput.value);
+  if (isNaN(amount) || amount <= 0) {
+    showGameToast("❌ Введите корректную сумму!");
+    return;
+  }
+  
+  var bankLevel = currentUser.mtbankLevel || 1;
+  var maxCredit = 250 * bankLevel;
+  
+  if (amount > maxCredit) {
+    showGameToast(`❌ Максимальный кредит для ${bankLevel} уровня: ${maxCredit} ⭐`);
+    return;
+  }
+  
+  if (mtData.creditDebt > 0) {
+    showGameToast("❌ У вас уже есть непогашенный кредит! Сначала погасите его.");
+    return;
+  }
+  
+  currentUser.balanceSkillPoints = (currentUser.balanceSkillPoints || 0) + amount;
+  mtData.creditDebt = amount;
+  
+  var users = loadAllUsers();
+  users[currentUser.id] = currentUser;
+  saveAllUsers(users);
+  saveMtbankData(mtData);
+  
+  balanceSkillPoints = currentUser.balanceSkillPoints;
+  syncBalancesToDom();
+  if (typeof updateGameBalanceDisplay === 'function') updateGameBalanceDisplay();
+  updateMtbankUI();
+  updateMtbankModalContent();
+  
+  showGameToast(`💰 Вы получили ${amount} ⭐ в кредит! Вернуть нужно ${Math.floor(amount * 1.7)} ⭐`);
+}
+
+function repayCredit() {
+  console.log("💸 repayCredit function called");
+  var currentUser = getCurrentUser();
+  var mtData = getMtbankData();
+  if (!currentUser || !mtData) return;
+  
+  if (mtData.creditDebt <= 0) {
+    showGameToast("❌ У вас нет активного кредита!");
+    return;
+  }
+  
+  var repayAmount = Math.floor(mtData.creditDebt * 1.7);
+  
+  if ((currentUser.balanceSkillPoints || 0) < repayAmount) {
+    showGameToast(`❌ Недостаточно очков прокачки для погашения кредита! Нужно ${repayAmount} ⭐`);
+    return;
+  }
+  
+  currentUser.balanceSkillPoints -= repayAmount;
+  mtData.creditDebt = 0;
+  
+  var users = loadAllUsers();
+  users[currentUser.id] = currentUser;
+  saveAllUsers(users);
+  saveMtbankData(mtData);
+  
+  balanceSkillPoints = currentUser.balanceSkillPoints;
+  syncBalancesToDom();
+  if (typeof updateGameBalanceDisplay === 'function') updateGameBalanceDisplay();
+  updateMtbankUI();
+  updateMtbankModalContent();
+  
+  showGameToast(`✅ Кредит погашен! Вы заплатили ${repayAmount} ⭐`);
+}
+
+function createDeposit() {
+  console.log("📈 createDeposit function called");
+  var currentUser = getCurrentUser();
+  var mtData = getMtbankData();
+  if (!currentUser || !mtData) return;
+  
+  var amountInput = document.getElementById("deposit-amount");
+  var daysSelect = document.getElementById("deposit-days");
+  
+  if (!amountInput || !daysSelect) {
+    showGameToast("❌ Ошибка: элементы не найдены!");
+    return;
+  }
+  
+  var amount = parseInt(amountInput.value);
+  var days = parseInt(daysSelect.value);
+  
+  if (isNaN(amount) || amount <= 0) {
+    showGameToast("❌ Введите корректную сумму!");
+    return;
+  }
+  
+  // Проверяем достаточно ли средств на балансе
+  var currentBalance = currentUser.balanceMtBanks || 0;
+  if (currentBalance < amount) {
+    showGameToast(`❌ Недостаточно MTBank Tokens! У вас ${currentBalance} 💰, нужно ${amount} 💰`);
+    return;
+  }
+  
+  var bankLevel = currentUser.mtbankLevel || 1;
+  var interestRate = 0;
+  
+  switch(days) {
+    case 3: interestRate = 0.5 * bankLevel; break;
+    case 7: interestRate = 1.0 * bankLevel; break;
+    case 14: interestRate = 1.5 * bankLevel; break;
+    case 30: interestRate = 2.0 * bankLevel; break;
+    default: interestRate = 0.5 * bankLevel;
+  }
+  
+  var endDate = Date.now() + (days * 24 * 60 * 60 * 1000);
+  
+  // 🔴 СПИСЫВАЕМ ДЕНЬГИ С БАЛАНСА
+  currentUser.balanceMtBanks = currentBalance - amount;
+  
+  // 🔴 ОБНОВЛЯЕМ ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+  balanceMtBanks = currentUser.balanceMtBanks;
+  
+  // Добавляем вклад в список
+  mtData.deposits.push({
+    amount: amount,
+    days: days,
+    interestRate: interestRate,
+    endDate: endDate,
+    startDate: Date.now()
+  });
+  
+  // Сохраняем все изменения
+  var users = loadAllUsers();
+  users[currentUser.id] = currentUser;
+  saveAllUsers(users);
+  saveMtbankData(mtData);
+  
+  // 🔴 ОБНОВЛЯЕМ ВСЕ ОТОБРАЖЕНИЯ БАЛАНСА
+  syncBalancesToDom();  // Обновляет профиль
+  if (typeof updateGameBalanceDisplay === 'function') {
+    updateGameBalanceDisplay();  // Обновляет игру
+  }
+  if (typeof updateDisplays === 'function') {
+    updateDisplays();  // Обновляет другие элементы
+  }
+  
+  // Обновляем UI банка и список вкладов
+  updateMtbankUI();
+  updateMtbankModalContent();
+  
+  showGameToast(`📈 Вклад открыт! С вашего счёта списано ${amount} 💰. Вклад на ${days} дней под ${interestRate}%`);
+}
+
+function openMtbankModal() {
+  console.log("🔓 openMtbankModal вызван");
+  
+  // Проверяем, есть ли окно в DOM
+  var modal = document.getElementById("mtbank-modal");
+  console.log("Поиск mtbank-modal:", modal);
+  
+  if (!modal) {
+    console.log("❌ Окно не найдено, создаём...");
+    createMtbankModal();
+    modal = document.getElementById("mtbank-modal");
+  }
+  
+  if (modal) {
+    updateMtbankUI();
+    updateMtbankModalContent();
+    modal.removeAttribute("hidden");
+    console.log("✅ Модальное окно МТБанка открыто");
+  } else {
+    console.log("❌ Не удалось создать/найти модальное окно!");
+  }
+}
+
+function closeMtbankModal() {
+  console.log("🔒 closeMtbankModal вызван");
+  var modal = document.getElementById("mtbank-modal");
+  if (modal) {
+    modal.setAttribute("hidden", "");
+  }
+}
+
+function createMtbankModal() {
+  console.log("🏗 Создаём модальное окно МТБанка");
+  
+  var modalHtml = `
+    <div class="mtbank-modal" id="mtbank-modal" hidden>
+      <div class="mtbank-modal__overlay"></div>
+      <div class="mtbank-modal__content">
+        <button class="mtbank-modal__close" id="mtbank-modal-close">✕</button>
+        
+        <div class="mtbank-modal__icon">
+          <img src="assets/sprites/buildings/bank.png" alt="МТБанк" style="width:80px; height:80px; object-fit:contain; margin:0 auto; display:block;" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <div style="display:none; font-size:64px; text-align:center;">🏦</div>
+        </div>
+        
+        <h3 class="mtbank-modal__title">МТБанк</h3>
+        <p class="mtbank-modal__subtitle">Главный банк города</p>
+        
+        <div class="mtbank-level">
+          <div class="mtbank-level__header">
+            <span class="mtbank-level__label">⭐ Уровень банка</span>
+            <span class="mtbank-level__value" id="mtbank-level">1</span>
+          </div>
+          <div class="mtbank-level__progress">
+            <div class="mtbank-level__progress-bar" id="mtbank-progress-bar" style="width: 0%"></div>
+          </div>
+          <div class="mtbank-level__count" id="mtbank-level-count">0 / 100</div>
+        </div>
+        
+        <div class="mtbank-credit-section">
+          <div class="mtbank-section-title">💳 Кредитование</div>
+          <div class="mtbank-action">
+            <p>Максимальная сумма: <span id="mtbank-max-credit">250</span> ⭐</p>
+            <div class="mtbank-action__controls">
+              <input type="number" id="credit-amount" class="mtbank-input" placeholder="Сумма кредита" value="100" min="1" step="50">
+              <button class="mtbank-btn mtbank-btn--credit" id="credit-btn">Взять кредит</button>
+            </div>
+          </div>
+          
+          <div class="mtbank-debt-info">
+            <p>💸 Текущий долг: <span id="mtbank-credit-debt">0</span> ⭐</p>
+            <p>💰 Сумма погашения: <span id="mtbank-repay-amount">0</span> ⭐</p>
+            <button class="mtbank-btn mtbank-btn--repay" id="repay-credit-btn" disabled>Погасить кредит</button>
+          </div>
+        </div>
+        
+        <div class="mtbank-deposit-section">
+          <div class="mtbank-section-title">📈 Вклады</div>
+          <div class="mtbank-action">
+            <div class="mtbank-action__controls">
+              <input type="number" id="deposit-amount" class="mtbank-input" placeholder="Сумма вклада" value="100" min="1" step="50">
+              <select id="deposit-days" class="mtbank-select">
+                <option value="3">На 3 дня (0.5% × ур. банка)</option>
+                <option value="7">На 7 дней (1% × ур. банка)</option>
+                <option value="14">На 14 дней (1.5% × ур. банка)</option>
+                <option value="30">На 30 дней (2% × ур. банка)</option>
+              </select>
+              <button class="mtbank-btn mtbank-btn--deposit" id="deposit-btn">Оформить вклад</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mtbank-deposits">
+          <div class="mtbank-section-title">📋 Активные вклады</div>
+          <div id="deposits-list"></div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  document.body.insertAdjacentHTML("beforeend", modalHtml);
+  console.log("✅ Модальное окно МТБанка создано");
+  
+  // Привязываем события
+  bindMtbankModalEvents();
+}
+
+// Функция для принудительного обновления кнопок (вызывать после загрузки модального окна)
+function bindMtbankModalEvents() {
+  console.log("🔗 Привязка кнопок МТБанка...");
+  
+  var creditBtn = document.getElementById("credit-btn");
+  var repayBtn = document.getElementById("repay-credit-btn");
+  var depositBtn = document.getElementById("deposit-btn");
+  var closeBtn = document.getElementById("mtbank-modal-close");
+  var overlay = document.querySelector("#mtbank-modal .mtbank-modal__overlay");
+  
+  if (creditBtn) {
+    var newCreditBtn = creditBtn.cloneNode(true);
+    creditBtn.parentNode.replaceChild(newCreditBtn, creditBtn);
+    newCreditBtn.addEventListener("click", takeCredit);
+    console.log("✅ Кнопка кредита привязана");
+  }
+  
+  if (repayBtn) {
+    var newRepayBtn = repayBtn.cloneNode(true);
+    repayBtn.parentNode.replaceChild(newRepayBtn, repayBtn);
+    newRepayBtn.addEventListener("click", repayCredit);
+    console.log("✅ Кнопка погашения привязана");
+  }
+  
+  if (depositBtn) {
+    var newDepositBtn = depositBtn.cloneNode(true);
+    depositBtn.parentNode.replaceChild(newDepositBtn, depositBtn);
+    newDepositBtn.addEventListener("click", createDeposit);
+    console.log("✅ Кнопка вклада привязана");
+  }
+  
+  if (closeBtn) {
+    var newCloseBtn = closeBtn.cloneNode(true);
+    closeBtn.parentNode.replaceChild(newCloseBtn, closeBtn);
+    newCloseBtn.addEventListener("click", closeMtbankModal);
+    console.log("✅ Кнопка закрытия привязана");
+  }
+  
+  if (overlay) {
+    var newOverlay = overlay.cloneNode(true);
+    overlay.parentNode.replaceChild(newOverlay, overlay);
+    newOverlay.addEventListener("click", closeMtbankModal);
+    console.log("✅ Оверлей привязан");
+  }
+}
+
+// ========== ВАУЧЕРЫ ==========
+
+function buyVoucher() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  
+  var voucherPrice = 500;
+  var currentBalance = currentUser.balanceMtBanks || 0;
+  
+  if (currentBalance < voucherPrice) {
+    showGameToast("❌ Недостаточно MTBank Tokens! Нужно 500 💰");
+    return;
+  }
+  
+  // Проверяем, есть ли уже активный ваучер
+  if (currentUser.activeVoucher) {
+    var voucherDate = new Date(currentUser.voucherExpiry);
+    if (voucherDate > new Date()) {
+      showGameToast("❌ У вас уже есть активный ваучер! Дождитесь его окончания.");
+      return;
+    }
+  }
+  
+  // Списываем деньги
+  currentUser.balanceMtBanks = currentBalance - voucherPrice;
+  
+  // Активируем ваучер на 24 часа
+  currentUser.activeVoucher = true;
+  currentUser.voucherExpiry = Date.now() + (24 * 60 * 60 * 1000);
+  currentUser.voucherDiscount = 5; // 5% скидка
+  
+  // Сохраняем
+  var users = loadAllUsers();
+  users[currentUser.id] = currentUser;
+  saveAllUsers(users);
+  
+  // Обновляем отображение
+  balanceMtBanks = currentUser.balanceMtBanks;
+  syncBalancesToDom();
+  if (typeof updateGameBalanceDisplay === 'function') updateGameBalanceDisplay();
+  
+  showGameToast("🎫 Ваучер на скидку 5% активирован! Действует 24 часа.");
+}
+
+// Функция для получения скидки при постройке
+function getBuildingDiscount() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return 0;
+  
+  if (currentUser.activeVoucher && currentUser.voucherExpiry > Date.now()) {
+    return currentUser.voucherDiscount || 5;
+  }
+  return 0;
+}
+  // ========== ЗАДАНИЯ ==========
+  var TASKS_KEY = "rr_tasks_";
+
+  var TASKS_LIST = [
+    { id: "upgrade_coffee", title: "Прокачай кофейню", desc: "Улучшите кофейню до 3 уровня", type: "upgrade_building", buildingType: "coffee", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, rewardExp: 15, category: "once" },
+    { id: "upgrade_flowershop", title: "Прокачай цветочный магазин", desc: "Улучшите цветочный магазин до 3 уровня", type: "upgrade_building", buildingType: "flowershop", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, rewardExp: 15, category: "once" },
+    { id: "upgrade_minimarket", title: "Прокачай мини-маркет", desc: "Улучшите мини-маркет до 3 уровня", type: "upgrade_building", buildingType: "minimarket", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, rewardExp: 15, category: "once" },
+    { id: "upgrade_foodtruck", title: "Прокачай фудтрак", desc: "Улучшите фудтрак до 3 уровня", type: "upgrade_building", buildingType: "foodtruck", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, rewardExp: 15, category: "once" },
+    { id: "upgrade_icecream", title: "Прокачай киоск мороженого", desc: "Улучшите киоск мороженого до 3 уровня", type: "upgrade_building", buildingType: "icecream", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, rewardExp: 15, category: "once" },
+    { id: "upgrade_restaurant", title: "Прокачай ресторан", desc: "Улучшите ресторан до 3 уровня", type: "upgrade_building", buildingType: "restaurant", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, rewardExp: 15, category: "once" },
+    { id: "upgrade_shop", title: "Прокачай магазин", desc: "Улучшите магазин до 3 уровня", type: "upgrade_building", buildingType: "shop", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, rewardExp: 15, category: "once" },
+    { id: "upgrade_autoservice", title: "Прокачай автосервис", desc: "Улучшите автосервис до 3 уровня", type: "upgrade_building", buildingType: "autoservice", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, rewardExp: 15, category: "once" },
+    { id: "upgrade_itcompany", title: "Прокачай IT компанию", desc: "Улучшите IT компанию до 3 уровня", type: "upgrade_building", buildingType: "itcompany", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, rewardExp: 15, category: "once" },
+    { id: "upgrade_gasstation", title: "Прокачай заправку", desc: "Улучшите заправку до 3 уровня", type: "upgrade_building", buildingType: "gasstation", requiredLevel: 3, rewardSkill: 100, rewardToken: 100, rewardExp: 15, category: "once" },
+    { id: "upgrade_businesspark", title: "Прокачай бизнес-парк", desc: "Улучшите бизнес-парк до 3 уровня", type: "upgrade_building", buildingType: "businesspark", requiredLevel: 3, rewardSkill: 150, rewardToken: 150, rewardExp: 25, category: "once" },
+    { id: "upgrade_cinema", title: "Прокачай кинотеатр", desc: "Улучшите кинотеатр до 3 уровня", type: "upgrade_building", buildingType: "cinema", requiredLevel: 3, rewardSkill: 150, rewardToken: 150, rewardExp: 25, category: "once" },
+    { id: "upgrade_construction", title: "Прокачай стройкомпанию", desc: "Улучшите стройкомпанию до 3 уровня", type: "upgrade_building", buildingType: "construction", requiredLevel: 3, rewardSkill: 150, rewardToken: 150, rewardExp: 25, category: "once" },
+    { id: "upgrade_warehouse", title: "Прокачай склад", desc: "Улучшите склад до 3 уровня", type: "upgrade_building", buildingType: "warehouse", requiredLevel: 3, rewardSkill: 150, rewardToken: 150, rewardExp: 25, category: "once" },
+    { id: "upgrade_mall", title: "Прокачай торговый центр", desc: "Улучшите торговый центр до 3 уровня", type: "upgrade_building", buildingType: "mall", requiredLevel: 3, rewardSkill: 150, rewardToken: 150, rewardExp: 25, category: "once" },
+    
+    { id: "card_spending_500_1000", title: "Траты по карте МТБанка", desc: "Потратьте от 500 до 1000 рублей за месяц", type: "card_spending", minAmount: 500, maxAmount: 1000, rewardSkill: 200, rewardToken: 0, rewardExp: 20, category: "monthly" },
+    { id: "card_spending_1000_1500", title: "Траты по карте МТБанка", desc: "Потратьте от 1000 до 1500 рублей за месяц", type: "card_spending", minAmount: 1000.01, maxAmount: 1500, rewardSkill: 300, rewardToken: 0, rewardExp: 30, category: "monthly" },
+    { id: "card_spending_1500_2000", title: "Траты по карте МТБанка", desc: "Потратьте от 1500 до 2000 рублей за месяц", type: "card_spending", minAmount: 1500.01, maxAmount: 2000, rewardSkill: 400, rewardToken: 0, rewardExp: 40, category: "monthly" },
+    { id: "card_spending_2000_plus", title: "Траты по карте МТБанка", desc: "Потратьте от 2000 рублей и более за месяц", type: "card_spending", minAmount: 2000.01, maxAmount: Infinity, rewardSkill: 500, rewardToken: 100, rewardExp: 50, category: "monthly" }
+  ];
+
+  function getTasksData() {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return null;
+    
+    var key = TASKS_KEY + currentUser.id;
+    try {
+      var raw = localStorage.getItem(key);
+      if (!raw) {
+        var defaultTasks = {};
+        for (var i = 0; i < TASKS_LIST.length; i++) {
+          defaultTasks[TASKS_LIST[i].id] = { completed: false, claimed: false, lastMonth: null };
+        }
+        return defaultTasks;
+      }
+      return JSON.parse(raw);
+    } catch (e) {
+      var defaultTasks = {};
+      for (var i = 0; i < TASKS_LIST.length; i++) {
+        defaultTasks[TASKS_LIST[i].id] = { completed: false, claimed: false, lastMonth: null };
+      }
+      return defaultTasks;
+    }
+  }
+
+  function saveTasksData(data) {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return;
+    var key = TASKS_KEY + currentUser.id;
+    localStorage.setItem(key, JSON.stringify(data));
+  }
+
+  function checkBuildingUpgradeTask(buildingType, requiredLevel) {
+    for (var i = 0; i < buildings.length; i++) {
+      var building = buildings[i];
+      if (building && building.type === buildingType && building.level >= requiredLevel) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function checkAllTasksCompletion() {
+    var tasksData = getTasksData();
+    if (!tasksData) return;
+    
+    var needSave = false;
+    
+    for (var i = 0; i < TASKS_LIST.length; i++) {
+      var task = TASKS_LIST[i];
+      var taskData = tasksData[task.id];
+      
+      if (!taskData) {
+        tasksData[task.id] = { completed: false, claimed: false, lastMonth: null };
+        taskData = tasksData[task.id];
+        needSave = true;
+      }
+      
+      if (!taskData.completed && !taskData.claimed) {
+        var isCompleted = false;
+        
+        if (task.type === "upgrade_building") {
+          isCompleted = checkBuildingUpgradeTask(task.buildingType, task.requiredLevel);
+        }
+        
+        if (isCompleted) {
+          taskData.completed = true;
+          needSave = true;
+        }
+      }
+    }
+    
+    if (needSave) {
+      saveTasksData(tasksData);
+    }
+    
+    renderTasksList();
+  }
+
+  function claimTaskReward(taskId, rewardSkill, rewardToken, rewardExp) {
+    var currentUser = getCurrentUser();
+    if (!currentUser) return false;
+    
+    var tasksData = getTasksData();
+    var taskData = tasksData[taskId];
+    
+    if (!taskData.completed) {
+      showGameToast("❌ Условие задания ещё не выполнено!");
+      return false;
+    }
+    
+    if (taskData.claimed) {
+      showGameToast("❌ Награда за это задание уже получена!");
+      return false;
+    }
+    
+    currentUser.balanceSkillPoints = (currentUser.balanceSkillPoints || 0) + rewardSkill;
+    currentUser.balanceMtBanks = (currentUser.balanceMtBanks || 0) + rewardToken;
+    
+    taskData.claimed = true;
+    
+    var users = loadAllUsers();
+    users[currentUser.id] = currentUser;
+    saveAllUsers(users);
+    saveTasksData(tasksData);
+    
+    balanceSkillPoints = currentUser.balanceSkillPoints;
+    balanceMtBanks = currentUser.balanceMtBanks;
+    syncBalancesToDom();
+    updateDisplays();
+    renderTasksList();
+    
+    if (rewardExp) {
+      addMtbankExp(rewardExp, "task_reward");
+      updateMtbankUI();
+    }
+    
+    showGameToast(`🎉 Получена награда: ${rewardSkill} ⭐, ${rewardToken} 💰 и ${rewardExp} опыта!`);
+    return true;
+  }
+
+  function openTaskModal(task) {
+    var modal = document.getElementById("task-modal");
+    if (!modal) {
+      createTaskModal();
+      modal = document.getElementById("task-modal");
+    }
+    
+    document.getElementById("task-modal-title").textContent = task.title;
+    document.getElementById("task-modal-desc").textContent = task.desc;
+    document.getElementById("task-modal-reward").innerHTML = `⭐ ${task.rewardSkill} очков прокачки ${task.rewardToken > 0 ? `+ 💰 ${task.rewardToken} токенов` : ''}<br>✨ +${task.rewardExp} опыта МТБанка`;
+    
+    var inputContainer = document.getElementById("task-modal-input-container");
+    var inputField = document.getElementById("task-modal-input");
+    
+    if (task.type === "card_spending") {
+      inputContainer.style.display = "block";
+      inputField.placeholder = "Введите сумму трат за месяц (₽)";
+      inputField.type = "number";
+      inputField.step = "0.01";
+      inputField.value = "";
+      
+      var confirmBtn = document.getElementById("task-modal-confirm");
+      confirmBtn.onclick = function() {
+        var amount = parseFloat(inputField.value);
+        if (isNaN(amount) || amount <= 0) {
+          showGameToast("❌ Введите корректную сумму!");
+          return;
+        }
+        
+        if (amount >= task.minAmount && amount <= task.maxAmount) {
+          claimTaskReward(task.id, task.rewardSkill, task.rewardToken, task.rewardExp);
+          closeTaskModal();
+        } else {
+          showGameToast(`❌ Сумма должна быть от ${task.minAmount} до ${task.maxAmount === Infinity ? '∞' : task.maxAmount} рублей!`);
+        }
+      };
+    } else {
+      inputContainer.style.display = "none";
+      var confirmBtn = document.getElementById("task-modal-confirm");
+      confirmBtn.onclick = function() {
+        claimTaskReward(task.id, task.rewardSkill, task.rewardToken, task.rewardExp);
+        closeTaskModal();
+      };
+    }
+    
+    modal.removeAttribute("hidden");
+  }
+
+  function createTaskModal() {
+    var modalHtml = `
+      <div class="task-modal" id="task-modal" hidden>
+        <div class="task-modal__overlay"></div>
+        <div class="task-modal__content">
+          <button class="task-modal__close" id="task-modal-close">✕</button>
+          <h3 class="task-modal__title" id="task-modal-title">Название задания</h3>
+          <p class="task-modal__desc" id="task-modal-desc">Описание задания</p>
+          <div class="task-modal__reward" id="task-modal-reward">⭐ 0</div>
+          <div id="task-modal-input-container">
+            <input type="text" class="task-modal__input" id="task-modal-input" placeholder="Введите данные">
+          </div>
+          <button class="task-modal__btn" id="task-modal-confirm">Получить награду</button>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML("beforeend", modalHtml);
+    
+    document.getElementById("task-modal-close").addEventListener("click", closeTaskModal);
+    var overlay = document.querySelector("#task-modal .task-modal__overlay");
+    if (overlay) overlay.addEventListener("click", closeTaskModal);
+  }
+
+  function closeTaskModal() {
+    var modal = document.getElementById("task-modal");
+    if (modal) modal.setAttribute("hidden", "");
+  }
+
+  function renderTasksByType(category) {
+    var containerId = "tasks-list-" + category;
+    var container = document.getElementById(containerId);
+    if (!container) return;
+    
+    var tasksData = getTasksData();
+    if (!tasksData) return;
+    
+    var filteredTasks = [];
+    for (var i = 0; i < TASKS_LIST.length; i++) {
+      var task = TASKS_LIST[i];
+      if (task.category === category) {
+        filteredTasks.push(task);
+      }
+    }
+    
+    container.innerHTML = "";
+    
+    if (filteredTasks.length === 0) {
+      var placeholderText = "";
+      var placeholderIcon = "";
+      if (category === "monthly") {
+        placeholderIcon = "📅";
+        placeholderText = "Ежемесячные задания появятся 1 числа!";
+      } else if (category === "seasonal") {
+        placeholderIcon = "🌸";
+        placeholderText = "Сезонные задания появятся с новым сезоном!";
+      } else {
+        placeholderIcon = "🎯";
+        placeholderText = "Заданий пока нет";
+      }
+      
+      container.innerHTML = `
+        <div class="seasonal-placeholder">
+          <span class="seasonal-icon">${placeholderIcon}</span>
+          <p>${placeholderText}</p>
+          <span class="seasonal-hint">Следите за обновлениями</span>
+        </div>
+      `;
+      return;
+    }
+    
+    for (var i = 0; i < filteredTasks.length; i++) {
+      var task = filteredTasks[i];
+      var taskData = tasksData[task.id];
+      
+      var taskDiv = document.createElement("div");
+      taskDiv.className = "task-item";
+      if (taskData && taskData.claimed) {
+        taskDiv.classList.add("task-item--completed");
+      }
+      
+      var statusText = "";
+      var statusClass = "";
+      var showButton = false;
+      var buttonDisabled = false;
+      
+      if (taskData && taskData.claimed) {
+        statusText = "✓ Получено";
+        statusClass = "task-status--claimed";
+        showButton = false;
+      } else if (taskData && taskData.completed) {
+        statusText = "⭐ Готово к получению";
+        statusClass = "task-status--available";
+        showButton = true;
+        buttonDisabled = false;
+      } else {
+        statusText = "🔒 Не выполнено";
+        statusClass = "";
+        showButton = true;
+        buttonDisabled = true;
+      }
+      
+      taskDiv.innerHTML = `
+        <div class="task-info">
+          <div class="task-title">${task.title}</div>
+          <div class="task-desc">${task.desc}</div>
+          <div class="task-reward">
+            <span>⭐ ${task.rewardSkill}</span>
+            ${task.rewardToken > 0 ? `<span>💰 ${task.rewardToken}</span>` : ''}
+            <span>✨ +${task.rewardExp}</span>
+          </div>
+        </div>
+        <div class="task-status ${statusClass}">${statusText}</div>
+
+========================================
+=== styles.css (первые 50%) ===
+========================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-page: #f2f2f2;
+  --bg-card: #ffffff;
+  --text-dark: #2a2a2a;
+  --text-muted: #8a8a8a;
+  --border-input: #d8d8d8;
+  --shadow-card: 0 8px 28px rgba(0, 0, 0, 0.06);
+  --nav-border: #e8e8e8;
+  --accent-active: #1a1a1a;
+  --font: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+[hidden],
+.is-hidden {
+  display: none !important;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: var(--font);
+  background: var(--bg-page);
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+.screen {
+  min-height: 100vh;
+}
+
+.screen--center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.screen--app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+}
+
+.card {
+  background: var(--bg-card);
+  border-radius: 10px;
+  box-shadow: var(--shadow-card);
+  width: 100%;
+  max-width: 420px;
+}
+
+.card--form {
+  padding: 48px 44px;
+}
+
+.card__title {
+  margin: 0 0 32px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dark);
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field__label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.field__input {
+  width: 100%;
+  padding: 14px 16px;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--text-dark);
+  background: #fff;
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.field__input:focus {
+  border-color: #9a9a9a;
+}
+
+.field__input::placeholder {
+  color: #bdbdbd;
+}
+
+.field__readonly {
+  margin: 0;
+  padding: 14px 16px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  background: #fafafa;
+  border: 1px solid var(--border-input);
+  border-radius: 4px;
+  word-break: break-all;
+  line-height: 1.4;
+}
+
+.field__hint {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #c62828;
+}
+
+.btn {
+  margin-top: 8px;
+  border: none;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.btn--pill {
+  align-self: center;
+  padding: 14px 48px;
+  border-radius: 999px;
+  background: var(--accent-active);
+  color: #fff;
+  min-width: 200px;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+}
+
+.btn--pill:hover {
+  opacity: 0.92;
+}
+
+.btn--pill:active {
+  transform: scale(0.98);
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 16px 16px 80px 16px;
+  overflow-y: auto;
+}
+
+.panel {
+  display: none;
+  width: 100%;
+  max-width: 480px;
+}
+
+.panel.is-active {
+  display: block;
+}
+
+.card--panel {
+  padding: 28px 24px 32px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.card--profile {
+  padding-bottom: 36px;
+}
+
+.panel__title {
+  margin: 0 0 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color:rgb(255, 255, 255) ;
+}
+
+.panel__titleb {
+  margin: 0 0 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color:rgb(0, 0, 0) ;
+  
+}
+
+.panel__empty {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.profile-page {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.profile-balances {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+}
+
+.balance-card {
+  padding: 20px 14px 22px;
+  text-align: center;
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  min-height: 112px;
+  box-shadow: 0 10px 28px rgba(75, 0, 130, 0.22);
+}
+
+.profile-balances .balance-card:nth-child(1) {
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+}
+
+.profile-balances .balance-card:nth-child(2) {
+  background: linear-gradient(168deg, #e10098 0%, #5c0099 42%, #300060 100%);
+}
+
+.balance-card__label {
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.balance-card__value {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+  color: #ffffff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.28em;
+}
+
+.balance-card__digits {
+  line-height: 1;
+}
+
+.balance-card__glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  color: rgba(255, 255, 255, 0.96);
+}
+
+.balance-card__svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.shop-page {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.shop-page__title {
+  margin-bottom: 16px;
+}
+
+.shop-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  width: 100%;
+  padding: 2px;
+}
+
+.shop-item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  outline: none;
+}
+
+a.shop-item {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.shop-item__inner {
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--bg-card);
+  box-shadow: var(--shadow-card);
+  transition: transform 0.24s ease, box-shadow 0.24s ease;
+}
+
+.shop-item:hover .shop-item__inner {
+  transform: scale(1.06);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.14);
+  z-index: 2;
+}
+
+.shop-item__visual {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14%;
+}
+
+.shop-item__visual--apple { background: linear-gradient(160deg, #fff8e7 0%, #f5e6c8 100%); }
+.shop-item__visual--spa { background: linear-gradient(160deg, #f7f2ed 0%, #e8ddd4 100%); }
+.shop-item__visual--cash { background: linear-gradient(160deg, #e8fff0 0%, #c8eed8 100%); }
+.shop-item__visual--brain { background: linear-gradient(160deg, #fdf2f8 0%, #e9d4e8 100%); }
+
+.shop-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.shop-item__hover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 12px;
+  background: linear-gradient(to top, rgba(20, 20, 20, 0.88) 0%, rgba(20, 20, 20, 0.35) 52%, transparent 72%);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+  pointer-events: none;
+}
+
+.shop-item:hover .shop-item__hover {
+  opacity: 1;
+}
+
+.shop-item__name {
+  margin: 0 0 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.shop-item__desc {
+  margin: 0;
+  font-size: 0.6875rem;
+  color: rgba(255, 255, 255, 0.88);
+}
+
+.profile-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.profile-item--full {
+  grid-column: 1 / -1;
+}
+
+.profile-item__label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.profile-item__value {
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: 500;
+  color: var(--text-dark);
+  line-height: 1.4;
+}
+
+.profile-item__value--break {
+  word-break: break-all;
+}
+
+.link-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: #fafafa;
+  border: 1px solid var(--border-input);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.link-copy:hover {
+  background: #f3f3f3;
+}
+
+.link-copy__hint {
+  margin-top: 8px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.copy-toast {
+  margin: 10px 0 0;
+  font-size: 0.8125rem;
+  color: #2e7d32;
+  font-weight: 500;
+}
+
+.bottom-nav {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch;
+  gap: 4px;
+  padding: 8px 8px calc(8px + env(safe-area-inset-bottom, 0px));
+  background: var(--bg-card);
+  border-top: 1px solid var(--nav-border);
+  z-index: 10;
+}
+
+.bottom-nav__tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: var(--text-muted);
+  border-radius: 8px;
+  transition: color 0.15s ease;
+}
+
+.bottom-nav__tab[aria-current="page"] {
+  color: var(--accent-active);
+  font-weight: 600;
+}
+
+.bottom-nav__icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.bottom-nav__text {
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+}
+
+.auth-switch {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.auth-link {
+  color: #007bff;
+  text-decoration: none;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}
+
+.btn--logout {
+  width: 100%;
+  margin-top: 16px;
+  background: linear-gradient(145deg, #dc3545 0%, #c82333 100%);
+}
+
+.skill-input-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.skill-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid var(--border-input);
+  border-radius: 8px;
+  font-family: var(--font);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.skill-add-btn {
+  background: linear-gradient(145deg, #28a745, #1e7e34);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  margin-top: 0;
+  min-width: auto;
+  padding: 10px 20px;
+}
+
+.skill-add-btn:hover {
+  filter: brightness(1.05);
+}
+
+/* Игра */
+.game-container {
+  padding: 16px;
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  border-radius: 20px;
+  box-shadow: 0 10px 32px rgba(0, 123, 255, 0.28), 0 4px 16px rgba(225, 0, 152, 0.18);
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.game-title-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.game-title {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.game-help-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 30px;
+  padding: 6px 14px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.game-help-btn:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transform: scale(1.02);
+}
+
+.game-balance {
+  display: flex;
+  flex-direction: column;
+}
+
+.game-balance__label {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-transform: uppercase;
+}
+
+.game-balance__value {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #ffd700;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.game-skill-balance {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 8px 16px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.game-skill-balance__label {
+  font-size: 0.6rem;
+  color: rgba(255, 255, 255, 0.7);
+  display: block;
+}
+
+.game-skill-balance__value {
+  font-size: 1rem;
+  font-weight: bold;
+  color: #a5d6ff;
+}
+
+.game-total-income {
+  background: rgba(0, 0, 0, 0.5);
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  color: white;
+}
+
+.minecraft-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  background-color: #3a6b2f;
+  padding: 8px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+  aspect-ratio: 1 / 1;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.minecraft-block {
+  background: radial-gradient(circle at 30% 35%, #5a9e3e, #3d7a2a);
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.15s ease;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.minecraft-block:hover {
+  transform: scale(1.02);
+  background: radial-gradient(circle at 30% 35%, #6aae4e, #4d8a3a);
+}
+
+.minecraft-block--empty {
+  background: radial-gradient(circle at 30% 35%, #4d8e35, #2d6a1f);
+  border: 1.5px dashed rgba(150, 150, 150, 0.5);
+}
+
+.minecraft-block--building {
+  background: radial-gradient(circle at 30% 35%, #5a9e3e, #3d7a2a);
+  border: none;
+}
+
+.empty-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-block__plus {
+  font-size: 2rem;
+  font-weight: 300;
+  color: rgba(180, 180, 180, 0.7);
+}
+
+.empty-block__text {
+  font-size: 0.55rem;
+  color: rgba(200, 200, 200, 0.6);
+  text-transform: uppercase;
+}
+
+.block-building {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.block-building__svg {
+  width: 90%;
+  height: 90%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.block-building__svg svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.block-building__level {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #FFD700;
+  font-size: 0.6rem;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 12px;
+  z-index: 10;
+}
+
+.block-building__income {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #FFD700;
+  font-size: 0.55rem;
+  padding: 2px 6px;
+  border-radius: 12px;
+  white-space: nowrap;
+  display: none;
+  z-index: 10;
+}
+
+.block-building__income--active {
+  display: block;
+  animation: incomePulse 0.6s ease;
+}
+
+@keyframes incomePulse {
+  0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+  50% { opacity: 0.8; transform: translateX(-50%) scale(1.05); }
+}
+
+.collect-all-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
+}
+
+.collect-all-btn:active {
+  transform: scale(0.98);
+}
+
+/* Модальные окна */
+.build-modal, .info-modal, .help-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.build-modal[hidden], .info-modal[hidden], .help-modal[hidden] {
+  display: none;
+}
+
+.build-modal__overlay, .info-modal__overlay, .help-modal__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.build-modal__content {
+  position: relative;
+  background: #2a2a2a;
+  border-radius: 20px;
+  padding: 20px;
+  width: 90%;
+  max-width: 340px;
+}
+
+.info-modal__content, .help-modal__content {
+  position: relative;
+  background: white;
+  border-radius: 24px;
+  padding: 24px 20px 28px;
+  width: 90%;
+  max-width: 340px;
+}
+
+.build-modal__title {
+  margin: 0 0 16px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  color: white;
+}
+
+.info-modal__close, .help-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #999;
+}
+
+.build-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.build-option {
+  background: #3a3a3a;
+  border: 2px solid #5a5a5a;
+  border-radius: 16px;
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.build-option:active {
+  transform: scale(0.96);
+}
+
+.build-option__icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.build-option__name {
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: white;
+}
+
+.build-option__cost {
+  font-size: 0.65rem;
+  color: #ffd700;
+}
+
+.build-modal__close {
+  width: 100%;
+  padding: 10px;
+  background: #555;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+}
+
+.info-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.info-stat__label {
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.info-stat__value {
+  font-weight: bold;
+  color: #333;
+}
+
+.info-modal__actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.info-btn {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.info-btn:active {
+  transform: scale(0.97);
+}
+
+.info-btn--collect {
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  color: white;
+}
+
+.info-btn--upgrade {
+  background: linear-gradient(135deg, #2196f3, #1976d2);
+  color: white;
+}
+
+.info-btn--sell {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+  color: white;
+}
+
+/* Модальное окно помощи */
+.help-modal__title {
+  margin: 0 0 16px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+}
+
+.help-modal__body {
+  margin-bottom: 20px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.help-section {
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.help-section:last-child {
+  border-bottom: none;
+}
+
+.help-section h4 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+  color: #007bff;
+}
+
+.help-section p {
+  margin: 0 0 6px;
+  font-size: 0.8rem;
+  color: #555;
+  line-height: 1.4;
+}
+
+.help-section ul {
+  margin: 6px 0 0;
+  padding-left: 20px;
+}
+
+.help-section li {
+  font-size: 0.75rem;
+  color: #666;
+  margin: 4px 0;
+}
+
+.help-modal__ok {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.help-modal__ok:active {
+  transform: scale(0.98);
+}
+
+/* Календарь и задания */
+.tasks-card {
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  color: white;
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.task-item {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.task-item--completed {
+  opacity: 0.6;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.task-info {
+  flex: 2;
+  min-width: 150px;
+}
+
+.task-title {
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.task-desc {
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+.task-reward {
+  display: flex;
+  gap: 12px;
+  font-size: 0.7rem;
+  font-weight: bold;
+}
+
+.task-reward span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.task-status {
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.task-status--available {
+  background: #4caf50;
+}
+
+.task-status--claimed {
+  background: #ff9800;
+}
+
+.task-btn {
+  background: linear-gradient(135deg, #ffd700, #ff9800);
+  border: none;
+  border-radius: 30px;
+  padding: 8px 16px;
+  font-size: 0.7rem;
+  font-weight: bold;
+  color: #2a2a2a;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.task-btn:active {
+  transform: scale(0.96);
+}
+
+.task-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.calendar-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.calendar-title {
+  font-size: 0.9rem;
+  margin: 0 0 12px;
+  opacity: 0.9;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.calendar-streak {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 8px 16px;
+  border-radius: 40px;
+  backdrop-filter: blur(10px);
+}
+
+.streak-flame {
+  font-size: 1.5rem;
+  animation: flameFlicker 0.5s ease infinite alternate;
+}
+
+@keyframes flameFlicker {
+  0% { transform: scale(1); opacity: 0.8; text-shadow: 0 0 2px #ff6600; }
+  100% { transform: scale(1.1); opacity: 1; text-shadow: 0 0 8px #ff9900, 0 0 4px #ff3300; }
+}
+
+.streak-count {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ffaa00;
+}
+
+.streak-label {
+  font-size: 0.7rem;
+  opacity: 0.8;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 20px;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+@media (min-width: 500px) {
+  .calendar-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (min-width: 600px) {
+  .calendar-grid {
+    grid-template-columns: repeat(7, 1fr);
+  }
+}
+
+.calendar-day {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 10px 4px;
+  text-align: center;
+  transition: all 0.2s ease;
+  position: relative;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 70px;
+}
+
+.calendar-day:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.calendar-day--available {
+  background: linear-gradient(135deg, #ffd700, #ff9800);
+  cursor: pointer;
+  animation: pulse 1.5s ease infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.4); }
+  50% { transform: scale(1.02); box-shadow: 0 0 0 8px rgba(255, 215, 0, 0); }
+}
+
+.calendar-day--claimed {
+  background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+  cursor: default;
+  opacity: 0.8;
+}
+
+.calendar-day--locked {
+  background: rgba(255, 255, 255, 0.05);
+  cursor: default;
+  opacity: 0.5;
+}
+
+.calendar-day__number {
+  font-size: 0.65rem;
+  opacity: 0.7;
+  margin-bottom: 6px;
+}
+
+.calendar-day__reward {
+  font-size: 0.65rem;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.calendar-day__reward span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.reward-skill {
+  color: #a5d6ff;
+}
+
+.reward-token {
+  color: #ffd700;
+}
+
+.calendar-day--available .calendar-day__reward {
+  color: #2a2a2a;
+}
+
+.claimed-badge, .max-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #4caf50;
+  border-radius: 20px;
+  padding: 2px 6px;
+  font-size: 0.55rem;
+  font-weight: bold;
+}
+
+.max-badge {
+  background: #ff9800;
+  left: -6px;
+  right: auto;
+}
+
+.calendar-reset {
+  text-align: center;
+  margin-top: 16px;
+}
+
+.reset-streak-btn {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+  border: none;
+  border-radius: 30px;
+  padding: 10px 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reset-streak-btn:active {
+  transform: scale(0.97);
+}
+
+.reset-streak-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.reset-hint {
+  font-size: 0.7rem;
+  opacity: 0.6;
+  margin-top: 8px;
+}
+
+.calendar-grid::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.calendar-grid::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.calendar-grid::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+/* Модальное окно задания */
+.task-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+}
+
+.task-modal[hidden] {
+  display: none;
+}
+
+.task-modal__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.task-modal__content {
+  position: relative;
+  background: white;
+  border-radius: 24px;
+  padding: 24px 20px 28px;
+  width: 90%;
+  max-width: 340px;
+  animation: slideUp 0.3s ease;
+}
+
+.task-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #999;
+}
+
+.task-modal__title {
+  margin: 0 0 16px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+  color: #333;
+}
+
+.task-modal__desc {
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 20px;
+}
+
+.task-modal__reward {
+  background: #f5f5f5;
+  border-radius: 16px;
+  padding: 12px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.task-modal__reward span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.task-modal__input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.task-modal__input:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.task-modal__btn {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #4caf50, #45a049);
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+.task-modal__btn:active {
+  transform: scale(0.97);
+}
+
+/* Уведомления */
+.buy-toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.9);
+  color: #ffd700;
+  padding: 10px 20px;
+  border-radius: 40px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 9999;
+  white-space: nowrap;
+  display: none;
+}
+
+.buy-toast.is-visible {
+  display: block;
+  animation: fadeOut 2s ease forwards;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; transform: translateX(-50%) scale(1); }
+  70% { opacity: 1; transform: translateX(-50%) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) scale(0.9); display: none; }
+}
+
+@media (max-width: 480px) {
+  .minecraft-grid {
+    max-width: 340px;
+    gap: 3px;
+    padding: 6px;
+  }
+  .block-building__level {
+    font-size: 0.5rem;
+    padding: 1px 4px;
+  }
+  .game-balance__value {
+    font-size: 1.4rem;
+  }
+  .skill-input-group {
+    flex-direction: column;
+  }
+  .skill-add-btn {
+    width: 100%;
+  }
+  .calendar-day {
+    min-width: 55px;
+    padding: 6px 2px;
+  }
+  .calendar-day__reward {
+    font-size: 0.55rem;
+  }
+  .task-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .buy-toast {
+    white-space: normal;
+    text-align: center;
+    max-width: 90%;
+    font-size: 12px;
+  }
+}
+/* Лидерборд */
+.leaderboard-card {
+  background: linear-gradient(145deg, #007bff 0%, #6a00b8 48%, #e10098 100%);
+  color: white;
+  box-shadow: 0 10px 32px rgba(0, 123, 255, 0.28), 0 4px 16px rgba(225, 0, 152, 0.18);
+}
+
+.leaderboard-subtitle {
+  font-size: 0.75rem;
+  opacity: 0.8;
+  text-align: center;
+  margin: -12px 0 20px 0;
+}
+
+.leaderboard-table {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 16px;
+  backdrop-filter: blur(4px);
+}
+
+.leaderboard-header {
+  display: grid;
+  grid-template-columns: 50px 1fr 80px 80px;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 12px 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.leaderboard-rank {
+  text-align: center;
+}
+
+.leaderboard-player {
+  padding-left: 8px;
+}
+
+.leaderboard-level {
+  text-align: center;
+}
+
+.leaderboard-score {
+  text-align: center;
+}
+
+.leaderboard-body {
+  min-height: 300px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.leaderboard-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 80px 80px;
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.leaderboard-row:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.leaderboard-row--top {
+  background: rgba(255, 215, 0, 0.15);
+}
+
+.leaderboard-rank-number {
+  text-align: center;
+  font-weight: 600;
+}
+
+.leaderboard-rank-number--1 {
+  color: #ffd700;
+  text-shadow: 0 0 4px rgba(255, 215, 0, 0.5);
+}
+
+.leaderboard-rank-number--2 {
+  color: #c0c0c0;
+}
+
+.leaderboard-rank-number--3 {
+  color: #cd7f32;
+}
+
+.leaderboard-player-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 8px;
+}
+
+.leaderboard-player-avatar {
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+.leaderboard-level-value {
+  text-align: center;
+  font-weight: 600;
+  color: #ffd700;
+}
+
+.leaderboard-score-value {
+  text-align: center;
+  font-weight: 600;
+  color: #a5d6ff;
+}
+
+.leaderboard-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.leaderboard-empty-icon {
+  font-size: 48px;
+  opacity: 0.6;
+  margin-bottom: 16px;
+}
+
+.leaderboard-empty p {
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.leaderboard-empty-hint {
+  font-size: 0.7rem;
+  opacity: 0.5;
+}
+
+.leaderboard-footer {
+  text-align: center;
+  padding-top: 8px;
+}
+
+.leaderboard-note {
+  font-size: 0.65rem;
+  opacity: 0.6;
+  margin: 0;
+}
+
+/* Стили для скролла лидерборда */
+.leaderboard-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.leaderboard-body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+.leaderboard-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+/* Адаптив для лидерборда */
+@media (max-width: 480px) {
+  .leaderboard-header {
+    grid-template-columns: 40px 1fr 60px 70px;
+    font-size: 0.65rem;
+    padding: 10px 12px;
+  }
+  
+  .leaderboard-row {
+    grid-template-columns: 40px 1fr 60px 70px;
+    padding: 10px 12px;
+    font-size: 0.75rem;
+  }
+  
+  .leaderboard-player-avatar {
+    width: 22px;
+    height: 22px;
+    font-size: 0.7rem;
+  }
+  
+  .leaderboard-player-name {
+    gap: 6px;
+  }
+}
+/* Модальное окно МТБанка */
+.mtbank-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2500;
+}
+
+.mtbank-modal[hidden] {
+  display: none;
+}
+
+.mtbank-modal__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.mtbank-modal__content {
+  position: relative;
+  background: linear-gradient(145deg, #ffffff, #f0f0f0);
+  border-radius: 24px;
+  padding: 24px 20px 28px;
+  width: 90%;
+  max-width: 380px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.3s ease;
+}
+
+.mtbank-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  color: #999;
+}
+
+.mtbank-modal__icon {
+  font-size: 3rem;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.mtbank-modal__title {
+
+========================================
+=== iso-styles.css (первые 50%) ===
+========================================
+
+/* 🎮 ISO-STYLES.CSS — КАЗУАЛЬНЫЙ 2D-ИЗОМЕТРИЧЕСКИЙ СТИЛЬ */
+
+:root {
+  --bg-color: #F0F4F8;
+  --tile-top: #5BC0BE;
+  --tile-left: #3AA8A0;
+  --tile-right: #2A8A82;
+  --tile-stroke: rgba(255,255,255,0.4);
+  --empty-marker: #4CAF50;
+  --accent-cyan: #00BCD4;
+  --shadow-soft: 0 8px 20px rgba(0,0,0,0.08);
+  --shadow-float: 0 4px 12px rgba(0,0,0,0.1);
+  --border-radius-sm: 12px;
+  --border-radius-md: 16px;
+  --border-radius-lg: 24px;
+}
+
+#panel-game {
+  display: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 100% !important;
+  width: 100% !important;
+  background: var(--bg-color) !important;
+}
+
+#panel-game.is-active {
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.city-game-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-color);
+  position: relative;
+}
+
+/* Параллакс-фон с размытыми формами */
+.city-game-wrap::before {
+  content: '';
+  position: absolute;
+  top: -50px;
+  left: -30px;
+  width: 200px;
+  height: 200px;
+  background: rgba(91, 192, 190, 0.08);
+  border-radius: 50%;
+  filter: blur(40px);
+  z-index: 0;
+}
+
+.city-game-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: -30px;
+  right: -20px;
+  width: 250px;
+  height: 180px;
+  background: rgba(0, 188, 212, 0.06);
+  border-radius: 40% 60% 30% 70%;
+  filter: blur(50px);
+  z-index: 0;
+}
+
+.city-hud {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(12px);
+  flex-shrink: 0;
+  z-index: 10;
+  border-bottom: 1px solid rgba(255,255,255,0.5);
+}
+
+.city-coins {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFFFFF;
+  border-radius: var(--border-radius-lg);
+  padding: 6px 16px 6px 10px;
+  box-shadow: var(--shadow-float);
+}
+
+.coin-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #FFD54F, #FFB300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 14px;
+  color: #5D4037;
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,0.1);
+}
+
+.city-coins span {
+  font-family: 'Nunito', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1E293B;
+}
+
+.city-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 18px;
+  font-weight: 900;
+  color: #1E293B;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.city-level {
+  background: #FFFFFF;
+  border-radius: var(--border-radius-lg);
+  padding: 6px 16px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: #1E293B;
+  box-shadow: var(--shadow-float);
+}
+
+.city-game-area {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  z-index: 5;
+  padding: 16px;
+}
+
+#city-iso {
+  position: relative;
+  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+}
+
+/* Парящие плиты */
+.city-tile {
+  position: absolute;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  margin: 0 !important;
+  padding: 0 !important;
+  transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.city-tile:hover {
+  transform: translateY(-3px);
+  filter: brightness(1.05);
+}
+
+.city-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 10px;
+  height: 10px;
+  background: #4CAF50;
+  border: 2px solid #FFFFFF;
+  border-radius: 50%;
+  display: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  z-index: 30;
+}
+
+/* Нижняя панель управления */
+.city-bar {
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px 18px;
+  background: rgba(255,255,255,0.7);
+  backdrop-filter: blur(12px);
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  flex-shrink: 0;
+  z-index: 10;
+  border-top: 1px solid rgba(255,255,255,0.5);
+}
+
+.city-bar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 16px;
+  background: #FFFFFF;
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  box-shadow: var(--shadow-float);
+  transition: all 0.15s ease;
+  text-transform: uppercase;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  color: #475569;
+}
+
+.city-bar-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.city-bar-btn span:first-child {
+  font-size: 20px;
+}
+
+.city-bar-btn.primary {
+  background: var(--accent-cyan);
+  color: #FFFFFF;
+  flex: 1;
+  box-shadow: 0 4px 0 #0097A7, var(--shadow-float);
+}
+
+.city-bar-btn.primary span {
+  color: #FFFFFF;
+}
+
+/* Попап здания */
+.city-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(0,0,0,0.3);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s;
+}
+
+.city-popup-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.city-popup {
+  background: #FFFFFF;
+  border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
+  width: 100%;
+  max-width: 450px;
+  padding: 24px 20px 30px;
+  transform: translateY(100%);
+  transition: transform .3s cubic-bezier(0.2, 0.9, 0.4, 1);
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 -8px 30px rgba(0,0,0,0.1);
+}
+
+.city-popup-overlay.open .city-popup {
+  transform: translateY(0);
+}
+
+.popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.popup-name {
+  font-family: 'Nunito', sans-serif;
+  font-size: 22px;
+  font-weight: 900;
+  color: #0F172A;
+  text-transform: uppercase;
+}
+
+.popup-type {
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.popup-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #F1F5F9;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.popup-close:hover {
+  background: #E2E8F0;
+}
+
+.popup-preview {
+  width: 100%;
+  height: 130px;
+  border-radius: var(--border-radius-md);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F8FAFC;
+}
+
+.popup-progress-bar {
+  background: #E2E8F0;
+  border-radius: 10px;
+  height: 8px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.popup-progress {
+  height: 100%;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--accent-cyan), #0097A7);
+  transition: width .3s;
+}
+
+.popup-progress-text {
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.popup-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: #F8FAFC;
+  border-radius: var(--border-radius-sm);
+  padding: 14px 12px;
+}
+
+.stat-label {
+  font-size: 10px;
+  color: #94A3B8;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-family: 'Nunito', sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+========================================
+=== city-game.js (первые 50%) ===
+========================================
+
+// 🏙️ MtBank City — ИЗОМЕТРИЧЕСКАЯ ВЕРСИЯ (полная замена 2D игры)
+console.log('🚀 city-game.js загружается...');
+
+// ========== КОНФИГУРАЦИЯ ЗДАНИЙ (как в 2D версии) ==========
+const BUILDING_TYPES = {
+  coffee: { name: "Кофейня", icon: "☕", baseIncome: 50, upgradeMultiplier: 1.5, cost: 100, maxLevel: 5, bg: '#fff4e0', sprite: 'cafe.png' },
+  flowershop: { name: "Цветочный магазин", icon: "🌷", baseIncome: 55, upgradeMultiplier: 1.53, cost: 110, maxLevel: 5, bg: '#ffe0f0', sprite: 'flower.png' },
+  minimarket: { name: "Мини-магазин", icon: "🏪", baseIncome: 45, upgradeMultiplier: 1.52, cost: 90, maxLevel: 5, bg: '#e0ffe0', sprite: 'minimarket.png' },
+  foodtruck: { name: "Фудтрак", icon: "🚚", baseIncome: 48, upgradeMultiplier: 1.54, cost: 95, maxLevel: 5, bg: '#ffe8d0', sprite: 'foodtruck.png' },
+  icecream: { name: "Киоск мороженого", icon: "🍦", baseIncome: 42, upgradeMultiplier: 1.51, cost: 85, maxLevel: 5, bg: '#e0f0ff', sprite: 'icecream.png' },
+  restaurant: { name: "Ресторан", icon: "🍽️", baseIncome: 100, upgradeMultiplier: 1.6, cost: 250, maxLevel: 5, bg: '#f0e0e0', sprite: 'restaurant.png' },
+  shop: { name: "Магазин", icon: "🏪", baseIncome: 110, upgradeMultiplier: 1.62, cost: 280, maxLevel: 5, bg: '#e0e0ff', sprite: 'store.png' },
+  autoservice: { name: "Автосервис", icon: "🔧", baseIncome: 120, upgradeMultiplier: 1.63, cost: 300, maxLevel: 5, bg: '#d0d0d0', sprite: 'autoservice.png' },
+  itcompany: { name: "IT Компания", icon: "💻", baseIncome: 140, upgradeMultiplier: 1.65, cost: 350, maxLevel: 5, bg: '#c0e0ff', sprite: 'itoffice.png' },
+  gasstation: { name: "Заправка", icon: "⛽", baseIncome: 115, upgradeMultiplier: 1.61, cost: 290, maxLevel: 5, bg: '#ffe0c0', sprite: 'gasstation.png' },
+  businesspark: { name: "Бизнес-парк", icon: "🏢", baseIncome: 500, upgradeMultiplier: 1.85, cost: 1200, maxLevel: 5, bg: '#e0eeff', sprite: 'business-center.png' },
+  cinema: { name: "Кинотеатр", icon: "🎬", baseIncome: 350, upgradeMultiplier: 1.78, cost: 800, maxLevel: 5, bg: '#e0d0ff', sprite: 'cinema.png' },
+  construction: { name: "Стройкомпания", icon: "🏗️", baseIncome: 320, upgradeMultiplier: 1.75, cost: 750, maxLevel: 5, bg: '#ffe8a0', sprite: 'construction.png' },
+  warehouse: { name: "Склад", icon: "🏭", baseIncome: 250, upgradeMultiplier: 1.7, cost: 600, maxLevel: 5, bg: '#d0c0a0', sprite: 'warehouse.png' },
+  mall: { name: "Торговый центр", icon: "🏬", baseIncome: 450, upgradeMultiplier: 1.82, cost: 1100, maxLevel: 5, bg: '#ffd0e0', sprite: 'mall.png' }
+};
+
+const BUILDING_KEYS = ["coffee", "flowershop", "minimarket", "foodtruck", "icecream", "restaurant", "shop", "autoservice", "itcompany", "gasstation", "businesspark", "cinema", "construction", "warehouse", "mall"];
+
+const SPRITE_PATH = 'buildings/';
+const GRID_SIZE = 5;
+let buildingPriceMultiplier = 1.0;
+
+// ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
+let buildings = [];
+let currentSelectedBlock = null;
+let currentInfoIndex = null;
+let incomeInterval = null;
+let cameraZoom = 1.3;
+let cameraX = 0, cameraY = 0;
+let isDragging = false, hasMoved = false;
+let dragStartX = 0, dragStartY = 0;
+let dragCameraStartX = 0, dragCameraStartY = 0;
+
+// DOM элементы
+let isoContainer, coinDisplay, skillDisplay, totalIncomeDisplay;
+
+// ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+function getCurrentUser() {
+  if (typeof window.getCurrentUser === 'function') {
+    return window.getCurrentUser();
+  }
+  try {
+    var userId = localStorage.getItem("rr_current_user_id");
+    if (!userId) return null;
+    var usersRaw = localStorage.getItem("rr_registered_users");
+    if (!usersRaw) return null;
+    var users = JSON.parse(usersRaw);
+    return users[userId] || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function loadGameBuildings() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return null;
+  
+  var gameKey = "rr_game_" + currentUser.id;
+  try {
+    var raw = localStorage.getItem(gameKey);
+    if (!raw) {
+      var emptyGrid = [];
+      for (var i = 0; i < 25; i++) emptyGrid.push(null);
+      var defaultData = { buildings: emptyGrid, lastUpdate: Date.now() };
+      saveGameBuildings(defaultData);
+      return defaultData;
+    }
+    return JSON.parse(raw);
+  } catch (e) {
+    var emptyGrid = [];
+    for (var i = 0; i < 25; i++) emptyGrid.push(null);
+    return { buildings: emptyGrid, lastUpdate: Date.now() };
+  }
+}
+
+function saveGameBuildings(data) {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  var gameKey = "rr_game_" + currentUser.id;
+  localStorage.setItem(gameKey, JSON.stringify(data));
+}
+
+function getBuildingIncome(building) {
+  if (!building) return 0;
+  var typeData = BUILDING_TYPES[building.type];
+  if (!typeData) return 0;
+  return Math.floor(typeData.baseIncome * Math.pow(typeData.upgradeMultiplier, building.level - 1));
+}
+
+function getUpgradeCost(building) {
+  if (!building) return 0;
+  var typeData = BUILDING_TYPES[building.type];
+  if (!typeData) return 0;
+  return Math.floor(typeData.cost * Math.pow(1.3, building.level - 1));
+}
+
+function updateBuildingPriceMultiplier() {
+  var buildingCount = 0;
+  for (var i = 0; i < buildings.length; i++) {
+    if (buildings[i]) buildingCount++;
+  }
+  buildingPriceMultiplier = Math.pow(1.1, buildingCount);
+}
+
+function syncBalanceToApp() {
+  var currentUser = getCurrentUser();
+  if (currentUser && typeof window.syncBalancesToDom === 'function') {
+    window.balanceMtBanks = currentUser.balanceMtBanks;
+    window.balanceSkillPoints = currentUser.balanceSkillPoints;
+    window.syncBalancesToDom();
+  }
+}
+
+// ========== ИЗОМЕТРИЧЕСКАЯ ПЛИТКА ==========
+function tileBg(r, c) {
+  const isCenter = (r === 2 && c === 2);
+  const sh = isCenter ? '#FFD700' : ((r + c) % 2 === 0 ? '#5BC0BE' : '#4AB0AE');
+  const lsh = isCenter ? '#DAA520' : '#3AA8A0';
+  const rsh = isCenter ? '#B8860B' : '#2A8A82';
+  const strokeColor = isCenter ? '#FFD700' : 'rgba(255,255,255,0.4)';
+  
+  const index = r * GRID_SIZE + c;
+  const isEmpty = !buildings[index];
+  const emptyMarker = (isEmpty && !isCenter) ? `<polygon points="36,12 52,20 36,28 20,20" fill="#4CAF50" opacity="0.7" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>` : '';
+  
+  return `
+    <svg viewBox="0 0 72 64" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;">
+      <polygon points="36,1 71,19 36,37 1,19" fill="${sh}" stroke="${strokeColor}" stroke-width="${isCenter ? '2.5' : '1.5'}"/>
+      <polygon points="1,19 36,37 36,52 1,34" fill="${lsh}"/>
+      <polygon points="36,37 71,19 71,34 36,52" fill="${rsh}"/>
+      ${emptyMarker}
+    </svg>
+  `;
+}
+
+function getBuildingSpriteHTML(type, level) {
+  const def = BUILDING_TYPES[type];
+  if (!def) return '';
+  
+  return `
+    <div style="position:absolute;bottom:28px;left:50%;transform:translateX(-50%);width:55px;height:55px;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;filter:drop-shadow(0 6px 4px rgba(0,0,0,0.25));z-index:10;">
+      <img src="${SPRITE_PATH}${def.sprite}" alt="${def.name}" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+      <div style="display:none;width:100%;height:100%;background:${def.bg};border-radius:8px;align-items:center;justify-content:center;font-size:28px;font-weight:bold;color:#333;">${def.icon}</div>
+    </div>
+  `;
+}
+
+function makeTile(r, c) {
+  const index = r * GRID_SIZE + c;
+  const building = buildings[index];
+  
+  const buildingHTML = building ? getBuildingSpriteHTML(building.type, building.level) : '';
+  
+  const levelHTML = building ? `
+    <div style="position:absolute;bottom:17px;left:50%;transform:translateX(-50%);background:rgba(30,30,30,0.35);backdrop-filter:blur(6px);border-radius:18px;padding:2px 6px;z-index:15;white-space:nowrap;">
+      <span style="font-size:8px;font-weight:600;color:white;">Lv.${building.level}</span>
+    </div>
+  ` : '';
+  
+  const pending = building?.pendingIncome || 0;
+  const incomeHTML = (pending > 0) ? `
+    <div style="position:absolute;top:5px;right:5px;background:#4CAF50;border-radius:12px;padding:2px 6px;z-index:15;">
+      <span style="font-size:7px;font-weight:bold;color:white;">+${Math.floor(pending)}</span>
+    </div>
+  ` : '';
+  
+  const emptyHTML = !building && !(r === 2 && c === 2) ? `
+    <div style="position:absolute;top:35%;left:50%;transform:translate(-50%, -50%);width:40px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:rgba(100,100,100,0.45);border:2px dashed rgba(220,220,220,0.8);font-size:20px;font-weight:bold;color:rgba(255,255,255,0.8);pointer-events:none;z-index:20;">+</div>
+  ` : '';
+  
+  return tileBg(r, c) + levelHTML + incomeHTML + buildingHTML + emptyHTML;
+}
+
+function renderGrid() {
+  if (!isoContainer) return;
+  
+  const TW = 90, TH = 48;
+  const CW = GRID_SIZE * TW, CH = GRID_SIZE * (TH / 2) + TH + 80;
+  
+  isoContainer.style.width = CW + 'px';
+  isoContainer.style.height = CH + 'px';
+  isoContainer.style.transformOrigin = 'center center';
+  isoContainer.innerHTML = '';
+  
+  for (let r = 0; r < GRID_SIZE; r++) {
+    for (let c = 0; c < GRID_SIZE; c++) {
+      const sx = (c - r) * (TW / 2) + CW / 2 - TW / 2;
+      const sy = (c + r) * (TH / 2) + 15;
+      const index = r * GRID_SIZE + c;
+      
+      const div = document.createElement('div');
+      div.className = 'city-tile';
+      div.style.cssText = `left:${sx}px;top:${sy}px;width:72px;height:64px;cursor:pointer;`;
+      div.innerHTML = makeTile(r, c);
+      div.onclick = (function(idx) { return function() { onTileClick(idx); }; })(index);
+      
+      isoContainer.appendChild(div);
+    }
+  }
+  
+  updateCameraTransform();
+}
+
+function onTileClick(index) {
+  if (hasMoved) {
+    hasMoved = false;
+    return;
+  }
+  
+  const building = buildings[index];
+  
+  if (building) {
+    openInfoModal(index);
+  } else if (index !== 12) {
+    openBuildModal(index);
+  }
+}
+
+// ========== МОДАЛЬНЫЕ ОКНА ==========
+function openBuildModal(blockIndex) {
+  currentSelectedBlock = blockIndex;
+  var container = document.getElementById("build-options");
+  if (!container) return;
+  
+  container.innerHTML = "";
+  
+  // Группируем здания по категориям
+  var categories = {
+    starter: { name: "⭐ Стартовые", buildings: BUILDING_KEYS.slice(0, 5) },
+    medium: { name: "🏢 Средние", buildings: BUILDING_KEYS.slice(5, 10) },
+    elite: { name: "🏦 Элитные", buildings: BUILDING_KEYS.slice(10, 15) }
+  };
+  
+  for (var cat in categories) {
+    var header = document.createElement("div");
+    header.className = "build-category-header";
+    header.innerHTML = `<span class="build-category-title">${categories[cat].name}</span>`;
+    container.appendChild(header);
+    
+    for (var i = 0; i < categories[cat].buildings.length; i++) {
+      var key = categories[cat].buildings[i];
+      var type = BUILDING_TYPES[key];
+      var price = Math.floor(type.cost * buildingPriceMultiplier);
+      
+      var option = document.createElement("div");
+      option.className = "build-option";
+      option.innerHTML = `
+        <div class="build-option__icon">${type.icon}</div>
+        <div class="build-option__name">${type.name}</div>
+        <div class="build-option__cost">⭐ ${price}</div>
+      `;
+      option.onclick = (function(k, p) { return function() { buildBuilding(blockIndex, k, p); }; })(key, price);
+      container.appendChild(option);
+    }
+  }
+  
+  var modal = document.getElementById("build-modal");
+  if (modal) modal.removeAttribute("hidden");
+}
+
+function buildBuilding(index, type, cost) {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return false;
+  
+  updateBuildingPriceMultiplier();
+  
+  if ((currentUser.balanceSkillPoints || 0) < cost) {
+    showGameToast("❌ Недостаточно очков прокачки! Нужно " + cost + " ⭐");
+    return false;
+  }
+  
+  if (buildings[index]) {
+    showGameToast("❌ Здесь уже есть здание!");
+    return false;
+  }
+  
+  buildings[index] = {
+    type: type,
+    level: 1,
+    pendingIncome: 0,
+    purchasePrice: cost
+  };
+  
+  currentUser.balanceSkillPoints -= cost;
+  
+  var gameData = { buildings: buildings, lastUpdate: Date.now() };
+  saveGameBuildings(gameData);
+  
+  var users = window.loadAllUsers ? window.loadAllUsers() : {};
+  users[currentUser.id] = currentUser;
+  if (typeof window.saveAllUsers === 'function') window.saveAllUsers(users);
+  
+  syncBalanceToApp();
+  updateDisplays();
+  renderGrid();
+  
+  showGameToast("✅ Построено: " + BUILDING_TYPES[type].name + " за " + cost + " ⭐!");
+  closeBuildModal();
+  return true;
+}
+
+function closeBuildModal() {
+  var modal = document.getElementById("build-modal");
+  if (modal) modal.setAttribute("hidden", "");
+  currentSelectedBlock = null;
+}
+
+function openInfoModal(index) {
+  var building = buildings[index];
+  if (!building) return;
+  
+  currentInfoIndex = index;
+  var typeData = BUILDING_TYPES[building.type];
+  
+  var iconContainer = document.getElementById("info-icon");
+  if (iconContainer) {
+    iconContainer.innerHTML = `<div style="font-size:48px;">${typeData.icon}</div>`;
+  }
+  
+  var purchasePrice = building.purchasePrice || typeData.cost;
+  var sellPrice = Math.floor(purchasePrice / 2);
+  
+  document.getElementById("info-title").textContent = typeData.name;
+  document.getElementById("info-type").textContent = typeData.name;

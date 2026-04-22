@@ -213,44 +213,56 @@ var MAX_ACCUMULATION_HOURS = 24;
     switchTab("profile");
   }
 
-  function switchTab(tab) {
-    var panels = document.querySelectorAll(".panel");
-    for (var i = 0; i < panels.length; i += 1) {
-      var p = panels[i];
-      if (p.getAttribute("data-panel") === tab) {
-        p.classList.add("is-active");
-      } else {
-        p.classList.remove("is-active");
-      }
-    }
+function switchTab(tab) {
+  console.log("Переключение на вкладку:", tab);
+  
+  // Сначала скрываем ВСЕ панели
+  var panels = document.querySelectorAll(".panel");
+  for (var i = 0; i < panels.length; i++) {
+    panels[i].classList.remove("is-active");
+  }
+  
+  // Показываем нужную панель
+  var activePanel = document.querySelector('.panel[data-panel="' + tab + '"]');
+  if (activePanel) {
+    activePanel.classList.add("is-active");
+    console.log("Активирована панель:", tab);
+  }
 
-    var tabs = document.querySelectorAll(".bottom-nav__tab");
-    for (var j = 0; j < tabs.length; j += 1) {
-      var btn = tabs[j];
-      if (btn.getAttribute("data-tab") === tab) {
-        btn.setAttribute("aria-current", "page");
-      } else {
-        btn.removeAttribute("aria-current");
-      }
-    }
-
-    if (tab === "profile") syncBalancesToDom();
-    if (tab === "game") {
-      syncBalancesToDom();
-      setTimeout(function() {
-        if (typeof window.initCityGame === 'function') {
-          window.initCityGame();
-        } else {
-          initCityGame();
-        }
-      }, 50);
-    }
-    if (tab === "tasks") {
-      renderCalendarGrid();
-      updateStreakDisplay();
-      renderTasksList();
+  // Обновляем табы в навигации
+  var tabs = document.querySelectorAll(".bottom-nav__tab");
+  for (var j = 0; j < tabs.length; j++) {
+    var btn = tabs[j];
+    if (btn.getAttribute("data-tab") === tab) {
+      btn.setAttribute("aria-current", "page");
+    } else {
+      btn.removeAttribute("aria-current");
     }
   }
+
+  if (tab === "profile") syncBalancesToDom();
+  if (tab === "game") {
+    syncBalancesToDom();
+    setTimeout(function() {
+      if (typeof window.initCityGame === 'function') {
+        window.initCityGame();
+      } else {
+        initCityGame();
+      }
+    }, 50);
+  }
+  if (tab === "tasks") {
+    renderCalendarGrid();
+    updateStreakDisplay();
+    renderTasksList();
+  }
+  if (tab === "leaderboard") {
+    // Обновление лидерборда если нужно
+  }
+  if (tab === "shop") {
+    // Обновление магазина если нужно
+  }
+}
 
   function registerUser(nicknameRaw, inviterCode) {
     var nickname = nicknameRaw.trim();
@@ -394,7 +406,7 @@ var MAX_ACCUMULATION_HOURS = 24;
   let dragStartX = 0, dragStartY = 0;
   let dragCameraStartX = 0, dragCameraStartY = 0;
   let isoContainer = null;
-  let buildMode = true;
+  let buildMode = false;
 
   // ========== МТБАНК (ЦЕНТРАЛЬНОЕ ЗДАНИЕ) ==========
 
@@ -1703,7 +1715,7 @@ function getMaxPendingIncome(building) {
     
     const index = r * GRID_SIZE + c;
     const isEmpty = !buildings[index];
-    const emptyMarker = (isEmpty && !isCenter && buildMode) ? `<polygon points="36,12 52,20 36,28 20,20" fill="#4CAF50" opacity="0.7" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>` : '';
+    const emptyMarker = (isEmpty && !isCenter) ? `<polygon points="36,12 52,20 36,28 20,20" fill="#4CAF50" opacity="0.7" stroke="rgba(255,255,255,0.5)" stroke-width="1"/>` : '';
     
     return `
       <svg viewBox="0 0 72 64" xmlns="http://www.w3.org/2000/svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;">
@@ -1715,38 +1727,39 @@ function getMaxPendingIncome(building) {
     `;
   }
 
-  function makeTile(r, c) {
-    const index = r * GRID_SIZE + c;
-    const building = buildings[index];
-    const isCenter = (r === 2 && c === 2);
-    
-    const buildingHTML = building ? getBuildingSpriteHTML(building.type, building.level) : '';
-    
-    const levelHTML = building && building.type !== "mtbank" ? `
-      <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.5);border-radius:12px;padding:1px 5px;z-index:15;white-space:nowrap;">
-        <span style="font-size:7px;font-weight:600;color:#FFD700;">Lv.${building.level}</span>
-      </div>
-    ` : '';
-    
-    const bankLevelHTML = building && building.type === "mtbank" ? `
-      <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);border-radius:12px;padding:2px 6px;z-index:15;white-space:nowrap;">
-        <span style="font-size:8px;font-weight:700;color:#FFD700;">🏦 Lv.${building.level}</span>
-      </div>
-    ` : '';
-    
-    const pending = building?.pendingIncome || 0;
-const incomeHTML = (pending > 0 && building?.type !== "mtbank") ? `
-  <div style="position:absolute;top:3px;right:3px;background:#4CAF50;border-radius:10px;padding:1px 4px;z-index:15;">
-    <span style="font-size:6px;font-weight:bold;color:white;">+${Math.floor(pending)}</span>
-  </div>
-` : '';
-    
-    const emptyHTML = !building && !isCenter && buildMode ? `
-      <div style="position:absolute;top:35%;left:50%;transform:translate(-50%, -50%);width:30px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:rgba(100,100,100,0.45);border:1.5px dashed rgba(220,220,220,0.8);font-size:14px;font-weight:bold;color:rgba(255,255,255,0.8);pointer-events:none;z-index:20;">+</div>
-    ` : '';
-    
-    return tileBg(r, c) + levelHTML + bankLevelHTML + incomeHTML + buildingHTML + emptyHTML;
-  }
+ function makeTile(r, c) {
+  const index = r * GRID_SIZE + c;
+  const building = buildings[index];
+  const isCenter = (r === 2 && c === 2);
+  
+  const buildingHTML = building ? getBuildingSpriteHTML(building.type, building.level) : '';
+  
+  const levelHTML = building && building.type !== "mtbank" ? `
+    <div style="position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.5);border-radius:12px;padding:1px 5px;z-index:15;white-space:nowrap;">
+      <span style="font-size:7px;font-weight:600;color:#FFD700;">Lv.${building.level}</span>
+    </div>
+  ` : '';
+  
+  const bankLevelHTML = building && building.type === "mtbank" ? `
+    <div style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.6);border-radius:12px;padding:2px 6px;z-index:15;white-space:nowrap;">
+      <span style="font-size:8px;font-weight:700;color:#FFD700;">🏦 Lv.${building.level}</span>
+    </div>
+  ` : '';
+  
+  const pending = building?.pendingIncome || 0;
+  const incomeHTML = (pending > 0 && building?.type !== "mtbank") ? `
+    <div style="position:absolute;top:3px;right:3px;background:#4CAF50;border-radius:10px;padding:1px 4px;z-index:15;">
+      <span style="font-size:6px;font-weight:bold;color:white;">+${Math.floor(pending)}</span>
+    </div>
+  ` : '';
+  
+  // Плюсик ТОЛЬКО в режиме редактирования
+  const emptyHTML = !building && !isCenter && buildMode ? `
+    <div style="position:absolute;top:35%;left:50%;transform:translate(-50%, -50%);width:30px;height:20px;display:flex;align-items:center;justify-content:center;border-radius:6px;background:rgba(100,100,100,0.45);border:1.5px dashed rgba(220,220,220,0.8);font-size:14px;font-weight:bold;color:rgba(255,255,255,0.8);pointer-events:none;z-index:20;">+</div>
+  ` : '';
+  
+  return tileBg(r, c) + levelHTML + bankLevelHTML + incomeHTML + buildingHTML + emptyHTML;
+}
 
   function normalizePendingIncomes() {
   var gameData = loadGameBuildings();
@@ -2355,159 +2368,174 @@ function buyVoucher() {
     }
   }
 
-  function toggleBuildMode() {
-    buildMode = !buildMode;
-    var toggleBtn = document.getElementById("toggle-build-mode-btn");
-    var modeStatusDiv = document.getElementById("mode-status");
-    
-    if (buildMode) {
-      toggleBtn.style.background = "#ff9800";
-      toggleBtn.style.boxShadow = "0 3px 0 #e65100";
-      if (modeStatusDiv) {
-        modeStatusDiv.innerHTML = '🔨 РЕЖИМ СТРОИТЕЛЬСТВА <span style="background:#ff9800; padding:2px 8px; border-radius:20px; margin-left:8px;">Активен</span>';
-        modeStatusDiv.style.background = "#fff3e0";
-      }
-      showGameToast("🔨 Режим строительства: можно строить новые здания");
-    } else {
-      toggleBtn.style.background = "#6c757d";
-      toggleBtn.style.boxShadow = "0 3px 0 #495057";
-      if (modeStatusDiv) {
-        modeStatusDiv.innerHTML = '👁️ РЕЖИМ ПРОСМОТРА <span style="background:#6c757d; padding:2px 8px; border-radius:20px; margin-left:8px;">Строительство отключено</span>';
-        modeStatusDiv.style.background = "#e9ecef";
-      }
-      showGameToast("👁️ Режим просмотра: можно управлять зданиями, но нельзя строить новые");
+function toggleBuildMode() {
+  buildMode = !buildMode;
+  var toggleBtn = document.getElementById("toggle-build-mode-btn");
+  var modeStatusDiv = document.getElementById("mode-status");
+  var modeIcon = document.getElementById("mode-toggle-icon");
+  
+  if (buildMode) {
+    // Переключили на строительство
+    toggleBtn.style.background = "#6c757d";  // серая кнопка
+    if (modeIcon) modeIcon.textContent = "✗";  // крестик
+    if (modeStatusDiv) {
+      modeStatusDiv.innerHTML = '🔨 РЕЖИМ СТРОИТЕЛЬСТВА <span style="background:rgba(255,152,0,0.8); backdrop-filter:blur(4px); padding:3px 10px; border-radius:20px; margin-left:8px; color:white; font-size:11px;">Активен</span>';
     }
-    
-    renderGrid();
+    showGameToast("🔨 Режим строительства: можно строить новые здания");
+  } else {
+    // Переключили на просмотр
+    toggleBtn.style.background = "#ff9800";  // оранжевая кнопка
+    if (modeIcon) modeIcon.textContent = "🛠️";  // молоточек
+    if (modeStatusDiv) {
+      modeStatusDiv.innerHTML = '👁️ РЕЖИМ ПРОСМОТРА <span style="background:rgba(108,117,125,0.8); backdrop-filter:blur(4px); padding:3px 10px; border-radius:20px; margin-left:8px; color:white; font-size:11px;">Строительство отключено</span>';
+    }
+    showGameToast("👁️ Режим просмотра: можно управлять зданиями, но нельзя строить новые");
   }
+  
+  renderGrid();
+}
 
-  function initCityGame() {
-    console.log("🏗 Инициализация изометрической игры...");
-    
-    var panel = document.getElementById("panel-game");
-    if (!panel) return;
-    
-    var currentUser = getCurrentUser();
-    var mtbankLevel = currentUser?.mtbankLevel || 1;
-    var mtbankExp = currentUser?.mtbankExp || 0;
-    var mtbankExpToNext = currentUser?.mtbankExpToNext || 100;
-    var expPercent = (mtbankExp / mtbankExpToNext) * 100;
-    
-    panel.innerHTML = `
-      <div class="game-container">
-        <div class="game-header">
-          <div class="game-title-section">
-            <h2 class="game-title">🏙️ Город МТ</h2>
-            <button class="game-help-btn" id="game-help-btn">❓ Как играть?</button>
-          </div>
-          
-          <div class="game-balance">
-            <span class="game-balance__label">MTBank Tokens</span>
-            <span class="game-balance__value" id="game-balance">0</span>
-          </div>
-          <div class="game-skill-balance">
-            <span class="game-skill-balance__label">⭐ Очки прокачки</span>
-            <span class="game-skill-balance__value" id="game-skill-balance">0</span>
-          </div>
-          <div class="game-total-income">
-            <span>💰 Доход/час: <span id="total-income">0</span></span>
-          </div>
+function initCityGame() {
+  console.log("🏗 Инициализация изометрической игры...");
+  
+  var panel = document.getElementById("panel-game");
+  if (!panel) return;
+  
+  panel.innerHTML = '';
+  
+  var currentUser = getCurrentUser();
+  var mtbankLevel = currentUser?.mtbankLevel || 1;
+  var mtbankExp = currentUser?.mtbankExp || 0;
+  var mtbankExpToNext = currentUser?.mtbankExpToNext || 100;
+  var expPercent = (mtbankExp / mtbankExpToNext) * 100;
+  
+  panel.innerHTML = `
+    <div class="game-container" style="position:relative; padding-bottom:80px; background:#ffffff !important;">
+      
+      <!-- Компактная верхняя панель с градиентом -->
+      <div style="background:linear-gradient(145deg,#007bff 0%,#6a00b8 48%,#e10098 100%); padding:12px 16px; border-radius:0 0 20px 20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <h2 style="margin:0; font-size:1.1rem; font-weight:bold; color:white; text-shadow:0 2px 4px rgba(0,0,0,0.2);">🏙️ Город МТ</h2>
+          <button id="game-help-btn" style="background:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.4); border-radius:30px; padding:5px 12px; font-size:0.65rem; font-weight:500; color:white; cursor:pointer;">❓ Как играть?</button>
         </div>
         
-        <div class="mtbank-status" style="background:linear-gradient(145deg,#f5e6a0,#e6d5a0); border-radius:16px; padding:12px; margin:12px 0; text-align:center;">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-            <div style="display:flex; align-items:center; gap:8px;">
-              <span style="font-size:24px;">🏦</span>
-              <span style="font-weight:bold;">МТБанк Ур.${mtbankLevel}</span>
-            </div>
-            <div style="flex:1; min-width:150px;">
-              <div style="background:rgba(0,0,0,0.2); border-radius:10px; height:8px; overflow:hidden;">
-                <div id="mtbank-progress" style="width:${expPercent}%; height:100%; background:linear-gradient(90deg,#ffd700,#ff9800); border-radius:10px;"></div>
-              </div>
-              <div style="font-size:11px; margin-top:4px;" id="mtbank-exp">${mtbankExp} / ${mtbankExpToNext} опыта</div>
-            </div>
-            <div style="font-size:12px; opacity:0.8;">✨ +опыт за действия</div>
+        <div style="display:flex; gap:6px;">
+          <div style="background:rgba(255,255,255,0.15); backdrop-filter:blur(10px); border-radius:12px; padding:8px 12px; flex:1;">
+            <span style="font-size:0.55rem; color:rgba(255,255,255,0.8); text-transform:uppercase; display:block; margin-bottom:2px;">MTBank Tokens</span>
+            <span style="font-size:1.2rem; font-weight:bold; color:#FFD700; text-shadow:0 2px 4px rgba(0,0,0,0.3);" id="game-balance">0</span>
           </div>
-        </div>
-        
-        <div id="mode-status" style="text-align:center; font-size:14px; font-weight:bold; margin:8px 0; padding:8px; border-radius:12px; background:#fff3e0; color:#e65100;">
-          🔨 РЕЖИМ СТРОИТЕЛЬСТВА <span style="background:#ff9800; padding:2px 8px; border-radius:20px; margin-left:8px; color:white;">Активен</span>
-        </div>
-        
-        <div style="display:flex; justify-content:center; margin: 8px 0;">
-          <button id="toggle-build-mode-btn" style="display:flex; align-items:center; gap:8px; padding:10px 24px; background:#ff9800; border:none; border-radius:30px; color:white; font-weight:bold; cursor:pointer; box-shadow:0 3px 0 #e65100; transition:all 0.1s ease;">
-            <span>🛠️</span>
-            <span>Переключить режим</span>
-          </button>
-        </div>
-        
-        <div class="city-game-area" style="width:100%; min-height:450px; display:flex; align-items:center; justify-content:center; overflow:hidden; background:#87CEEB; border-radius:20px; margin-bottom:16px; box-shadow:inset 0 0 50px rgba(0,0,0,0.1); touch-action:none;">
-          <div id="city-iso" style="position:relative;"></div>
-        </div>
-        
-        <div class="city-game-controls" style="display:flex; gap:10px; justify-content:center;">
-          <button class="city-control-btn" id="city-reset-camera" style="padding:10px 20px; background:#007bff; color:white; border:none; border-radius:30px; cursor:pointer;">🎯 Центр</button>
-          <button class="city-control-btn primary" id="city-collect-all-btn" style="padding:10px 20px; background:linear-gradient(145deg,#28a745,#1e7e34); color:white; border:none; border-radius:30px; cursor:pointer;">💰 Собрать всё</button>
+          <div style="background:rgba(255,255,255,0.15); backdrop-filter:blur(10px); border-radius:12px; padding:8px 12px; flex:1;">
+            <span style="font-size:0.55rem; color:rgba(255,255,255,0.8); text-transform:uppercase; display:block; margin-bottom:2px;">Очки прокачки</span>
+            <span style="font-size:1.2rem; font-weight:bold; color:white; text-shadow:0 2px 4px rgba(0,0,0,0.3);" id="game-skill-balance">0</span>
+          </div>
+          <div style="background:rgba(255,255,255,0.15); backdrop-filter:blur(10px); border-radius:12px; padding:8px 12px; flex:0.8;">
+            <span style="font-size:0.55rem; color:rgba(255,255,255,0.8); text-transform:uppercase; display:block; margin-bottom:2px;">Доход/час</span>
+            <span style="font-size:1.2rem; font-weight:bold; color:white; text-shadow:0 2px 4px rgba(0,0,0,0.3);" id="total-income">0</span>
+          </div>
         </div>
       </div>
-    `;
-    
-    isoContainer = document.getElementById("city-iso");
-    
-    var gameData = loadGameBuildings();
-    buildings = gameData.buildings;
+      
+      <!-- Компактный МТБанк статус -->
+      <div style="background:#ffffff; margin:8px 12px; padding:8px 12px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+          <div style="display:flex; align-items:center; gap:6px;">
+            <span style="font-size:20px;">🏦</span>
+            <span style="font-weight:bold; color:#333; font-size:0.85rem;">МТБанк Ур.${mtbankLevel}</span>
+          </div>
+          <div style="flex:1;">
+            <div style="background:#e0e0e0; border-radius:8px; height:6px; overflow:hidden;">
+              <div id="mtbank-progress" style="width:${expPercent}%; height:100%; background:linear-gradient(90deg,#ff9800,#ff5722); border-radius:8px;"></div>
+            </div>
+            <div style="font-size:9px; margin-top:3px; color:#999;" id="mtbank-exp">${mtbankExp}/${mtbankExpToNext}</div>
+          </div>
+          <div style="font-size:10px; color:#bbb;">✨ +опыт</div>
+        </div>
+      </div>
+      
+      <!-- Игровое поле -->
+      <div class="city-game-area" style="display:flex; align-items:center; justify-content:center; overflow:hidden; background:#87CEEB; box-shadow:inset 0 0 50px rgba(0,0,0,0.1); touch-action:none; flex:1; border-radius:0; margin:0 8px; position:relative;">
+        <div id="city-iso" style="position:relative;"></div>
+        
+        <!-- Статус режима (поверх изометрии, сверху по центру, без фона) -->
+        <div id="mode-status" style="position:absolute; top:12px; left:50%; transform:translateX(-50%); font-size:13px; font-weight:bold; color:white; text-shadow:0 2px 6px rgba(0,0,0,0.5); white-space:nowrap; pointer-events:none; z-index:10;">
+          👁️ РЕЖИМ ПРОСМОТРА <span style="background:rgba(108,117,125,0.8); backdrop-filter:blur(4px); padding:3px 10px; border-radius:20px; margin-left:8px; color:white; font-size:11px;">Строительство отключено</span>
+        </div>
+      </div>
+      
+      
+      <!-- Три кнопки: Центр | 🛠️/✗ | Собрать (компактнее и выше) -->
+      <div style="position:absolute; bottom:110px; left:0; right:0; display:flex; gap:8px; padding:8px 16px; background:transparent; pointer-events:none;">
+        <button id="city-reset-camera" style="display:flex; align-items:center; justify-content:center; gap:4px; padding:10px 8px; background:#ffffff; color:#333; border:none; border-radius:30px; cursor:pointer; font-weight:bold; font-size:13px; flex:1.2; box-shadow:0 4px 12px rgba(0,0,0,0.1); pointer-events:auto;">
+          <span>🎯</span>
+          <span>Центр</span>
+        </button>
+        <button id="toggle-build-mode-btn" style="display:flex; align-items:center; justify-content:center; padding:10px 0; background:#ff9800; border:none; border-radius:30px; color:white; font-size:20px; cursor:pointer; box-shadow:0 4px 12px rgba(0,0,0,0.2); pointer-events:auto; flex:0.8;">
+          <span id="mode-toggle-icon">🛠️</span>
+        </button>
+        <button id="city-collect-all-btn" style="display:flex; align-items:center; justify-content:center; gap:4px; padding:10px 8px; background:linear-gradient(145deg,#007bff 0%,#6a00b8 48%,#e10098 100%); color:white; border:none; border-radius:30px; cursor:pointer; font-weight:bold; font-size:13px; flex:1.2; box-shadow:0 4px 12px rgba(0,0,0,0.2); pointer-events:auto;">
+          <span>💰</span>
+          <span>Собрать</span>
+        </button>
+      </div>
+    </div>
+  `;
+  
+  isoContainer = document.getElementById("city-iso");
+  
+  var gameData = loadGameBuildings();
+  buildings = gameData.buildings;
 
-    normalizePendingIncomes();
-    
-    updateBuildingPriceMultiplier();
-    updatePendingIncome();
-    renderGrid();
-    updateDisplays();
-    startIncomeTimer();
-    setupCameraControls();
-    
-    document.getElementById("city-reset-camera")?.addEventListener("click", resetCamera);
-    document.getElementById("city-collect-all-btn")?.addEventListener("click", collectAllIncome);
-    
-    var toggleBtn = document.getElementById("toggle-build-mode-btn");
-    if (toggleBtn) {
-      toggleBtn.addEventListener("click", toggleBuildMode);
-    }
-    
-    var helpBtn = document.getElementById("game-help-btn");
-    if (helpBtn) {
-      helpBtn.addEventListener("click", openHelpModal);
-    }
-    
-    var buildModalClose = document.getElementById("build-modal-close");
-    var buildModalOverlay = document.querySelector("#build-modal .build-modal__overlay");
-    if (buildModalClose) buildModalClose.addEventListener("click", closeBuildModal);
-    if (buildModalOverlay) buildModalOverlay.addEventListener("click", closeBuildModal);
-    
-    var infoModalClose = document.getElementById("info-modal-close");
-    var infoModalOverlay = document.querySelector("#info-modal .info-modal__overlay");
-    var infoCollectBtn = document.getElementById("info-collect-btn");
-    var infoUpgradeBtn = document.getElementById("info-upgrade-btn");
-    var infoSellBtn = document.getElementById("info-sell-btn");
-    
-    if (infoModalClose) infoModalClose.addEventListener("click", closeInfoModal);
-    if (infoModalOverlay) infoModalOverlay.addEventListener("click", closeInfoModal);
-    if (infoCollectBtn) infoCollectBtn.addEventListener("click", function() {
-      if (currentInfoIndex !== null) collectBuildingIncome(currentInfoIndex);
-    });
-    if (infoUpgradeBtn) infoUpgradeBtn.addEventListener("click", function() {
-      if (currentInfoIndex !== null) upgradeBuilding(currentInfoIndex);
-    });
-    if (infoSellBtn) infoSellBtn.addEventListener("click", function() {
-      if (currentInfoIndex !== null) sellBuilding(currentInfoIndex);
-    });
-    
-    checkAllTasksCompletion();
-    renderCalendarGrid();
-    updateStreakDisplay();
-    updateMtbankUI();
-    bindMtbankModalEvents();
+  normalizePendingIncomes();
+  
+  updateBuildingPriceMultiplier();
+  updatePendingIncome();
+  renderGrid();
+  updateDisplays();
+  startIncomeTimer();
+  setupCameraControls();
+  
+  document.getElementById("city-reset-camera")?.addEventListener("click", resetCamera);
+  document.getElementById("city-collect-all-btn")?.addEventListener("click", collectAllIncome);
+  
+  var toggleBtn = document.getElementById("toggle-build-mode-btn");
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", toggleBuildMode);
   }
+  
+  var helpBtn = document.getElementById("game-help-btn");
+  if (helpBtn) {
+    helpBtn.addEventListener("click", openHelpModal);
+  }
+  
+  var buildModalClose = document.getElementById("build-modal-close");
+  var buildModalOverlay = document.querySelector("#build-modal .build-modal__overlay");
+  if (buildModalClose) buildModalClose.addEventListener("click", closeBuildModal);
+  if (buildModalOverlay) buildModalOverlay.addEventListener("click", closeBuildModal);
+  
+  var infoModalClose = document.getElementById("info-modal-close");
+  var infoModalOverlay = document.querySelector("#info-modal .info-modal__overlay");
+  var infoCollectBtn = document.getElementById("info-collect-btn");
+  var infoUpgradeBtn = document.getElementById("info-upgrade-btn");
+  var infoSellBtn = document.getElementById("info-sell-btn");
+  
+  if (infoModalClose) infoModalClose.addEventListener("click", closeInfoModal);
+  if (infoModalOverlay) infoModalOverlay.addEventListener("click", closeInfoModal);
+  if (infoCollectBtn) infoCollectBtn.addEventListener("click", function() {
+    if (currentInfoIndex !== null) collectBuildingIncome(currentInfoIndex);
+  });
+  if (infoUpgradeBtn) infoUpgradeBtn.addEventListener("click", function() {
+    if (currentInfoIndex !== null) upgradeBuilding(currentInfoIndex);
+  });
+  if (infoSellBtn) infoSellBtn.addEventListener("click", function() {
+    if (currentInfoIndex !== null) sellBuilding(currentInfoIndex);
+  });
+  
+  checkAllTasksCompletion();
+  renderCalendarGrid();
+  updateStreakDisplay();
+  updateMtbankUI();
+  bindMtbankModalEvents();
+}
 
   // ========== ИНИЦИАЛИЗАЦИЯ ==========
 
