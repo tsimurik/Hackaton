@@ -523,6 +523,7 @@ function updateMtbankModalContent() {
   var creditDebt = mtData.creditDebt || 0;
   var maxCredit = 250 * bankLevel;
   var repayAmount = Math.floor(creditDebt * 1.7);
+  var currentBalance = currentUser.balanceMtBanks || 0;
   
   // Обновляем информацию о кредите
   var creditDebtSpan = document.getElementById("mtbank-credit-debt");
@@ -534,9 +535,16 @@ function updateMtbankModalContent() {
   var maxCreditSpan = document.getElementById("mtbank-max-credit");
   if (maxCreditSpan) maxCreditSpan.textContent = maxCredit;
   
+  // Показываем текущий баланс в модальном окне
+  var balanceSpan = document.getElementById("mtbank-current-balance");
+  if (balanceSpan) {
+    balanceSpan.textContent = currentBalance;
+  }
+  
   // Обновляем кнопки
   var creditBtn = document.getElementById("credit-btn");
   var repayBtn = document.getElementById("repay-credit-btn");
+  var depositBtn = document.getElementById("deposit-btn");
   
   if (creditBtn) {
     creditBtn.disabled = creditDebt > 0;
@@ -544,6 +552,10 @@ function updateMtbankModalContent() {
   
   if (repayBtn) {
     repayBtn.disabled = creditDebt <= 0 || (currentUser.balanceSkillPoints || 0) < repayAmount;
+  }
+  
+  if (depositBtn) {
+    depositBtn.disabled = currentBalance <= 0;
   }
   
   // Обновляем список вкладов
@@ -587,28 +599,67 @@ function checkDeposits() {
   
   var now = Date.now();
   var needSave = false;
+  var totalReturned = 0;
   
   for (var i = mtData.deposits.length - 1; i >= 0; i--) {
     var deposit = mtData.deposits[i];
     if (now >= deposit.endDate) {
       var profit = Math.floor(deposit.amount * deposit.interestRate / 100);
-      currentUser.balanceMtBanks = (currentUser.balanceMtBanks || 0) + deposit.amount + profit;
+      var totalReturn = deposit.amount + profit;
+      totalReturned += totalReturn;
+      
+      // 🔴 ВОЗВРАЩАЕМ ДЕНЬГИ НА БАЛАНС
+      currentUser.balanceMtBanks = (currentUser.balanceMtBanks || 0) + totalReturn;
       mtData.deposits.splice(i, 1);
       needSave = true;
-      showGameToast(`📊 Вклад закрыт! Получено ${deposit.amount + profit} 💰 (${profit} 💰 прибыль)`);
+      
+      showGameToast(`📊 Вклад закрыт! Получено ${totalReturn} 💰 (${profit} 💰 прибыль)`);
     }
   }
   
   if (needSave) {
+    // Обновляем глобальные переменные
+    balanceMtBanks = currentUser.balanceMtBanks;
+    
     var users = loadAllUsers();
     users[currentUser.id] = currentUser;
     saveAllUsers(users);
     saveMtbankData(mtData);
-    balanceMtBanks = currentUser.balanceMtBanks;
+    
+    // Обновляем все отображения
     syncBalancesToDom();
-    if (typeof updateGameBalanceDisplay === 'function') updateGameBalanceDisplay();
+    if (typeof updateGameBalanceDisplay === 'function') {
+      updateGameBalanceDisplay();
+    }
+    if (typeof updateDisplays === 'function') {
+      updateDisplays();
+    }
     updateMtbankUI();
     updateMtbankModalContent();
+    
+    if (totalReturned > 0) {
+      console.log(`💰 Возвращено по вкладам: ${totalReturned} MTBank Tokens`);
+    }
+  }
+}
+
+function updateGameBalanceDisplay() {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return;
+  
+  var gameBalanceSpan = document.getElementById("game-balance");
+  if (gameBalanceSpan) {
+    gameBalanceSpan.textContent = currentUser.balanceMtBanks || 0;
+  }
+  
+  var gameSkillSpan = document.getElementById("game-skill-balance");
+  if (gameSkillSpan) {
+    gameSkillSpan.textContent = currentUser.balanceSkillPoints || 0;
+  }
+  
+  var totalIncomeSpan = document.getElementById("total-income");
+  if (totalIncomeSpan && typeof getTotalHourlyIncome === 'function') {
+    totalIncomeSpan.textContent = getTotalHourlyIncome();
   }
 }
 
@@ -720,8 +771,10 @@ function createDeposit() {
     return;
   }
   
-  if ((currentUser.balanceMtBanks || 0) < amount) {
-    showGameToast("❌ Недостаточно MTBank Tokens!");
+  // Проверяем достаточно ли средств на балансе
+  var currentBalance = currentUser.balanceMtBanks || 0;
+  if (currentBalance < amount) {
+    showGameToast(`❌ Недостаточно MTBank Tokens! У вас ${currentBalance} 💰, нужно ${amount} 💰`);
     return;
   }
   
@@ -738,8 +791,13 @@ function createDeposit() {
   
   var endDate = Date.now() + (days * 24 * 60 * 60 * 1000);
   
-  currentUser.balanceMtBanks -= amount;
+  // 🔴 СПИСЫВАЕМ ДЕНЬГИ С БАЛАНСА
+  currentUser.balanceMtBanks = currentBalance - amount;
   
+  // 🔴 ОБНОВЛЯЕМ ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
+  balanceMtBanks = currentUser.balanceMtBanks;
+  
+  // Добавляем вклад в список
   mtData.deposits.push({
     amount: amount,
     days: days,
@@ -748,18 +806,26 @@ function createDeposit() {
     startDate: Date.now()
   });
   
+  // Сохраняем все изменения
   var users = loadAllUsers();
   users[currentUser.id] = currentUser;
   saveAllUsers(users);
   saveMtbankData(mtData);
   
-  balanceMtBanks = currentUser.balanceMtBanks;
-  syncBalancesToDom();
-  if (typeof updateGameBalanceDisplay === 'function') updateGameBalanceDisplay();
+  // 🔴 ОБНОВЛЯЕМ ВСЕ ОТОБРАЖЕНИЯ БАЛАНСА
+  syncBalancesToDom();  // Обновляет профиль
+  if (typeof updateGameBalanceDisplay === 'function') {
+    updateGameBalanceDisplay();  // Обновляет игру
+  }
+  if (typeof updateDisplays === 'function') {
+    updateDisplays();  // Обновляет другие элементы
+  }
+  
+  // Обновляем UI банка и список вкладов
   updateMtbankUI();
   updateMtbankModalContent();
   
-  showGameToast(`📈 Вклад открыт! ${amount} 💰 на ${days} дней под ${interestRate}%`);
+  showGameToast(`📈 Вклад открыт! С вашего счёта списано ${amount} 💰. Вклад на ${days} дней под ${interestRate}%`);
 }
 
 function openMtbankModal() {
