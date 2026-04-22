@@ -477,9 +477,11 @@ a.shop-item {
 
 .bottom-nav {
   position: fixed;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
   bottom: 0;
+  width: 100%;
+  max-width: 480px;
   display: flex;
   justify-content: space-around;
   align-items: stretch;
@@ -3563,7 +3565,12 @@ button:active, .city-bar-btn:active, .city-control-btn:active, .build-option:act
     display: block;
     background: var(--bg-page);
   }
-  
+    .bottom-nav {
+    max-width: 100%;
+    left: 0;
+    right: 0;
+    transform: none;
+  }
   #screen-register,
   #screen-login,
   #screen-app,
