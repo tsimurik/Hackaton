@@ -5,7 +5,7 @@
 
   var balanceSkillPoints = 0;
   var balanceMtBanks = 0;
-  var buildingPriceMultiplier = 1.0;
+  var buildingPriceMultiplier = 1.9;
   // Максимальное количество часов накопления дохода (24 часа)
 var MAX_ACCUMULATION_HOURS = 24;
 
@@ -429,21 +429,21 @@ function switchTab(tab) {
   // ========== КОНФИГУРАЦИЯ ЗДАНИЙ ==========
   const BUILDING_TYPES = {
     mtbank: { name: "МТБанк", icon: "🏦", sprite: "bank.png", baseIncome: 0, upgradeMultiplier: 1, cost: 0, maxLevel: 3, category: 0, bg: '#f5e6a0', isMain: true, unlockLevel: 1 },
-    coffee: { name: "Кофейня", icon: "☕", sprite: "cafe.png", baseIncome: 50, upgradeMultiplier: 1.5, cost: 100, maxLevel: 5, category: 1, bg: '#fff4e0', unlockLevel: 1 },
-    flowershop: { name: "Цветочный магазин", icon: "🌷", sprite: "flower.png", baseIncome: 55, upgradeMultiplier: 1.53, cost: 110, maxLevel: 5, category: 1, bg: '#ffe0f0', unlockLevel: 1 },
-    minimarket: { name: "Мини-магазин", icon: "🏪", sprite: "minimarket.png", baseIncome: 45, upgradeMultiplier: 1.52, cost: 90, maxLevel: 5, category: 1, bg: '#e0ffe0', unlockLevel: 1 },
-    foodtruck: { name: "Фудтрак", icon: "🚚", sprite: "foodtruck.png", baseIncome: 48, upgradeMultiplier: 1.54, cost: 95, maxLevel: 5, category: 1, bg: '#ffe8d0', unlockLevel: 1 },
-    icecream: { name: "Киоск мороженого", icon: "🍦", sprite: "icecream.png", baseIncome: 42, upgradeMultiplier: 1.51, cost: 85, maxLevel: 5, category: 1, bg: '#e0f0ff', unlockLevel: 1 },
-    restaurant: { name: "Ресторан", icon: "🍽️", sprite: "restaurant.png", baseIncome: 100, upgradeMultiplier: 1.6, cost: 250, maxLevel: 5, category: 2, bg: '#f0e0e0', unlockLevel: 2 },
-    shop: { name: "Магазин", icon: "🏪", sprite: "store.png", baseIncome: 110, upgradeMultiplier: 1.62, cost: 280, maxLevel: 5, category: 2, bg: '#e0e0ff', unlockLevel: 2 },
-    autoservice: { name: "Автосервис", icon: "🔧", sprite: "autoservice.png", baseIncome: 120, upgradeMultiplier: 1.63, cost: 300, maxLevel: 5, category: 2, bg: '#d0d0d0', unlockLevel: 2 },
-    itcompany: { name: "IT Компания", icon: "💻", sprite: "itoffice.png", baseIncome: 140, upgradeMultiplier: 1.65, cost: 350, maxLevel: 5, category: 2, bg: '#c0e0ff', unlockLevel: 2 },
-    gasstation: { name: "Заправка", icon: "⛽", sprite: "gasstation.png", baseIncome: 115, upgradeMultiplier: 1.61, cost: 290, maxLevel: 5, category: 2, bg: '#ffe0c0', unlockLevel: 2 },
-    businesspark: { name: "Бизнес-парк", icon: "🏢", sprite: "business-center.png", baseIncome: 500, upgradeMultiplier: 1.85, cost: 1200, maxLevel: 5, category: 3, bg: '#e0eeff', unlockLevel: 3 },
-    cinema: { name: "Кинотеатр", icon: "🎬", sprite: "cinema.png", baseIncome: 350, upgradeMultiplier: 1.78, cost: 800, maxLevel: 5, category: 3, bg: '#e0d0ff', unlockLevel: 3 },
-    construction: { name: "Стройкомпания", icon: "🏗️", sprite: "construction.png", baseIncome: 320, upgradeMultiplier: 1.75, cost: 750, maxLevel: 5, category: 3, bg: '#ffe8a0', unlockLevel: 3 },
-    warehouse: { name: "Склад", icon: "🏭", sprite: "warehouse.png", baseIncome: 250, upgradeMultiplier: 1.7, cost: 600, maxLevel: 5, category: 3, bg: '#d0c0a0', unlockLevel: 3 },
-    mall: { name: "Торговый центр", icon: "🏬", sprite: "mall.png", baseIncome: 450, upgradeMultiplier: 1.82, cost: 1100, maxLevel: 5, category: 3, bg: '#ffd0e0', unlockLevel: 3 }
+    coffee: { name: "Кофейня", icon: "☕", sprite: "cafe.png", baseIncome: 5, upgradeMultiplier: 1.5, cost: 195, maxLevel: 5, category: 1, bg: '#fff4e0', unlockLevel: 1 },
+    flowershop: { name: "Цветочный магазин", icon: "🌷", sprite: "flower.png", baseIncome: 6, upgradeMultiplier: 1.53, cost: 215, maxLevel: 5, category: 1, bg: '#ffe0f0', unlockLevel: 1 },
+    minimarket: { name: "Мини-магазин", icon: "🏪", sprite: "minimarket.png", baseIncome: 5, upgradeMultiplier: 1.52, cost: 176, maxLevel: 5, category: 1, bg: '#e0ffe0', unlockLevel: 1 },
+    foodtruck: { name: "Фудтрак", icon: "🚚", sprite: "foodtruck.png", baseIncome: 5, upgradeMultiplier: 1.54, cost: 185, maxLevel: 5, category: 1, bg: '#ffe8d0', unlockLevel: 1 },
+    icecream: { name: "Киоск мороженого", icon: "🍦", sprite: "icecream.png", baseIncome: 4, upgradeMultiplier: 1.51, cost: 166, maxLevel: 5, category: 1, bg: '#e0f0ff', unlockLevel: 1 },
+    restaurant: { name: "Ресторан", icon: "🍽️", sprite: "restaurant.png", baseIncome: 10, upgradeMultiplier: 1.6, cost: 488, maxLevel: 5, category: 2, bg: '#f0e0e0', unlockLevel: 2 },
+    shop: { name: "Магазин", icon: "🏪", sprite: "store.png", baseIncome: 11, upgradeMultiplier: 1.62, cost: 546, maxLevel: 5, category: 2, bg: '#e0e0ff', unlockLevel: 2 },
+    autoservice: { name: "Автосервис", icon: "🔧", sprite: "autoservice.png", baseIncome: 12, upgradeMultiplier: 1.63, cost: 585, maxLevel: 5, category: 2, bg: '#d0d0d0', unlockLevel: 2 },
+    itcompany: { name: "IT Компания", icon: "💻", sprite: "itoffice.png", baseIncome: 14, upgradeMultiplier: 1.65, cost: 682, maxLevel: 5, category: 2, bg: '#c0e0ff', unlockLevel: 2 },
+    gasstation: { name: "Заправка", icon: "⛽", sprite: "gasstation.png", baseIncome: 12, upgradeMultiplier: 1.61, cost: 566, maxLevel: 5, category: 2, bg: '#ffe0c0', unlockLevel: 2 },
+    businesspark: { name: "Бизнес-парк", icon: "🏢", sprite: "business-center.png", baseIncome: 50, upgradeMultiplier: 1.85, cost: 2340, maxLevel: 5, category: 3, bg: '#e0eeff', unlockLevel: 3 },
+    cinema: { name: "Кинотеатр", icon: "🎬", sprite: "cinema.png", baseIncome: 35, upgradeMultiplier: 1.78, cost: 1560, maxLevel: 5, category: 3, bg: '#e0d0ff', unlockLevel: 3 },
+    construction: { name: "Стройкомпания", icon: "🏗️", sprite: "construction.png", baseIncome: 32, upgradeMultiplier: 1.75, cost: 1463, maxLevel: 5, category: 3, bg: '#ffe8a0', unlockLevel: 3 },
+    warehouse: { name: "Склад", icon: "🏭", sprite: "warehouse.png", baseIncome: 25, upgradeMultiplier: 1.7, cost: 1170, maxLevel: 5, category: 3, bg: '#d0c0a0', unlockLevel: 3 },
+    mall: { name: "Торговый центр", icon: "🏬", sprite: "mall.png", baseIncome: 45, upgradeMultiplier: 1.82, cost: 2145, maxLevel: 5, category: 3, bg: '#ffd0e0', unlockLevel: 3 }
   };
 
   const BUILDING_KEYS = ["coffee", "flowershop", "minimarket", "foodtruck", "icecream", "restaurant", "shop", "autoservice", "itcompany", "gasstation", "businesspark", "cinema", "construction", "warehouse", "mall"];
@@ -1681,7 +1681,7 @@ function getMaxPendingIncome(building) {
     if (building.type === "mtbank") return Infinity;
     var typeData = BUILDING_TYPES[building.type];
     if (!typeData) return 0;
-    return Math.floor(typeData.cost * Math.pow(1.3, building.level - 1));
+    return Math.floor(typeData.cost * Math.pow(1.5, building.level - 1));
   }
 
   function updateBuildingPriceMultiplier() {
